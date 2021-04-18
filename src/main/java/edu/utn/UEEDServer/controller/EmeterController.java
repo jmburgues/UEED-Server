@@ -2,7 +2,7 @@ package edu.utn.UEEDServer.controller;
 
 
 
-import edu.utn.UEEDServer.model.Emeter;
+import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.persistence.mysql.EmeterMysqlDAO;
 
 
@@ -14,12 +14,12 @@ public class EmeterController {
 
 
 
-    public List<Emeter> getAll()
+    public List<Meter> getAll()
     {
         return emeterMysqlDAO.getAll();
     }
 
-    public Emeter getById(String serialNumber)
+    public Meter getById(String serialNumber)
     {
         return emeterMysqlDAO.getById(serialNumber);
     }

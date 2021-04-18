@@ -1,32 +1,29 @@
 package edu.utn.UEEDServer.model;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Emeter {
-
-
-    private String serialNumber;
+public class Meter {
+    private String serialNumber; // Set type UUID instead of String
+    private LocalDateTime lastMeasurementDate;
+    private double accumulatedConsumption;
     private Model model;
 
-
-    public Emeter(String serialNumber,Model model)
-    {
+    public Meter(String serialNumber, Model model) {
         this.serialNumber = serialNumber;
+        this.lastMeasurementDate = LocalDateTime.now();
+        this.accumulatedConsumption = 0;
         this.model = model;
-
     }
 
-    public Emeter(String serialNumber) {
-
+    public Meter(String serialNumber) {
         this.model = new Model();
+        this.lastMeasurementDate = LocalDateTime.now();
+        this.accumulatedConsumption = 0;
         this.serialNumber = serialNumber;
-
-
     }
 
-    public Emeter() {
-
+    public Meter() {
     }
-
 
     public String getSerialNumber() {
         return serialNumber;
@@ -48,8 +45,8 @@ public class Emeter {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Emeter emeter = (Emeter) o;
-        return Objects.equals(serialNumber, emeter.serialNumber);
+        Meter meter = (Meter) o;
+        return Objects.equals(serialNumber, meter.serialNumber);
     }
 
     @Override

@@ -58,12 +58,10 @@ CREATE TABLE METERS
 (
     serialNumber  varchar(40),
     modelId  int not null,
-    /*
-     * AGREGAR KW ACUMULADOS Y ULTIMA FECHA DE MEDICION ??????? CONSULTAR
-     */
+    lastMeasurement datetime default now(), # This field will be set by a trigger
+    accumulatedConsumption double default 0,  # This field will be set by a trigger
     CONSTRAINT pk_serialNumber primary key (serialNumber),
     CONSTRAINT fk_METERS_modelId foreign key (modelId) references MODELS (modelId)
-
 );
 
 CREATE TABLE BILLS(
@@ -82,15 +80,15 @@ CREATE TABLE BILLS(
     CONSTRAINT fk_BILLS_clientId foreign key (clientId) references CLIENTS(clientId)
 );
 
-CREATE TABLE MEASUREMENTS(
-    measurementId int auto_increment,
-    measuredDate datetime not null,
+CREATE TABLE READINGS(
+    readingId int auto_increment,
+    readDate datetime not null,
     totalKw float default 0,
     meterSerialNumber varchar(40) not null,
     billId int default null,
-    CONSTRAINT pk_mId primary key (measurementId),
-    CONSTRAINT fk_MEASUREMENTS_meterSN foreign key (meterSerialNumber) references METERS(serialNumber),
-    CONSTRAINT fk_MEASUREMENTS_billId foreign key (billId) references BILLS(billId)
+    CONSTRAINT pk_mId primary key (readingId),
+    CONSTRAINT fk_READINGS_meterSN foreign key (meterSerialNumber) references METERS(serialNumber),
+    CONSTRAINT fk_READINGS_billId foreign key (billId) references BILLS(billId)
 );
 
 #
