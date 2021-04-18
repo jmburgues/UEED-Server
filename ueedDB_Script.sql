@@ -49,7 +49,7 @@ CREATE TABLE ADDRESS
     number   int not null,
     clientId int not null,
     rateId   int not null,
-    CONSTRAINT pk_adressId primary key (addressId),
+    CONSTRAINT pk_addressId primary key (addressId),
     CONSTRAINT fk_ADDRESS_clientId foreign key (clientId) references CLIENTS(clientId),
     CONSTRAINT fk_ADDRESS_rateId foreign key (rateId) references RATES (rateId)
 );
@@ -58,12 +58,10 @@ CREATE TABLE METERS
 (
     serialNumber  varchar(40),
     modelId  int not null,
-    /*
-     * AGREGAR KW ACUMULADOS Y ULTIMA FECHA DE MEDICION ??????? CONSULTAR
-     */
+    lastReading datetime default now(), # This field will be set by a trigger
+    accumulatedConsumption double default 0,  # This field will be set by a trigger
     CONSTRAINT pk_serialNumber primary key (serialNumber),
     CONSTRAINT fk_METERS_modelId foreign key (modelId) references MODELS (modelId)
-
 );
 
 CREATE TABLE BILLS(
@@ -82,19 +80,34 @@ CREATE TABLE BILLS(
     CONSTRAINT fk_BILLS_clientId foreign key (clientId) references CLIENTS(clientId)
 );
 
-CREATE TABLE MEASUREMENTS(
-    measurementId int auto_increment,
-    measuredDate datetime not null,
+CREATE TABLE READINGS(
+    readingId int auto_increment,
+    readDate datetime not null,
     totalKw float default 0,
     meterSerialNumber varchar(40) not null,
     billId int default null,
-    CONSTRAINT pk_mId primary key (measurementId),
-    CONSTRAINT fk_MEASUREMENTS_meterSN foreign key (meterSerialNumber) references METERS(serialNumber),
-    CONSTRAINT fk_MEASUREMENTS_billId foreign key (billId) references BILLS(billId)
+    CONSTRAINT pk_mId primary key (readingId),
+    CONSTRAINT fk_READINGS_meterSN foreign key (meterSerialNumber) references METERS(serialNumber),
+    CONSTRAINT fk_READINGS_billId foreign key (billId) references BILLS(billId)
 );
 
-#
-#CALCULAR TOTAL DE FACUTRA
-#buscar tarifa del medidor en dicho momento,
-#calcularlo contra la medicion
-#guardarlo en factura.
+# TRIGGER updateMeterWithReading
+DELIMITER //
+CREATE TRIGGER `tai_updateMeterWithReading` AFTER INSERT ON READINGS FOR EACH ROW
+    BEGIN
+        IF(EXISTS (SELECT * FROM METERS WHERE meterSerialNumber = new.meterSerialNumber)) THEN
+            UPDATE METERS SET lastReading = new.readDate, accumulatedConsumption = totalKw WHERE serialNumber = new.meterSerialNumber;
+        ELSE
+            SIGNAL SQLSTATE '50000' SET MESSAGE_TEXT = 'Operation not allowed: Meter does not exists.';
+        END IF;
+    end //
+DELIMITER ;
+
+
+
+
+
+
+
+
+
