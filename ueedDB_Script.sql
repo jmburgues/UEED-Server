@@ -42,7 +42,7 @@ CREATE TABLE MODELS(
     CONSTRAINT fk_MODELS_brandId foreign key (brandId) references BRANDS(brandId)
 );
 
-CREATE TABLE ADDRESS
+CREATE TABLE ADDRESSES
 (
     addressId int auto_increment,
     street   varchar(40),
@@ -60,8 +60,10 @@ CREATE TABLE METERS
     modelId  int not null,
     lastReading datetime default now(), # This field will be set by a trigger
     accumulatedConsumption double default 0,  # This field will be set by a trigger
+    addressId integer UNIQUE,
     CONSTRAINT pk_serialNumber primary key (serialNumber),
-    CONSTRAINT fk_METERS_modelId foreign key (modelId) references MODELS (modelId)
+    CONSTRAINT fk_METERS_modelId foreign key (modelId) references MODELS (modelId),
+    CONSTRAINT fk_METERS_addressId foreign key (addressId) references ADDRESSES (addressId)
 );
 
 CREATE TABLE BILLS(
@@ -85,24 +87,64 @@ CREATE TABLE READINGS(
     readDate datetime not null,
     totalKw float default 0,
     meterSerialNumber varchar(40) not null,
+    readingPrice float default null, # DB Requirement nª 3
     billId int default null,
     CONSTRAINT pk_mId primary key (readingId),
     CONSTRAINT fk_READINGS_meterSN foreign key (meterSerialNumber) references METERS(serialNumber),
     CONSTRAINT fk_READINGS_billId foreign key (billId) references BILLS(billId)
 );
 
-# TRIGGER updateMeterWithReading
+
+# TRIGGER prevents unregistered meters from storing data.
 DELIMITER //
-CREATE TRIGGER `tai_updateMeterWithReading` AFTER INSERT ON READINGS FOR EACH ROW
+CREATE TRIGGER `tbi_checkRegisteredMeter` BEFORE INSERT ON READINGS FOR EACH ROW
     BEGIN
-        IF(EXISTS (SELECT * FROM METERS WHERE meterSerialNumber = new.meterSerialNumber)) THEN
-            UPDATE METERS SET lastReading = new.readDate, accumulatedConsumption = totalKw WHERE serialNumber = new.meterSerialNumber;
-        ELSE
-            SIGNAL SQLSTATE '50000' SET MESSAGE_TEXT = 'Operation not allowed: Meter does not exists.';
-        END IF;
+        IF(NOT EXISTS (SELECT * FROM METERS WHERE meterSerialNumber = new.meterSerialNumber)) THEN
+            SIGNAL SQLSTATE '50000' SET MESSAGE_TEXT = 'Operation not allowed: Meter is not registered.';
+        end if;
+    end //
+
+## ITEM 3
+# STORED PROCEDURE: gets Rate price from meter Serial Number.
+DELIMITER //
+CREATE PROCEDURE getKwPrice(IN meterSerialNumber VARCHAR(40), OUT actualPrice FLOAT)
+BEGIN
+    SELECT R.kwPrice INTO @actualPrice
+    FROM RATES R
+         INNER JOIN
+         ADDRESSES A
+         ON R.rateId = A.rateId
+         INNER JOIN
+         METERS M
+         ON A.addressId = M.addressId
+    WHERE M.serialNumber = meterSerialNumber;
+end //
+º
+## ITEM 3
+# TRIGGER updates meter attributes with last readings and calculates consumption price.
+## Its ok to do subquerys or is it preferable to create a trigger and update a column to gain efficiency???
+/**
+  * WARNING: MUST ADD readingPrice variable on Reading model !!!
+ */
+DELIMITER //
+CREATE TRIGGER `tbi_updateMeterWithReading` AFTER INSERT ON READINGS FOR EACH ROW
+    BEGIN
+        UPDATE METERS SET lastReading = new.readDate, accumulatedConsumption = totalKw WHERE serialNumber = new.meterSerialNumber;
+        CALL getKwPrice(new.meterSerialNumber);
+        UPDATE READINGS SET readingPrice = (new.totalKw * @actualPrice) WHERE readingId = new.readingId;
+        # Reading price must be calculated from accumulatedConsumption or by substracting last reading consumption to latest one?
     end //
 DELIMITER ;
 
+## ITEM 3 - Second part
+## Updates
+CREATE TRIGGER `tai_watchRates` AFTER UPDATE ON RATES FOR EACH ROW
+    BEGIN
+        CALL getKwPrice()
+        // working..
+    end;
+
+DELIMITER ;
 
 
 
