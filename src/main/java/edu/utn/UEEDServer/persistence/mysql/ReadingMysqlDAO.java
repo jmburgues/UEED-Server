@@ -2,7 +2,7 @@ package edu.utn.UEEDServer.persistence.mysql;
 
 
 
-import edu.utn.UEEDServer.model.Emeter;
+import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.persistence.ReadingDAO;
 
@@ -79,14 +79,14 @@ public class ReadingMysqlDAO implements ReadingDAO {
         return reading;
     }
 
-    public List<Reading>getByEmeter(Emeter emeter)
+    public List<Reading>getByEmeter(Meter meter)
     {
         try
         {
             PreparedStatement ps = this.connection.prepareStatement(
                     "Select * from readings where emeterId = ?"
             );
-            ps.setString(1,emeter.getSerialNumber());
+            ps.setString(1, meter.getSerialNumber());
             ResultSet rs=ps.executeQuery();
         }
         catch (SQLException sqlException) {

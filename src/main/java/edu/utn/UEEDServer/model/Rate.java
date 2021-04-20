@@ -1,7 +1,6 @@
 package edu.utn.UEEDServer.model;
 
 public class Rate {
-
     private Integer id;
     private String category;
     private Float price;

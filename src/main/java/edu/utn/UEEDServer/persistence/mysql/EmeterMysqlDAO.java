@@ -3,7 +3,7 @@ package edu.utn.UEEDServer.persistence.mysql;
 
 
 import edu.utn.UEEDServer.exception.InexistentObjectException;
-import edu.utn.UEEDServer.model.Emeter;
+import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.persistence.EmeterDAO;
 
@@ -28,14 +28,14 @@ public class EmeterMysqlDAO  implements EmeterDAO {
     }
 
     @Override
-    public void save(Emeter emeter) {
+    public void save(Meter meter) {
         try
         {
             PreparedStatement ps = this.connection.prepareStatement
                     ("INSERT into emeters (serialNumber,modelId) values (?,?)");
 
-            ps.setString(1,emeter.getSerialNumber());
-            ps.setInt(2,emeter.getModel().getId());
+            ps.setString(1, meter.getSerialNumber());
+            ps.setInt(2, meter.getModel().getId());
             ps.execute();
         }
         catch (SQLException sqlException) {
@@ -45,20 +45,20 @@ public class EmeterMysqlDAO  implements EmeterDAO {
 
     }
 
-    public void read(Emeter emeter)
+    public void read(Meter meter)
     {
 
-        this.readingMysqlDAO.save(new Reading(),emeter.getSerialNumber());
+        this.readingMysqlDAO.save(new Reading(), meter.getSerialNumber());
     }
 
     @Override
-    public void remove(Emeter o) {
+    public void remove(Meter o) {
 
 
     }
 
     @Override
-    public Emeter getById(String serialNumber) {
+    public Meter getById(String serialNumber) {
 
         try{
          final PreparedStatement preparedStatement = this.connection.prepareStatement(
@@ -78,13 +78,13 @@ public class EmeterMysqlDAO  implements EmeterDAO {
         return null;
     }
 
-    private Emeter createEmeter(ResultSet resultSet) throws SQLException {
+    private Meter createEmeter(ResultSet resultSet) throws SQLException {
 
-        return new Emeter(resultSet.getString("serialNumber"));
+        return new Meter(resultSet.getString("serialNumber"));
     }
 
     @Override
-    public List<Emeter>getAll() {
+    public List<Meter>getAll() {
         return new ArrayList<>();
     }
 

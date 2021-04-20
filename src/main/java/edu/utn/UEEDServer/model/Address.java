@@ -3,14 +3,15 @@ package edu.utn.UEEDServer.model;
 public class Address {
 
     private Integer id;
-    private Emeter emeter;
-    private Rate rate;
     private String street;
     private Integer number;
+    private Rate rate;
+    private Client client;
 
-    public Address(Integer id, Emeter emeter, String street, Integer number) {
+
+    public Address(Integer id, Meter meter, String street, Integer number) {
         this.id = id;
-        this.emeter = emeter;
+        this.emeter = meter;
         this.street = street;
         this.number = number;
     }
@@ -26,12 +27,12 @@ public class Address {
         this.id = id;
     }
 
-    public Emeter getEmeter() {
+    public Meter getEmeter() {
         return emeter;
     }
 
-    public void setEmeter(Emeter emeter) {
-        this.emeter = emeter;
+    public void setEmeter(Meter meter) {
+        this.emeter = meter;
     }
 
     public String getStreet() {

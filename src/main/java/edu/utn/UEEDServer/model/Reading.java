@@ -1,74 +1,61 @@
 package edu.utn.UEEDServer.model;
-import java.util.Date;
-
+import java.time.LocalDateTime;
 
 public class Reading {
-
-    private static Date INITIAL_DATE = new Date(2021,01,01,00,00,00);
-
     private Integer id;
-    private float reading;
-    private Date datetime;
-    private Boolean billed;
+    private LocalDateTime readDate;
+    private float totalKw;
+    private Meter meter;
+    private Bill bill;
 
-
-    public Reading(){
+    public Reading() {
     }
 
-    public Reading(float reading,Date datetime)
-    {
-        this.reading = reading;
-        this.datetime = INITIAL_DATE;
+    public Reading(Integer id, LocalDateTime readDate, float totalKw, Meter meter, Bill bill){
+            this.id = id;
+            this.readDate = readDate;
+            this.totalKw = totalKw;
+            this.meter = meter;
+            this.bill = bill;
     }
 
-    public Reading(Integer id,float reading,Date datetime)
-    {
-        this.id = id;
-        this.reading = reading;
-        this.datetime = datetime;
-    }
-
-    public Reading(Integer id,float reading,Date datetime,boolean billed)
-    {
-        this.id = id;
-        this.reading = reading;
-        this.datetime = datetime;
-        this.billed = billed;
-    }
-
-    /*GETTERS AND SETTERS*/
-
-    public Integer getId() {
+    public Integer getId () {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId (Integer id){
         this.id = id;
     }
 
-    public float getReading() {
-        return reading;
+    public LocalDateTime getReadDate () {
+        return readDate;
     }
 
-    public void setReading(float reading) {
-        this.reading = reading;
+    public void setReadDate (LocalDateTime readDate){
+        this.readDate = readDate;
     }
 
-    public Date getDatetime() {
-        return datetime;
+    public float getTotalKw () {
+        return totalKw;
     }
 
-    public void setDatetime(Date datetime) {
-        this.datetime = datetime;
+    public void setTotalKw ( float totalKw){
+        this.totalKw = totalKw;
     }
 
-    public Boolean getBilled() {
-        return billed;
+    public Meter getMeter () {
+        return meter;
     }
 
-    public void setBilled(Boolean billed) {
-        this.billed = billed;
+    public void setMeter (Meter meter){
+        this.meter = meter;
     }
 
-    /**/
+    public Bill getBill () {
+        return bill;
+    }
+
+    public void setBill (Bill bill){
+        this.bill = bill;
+    }
 }
