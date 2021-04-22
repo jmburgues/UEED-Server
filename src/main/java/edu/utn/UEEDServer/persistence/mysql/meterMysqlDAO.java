@@ -5,7 +5,7 @@ package edu.utn.UEEDServer.persistence.mysql;
 import edu.utn.UEEDServer.exception.InexistentObjectException;
 import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.model.Reading;
-import edu.utn.UEEDServer.persistence.EmeterDAO;
+import edu.utn.UEEDServer.persistence.meterDAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -14,13 +14,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EmeterMysqlDAO  implements EmeterDAO {
+public class meterMysqlDAO implements meterDAO {
 
     Connection connection;
     ReadingMysqlDAO readingMysqlDAO;
 
 
-    public EmeterMysqlDAO(Connection connection)
+    public meterMysqlDAO(Connection connection)
     {
 
         this.connection = connection;
@@ -32,7 +32,7 @@ public class EmeterMysqlDAO  implements EmeterDAO {
         try
         {
             PreparedStatement ps = this.connection.prepareStatement
-                    ("INSERT into emeters (serialNumber,modelId) values (?,?)");
+                    ("INSERT into METERS (serialNumber,modelId) values (?,?)");
 
             ps.setString(1, meter.getSerialNumber());
             ps.setInt(2, meter.getModel().getId());
@@ -63,12 +63,12 @@ public class EmeterMysqlDAO  implements EmeterDAO {
         try{
          final PreparedStatement preparedStatement = this.connection.prepareStatement(
 
-                 "SELECT * from emeters where serialNumber = ?");
+                 "SELECT * from METERS where serialNumber = ?");
          preparedStatement.setString(1,serialNumber);
             ResultSet resultSet = preparedStatement.executeQuery();
             if(resultSet.next())
             {
-                return createEmeter(resultSet);
+                return createMmeter(resultSet);
             }
         }
         catch (SQLException sqlException) {
@@ -78,7 +78,7 @@ public class EmeterMysqlDAO  implements EmeterDAO {
         return null;
     }
 
-    private Meter createEmeter(ResultSet resultSet) throws SQLException {
+    private Meter createMeter(ResultSet resultSet) throws SQLException {
 
         return new Meter(resultSet.getString("serialNumber"));
     }

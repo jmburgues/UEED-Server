@@ -3,14 +3,14 @@ package edu.utn.UEEDServer.controller;
 
 
 import edu.utn.UEEDServer.model.Meter;
-import edu.utn.UEEDServer.persistence.mysql.EmeterMysqlDAO;
+import edu.utn.UEEDServer.persistence.mysql.meterMysqlDAO;
 
 
 import java.util.List;
 
 public class EmeterController {
 
-    private EmeterMysqlDAO emeterMysqlDAO;
+    private meterMysqlDAO emeterMysqlDAO;
 
 
 

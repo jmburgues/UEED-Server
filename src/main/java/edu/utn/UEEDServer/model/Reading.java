@@ -5,6 +5,7 @@ public class Reading {
     private Integer id;
     private LocalDateTime readDate;
     private float totalKw;
+    private float readingPrice;
     private Meter meter;
     private Bill bill;
 

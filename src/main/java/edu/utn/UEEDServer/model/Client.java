@@ -6,11 +6,10 @@ public class Client {
     private Integer id;
     private User user;
     private List<Address> adresses;
+    private List<Bill> billings;
 
-    public Client(Integer id, User user, List<Address> adresses) {
-        this.id = id;
+    public Client(User user) {
         this.user = user;
-        this.adresses = adresses;
     }
 
     public Integer getId() {
@@ -35,5 +34,13 @@ public class Client {
 
     public void setAdresses(List<Address> adresses) {
         this.adresses = adresses;
+    }
+
+    public List<Bill> getBillings() {
+        return billings;
+    }
+
+    public void setBillings(List<Bill> billings) {
+        this.billings = billings;
     }
 }

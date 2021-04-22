@@ -6,33 +6,24 @@ public class Address {
     private String street;
     private Integer number;
     private Rate rate;
-    private Client client;
+    private Meter meter;
 
-
-    public Address(Integer id, Meter meter, String street, Integer number) {
-        this.id = id;
-        this.emeter = meter;
+    public Address(String street, Integer number, Rate rate) {
         this.street = street;
         this.number = number;
+        this.rate = rate;
+        this.meter = null;
     }
 
-    public Address() {
+    public Address(String street, Integer number, Rate rate, Meter meter) {
+        this.street = street;
+        this.number = number;
+        this.rate = rate;
+        this.meter = meter;
     }
 
     public Integer getId() {
         return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public Meter getEmeter() {
-        return emeter;
-    }
-
-    public void setEmeter(Meter meter) {
-        this.emeter = meter;
     }
 
     public String getStreet() {
@@ -50,4 +41,21 @@ public class Address {
     public void setNumber(Integer number) {
         this.number = number;
     }
+
+    public Rate getRate() {
+        return rate;
+    }
+
+    public void setRate(Rate rate) {
+        this.rate = rate;
+    }
+
+    public Meter getMeter() {
+        return meter;
+    }
+
+    public void setMeter(Meter meter) {
+        this.meter = meter;
+    }
+
 }

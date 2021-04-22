@@ -56,7 +56,7 @@ public class Meter {
 
     @Override
     public String toString() {
-        return "Emeter{" +
+        return "Meter{" +
                 "\nserialNumber='" + serialNumber + '\'' +
                 "\n model=" + model +
                 '}';
