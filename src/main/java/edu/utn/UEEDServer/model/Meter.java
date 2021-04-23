@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @AllArgsConstructor
@@ -21,6 +22,8 @@ public class Meter {
     private LocalDateTime lastMeasurementDate;
     @Column(name="accumulatedConsumption")
     private double accumulatedConsumption;
+    @OneToMany
+    private List<Reading> readings;
     @OneToOne
     private Brand brand;
 
