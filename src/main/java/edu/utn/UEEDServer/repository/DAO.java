@@ -1,4 +1,4 @@
-package edu.utn.UEEDServer.persistence;
+package edu.utn.UEEDServer.repository;
 
 import java.util.List;
 

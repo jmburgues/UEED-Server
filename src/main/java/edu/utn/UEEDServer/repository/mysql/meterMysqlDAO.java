@@ -1,11 +1,11 @@
-package edu.utn.UEEDServer.persistence.mysql;
+package edu.utn.UEEDServer.repository.mysql;
 
 
 
 import edu.utn.UEEDServer.exception.InexistentObjectException;
 import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.model.Reading;
-import edu.utn.UEEDServer.persistence.meterDAO;
+import edu.utn.UEEDServer.repository.meterDAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -78,10 +78,7 @@ public class meterMysqlDAO implements meterDAO {
         return null;
     }
 
-    private Meter createMeter(ResultSet resultSet) throws SQLException {
 
-        return new Meter(resultSet.getString("serialNumber"));
-    }
 
     @Override
     public List<Meter>getAll() {

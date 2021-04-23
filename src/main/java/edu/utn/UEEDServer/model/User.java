@@ -6,6 +6,7 @@ public class User {
     private String name;
     private String surname;
     private Boolean employee;
+    private Client client;
 
     public User(String username, String password, String name, String surname, Boolean employee) {
         this.username = username;
@@ -13,6 +14,16 @@ public class User {
         this.name = name;
         this.surname = surname;
         this.employee = employee;
+        this.client = null;
+    }
+
+    public User(String username, String password, String name, String surname, Boolean employee, Client client) {
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.surname = surname;
+        this.employee = employee;
+        this.client = client;
     }
 
     public String getUsername() {
@@ -53,5 +64,13 @@ public class User {
 
     public void setEmployee(Boolean employee) {
         this.employee = employee;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
     }
 }

@@ -105,7 +105,7 @@ CREATE TRIGGER `tbi_checkRegisteredMeter` BEFORE INSERT ON READINGS FOR EACH ROW
     end //
 
 ## ITEM 3
-# STORED PROCEDURE: gets Rate price from meter Serial Number.
+# STORED PROCEDURE: gets actual Rate price from meter Serial Number.
 DELIMITER //
 CREATE PROCEDURE getKwPrice(IN meterSerialNumber VARCHAR(40), OUT actualPrice FLOAT)
 BEGIN
@@ -119,7 +119,7 @@ BEGIN
          ON A.addressId = M.addressId
     WHERE M.serialNumber = meterSerialNumber;
 end //
-º
+
 ## ITEM 3
 # TRIGGER updates meter attributes with last readings and calculates consumption price.
 ## Its ok to do subquerys or is it preferable to create a trigger and update a column to gain efficiency???
@@ -132,7 +132,7 @@ CREATE TRIGGER `tbi_updateMeterWithReading` AFTER INSERT ON READINGS FOR EACH RO
         UPDATE METERS SET lastReading = new.readDate, accumulatedConsumption = totalKw WHERE serialNumber = new.meterSerialNumber;
         CALL getKwPrice(new.meterSerialNumber);
         UPDATE READINGS SET readingPrice = (new.totalKw * @actualPrice) WHERE readingId = new.readingId;
-        # Reading price must be calculated from accumulatedConsumption or by substracting last reading consumption to latest one?
+        # Reading price must be calculated from accumulatedConsumption or by subtracting last reading consumption to latest one?
     end //
 DELIMITER ;
 

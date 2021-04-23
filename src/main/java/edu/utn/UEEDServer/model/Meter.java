@@ -1,45 +1,25 @@
 package edu.utn.UEEDServer.model;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
+@AllArgsConstructor
+@NoArgsConstructor
+@Data
+@Entity
 public class Meter {
-    private String serialNumber; // Set type UUID instead of String
+    @Id
+    private UUID serialNumber; // Set type UUID instead of String
     private LocalDateTime lastMeasurementDate;
     private double accumulatedConsumption;
-    private Model model;
+    private Brand brand;
 
-    public Meter(String serialNumber, Model model) {
-        this.serialNumber = serialNumber;
-        this.lastMeasurementDate = LocalDateTime.now();
-        this.accumulatedConsumption = 0;
-        this.model = model;
-    }
-
-    public Meter(String serialNumber) {
-        this.model = new Model();
-        this.lastMeasurementDate = LocalDateTime.now();
-        this.accumulatedConsumption = 0;
-        this.serialNumber = serialNumber;
-    }
-
-    public Meter() {
-    }
-
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
-    public Model getModel() {
-        return model;
-    }
-
-    public void setModel(Model model) {
-        this.model = model;
-    }
 
     @Override
     public boolean equals(Object o) {

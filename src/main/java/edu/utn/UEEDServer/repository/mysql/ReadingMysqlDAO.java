@@ -1,10 +1,10 @@
-package edu.utn.UEEDServer.persistence.mysql;
+package edu.utn.UEEDServer.repository.mysql;
 
 
 
 import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.model.Reading;
-import edu.utn.UEEDServer.persistence.ReadingDAO;
+import edu.utn.UEEDServer.repository.ReadingDAO;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
