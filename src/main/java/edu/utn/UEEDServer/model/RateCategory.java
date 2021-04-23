@@ -15,6 +15,15 @@ public enum RateCategory {
         this.description = description;
         this.value = value;
     }
+    public static RateCategory find(final String value)
+    {
+        for(RateCategory rc :values())
+        {
+            if(rc.toString().equalsIgnoreCase(value))
+                return rc;
+        }
+        throw new IllegalArgumentException(String.format("Invalid rate category %s",value));
+    }
 
     public String getDescription() {
         return description;

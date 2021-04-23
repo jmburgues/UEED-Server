@@ -1,46 +1,28 @@
 package edu.utn.UEEDServer.model;
 
-import java.util.List;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+import java.util.List;
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name = "clients")
 public class Client {
+
+    @Id
+    @Column(name="clientId" )
     private Integer id;
+    @OneToOne
+    @JoinColumn(name = "username")
     private User user;
+    @OneToMany
     private List<Address> adresses;
+    @OneToMany
     private List<Bill> billings;
 
-    public Client(User user) {
-        this.user = user;
-    }
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public List<Address> getAdresses() {
-        return adresses;
-    }
-
-    public void setAdresses(List<Address> adresses) {
-        this.adresses = adresses;
-    }
-
-    public List<Bill> getBillings() {
-        return billings;
-    }
-
-    public void setBillings(List<Bill> billings) {
-        this.billings = billings;
-    }
 }

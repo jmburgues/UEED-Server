@@ -13,8 +13,13 @@ import java.util.UUID;
 @Service
 public class MeterService {
 
-    @Autowired
+
     MeterRepository meterRepo;
+
+    @Autowired
+    public MeterService(MeterRepository meterRepo) {
+        this.meterRepo = meterRepo;
+    }
 
     public List<Meter> getAll(){
         List<Meter> meterList = this.meterRepo.findAll();
@@ -30,8 +35,8 @@ public class MeterService {
     }
 
     public void add(Meter newMeter){
-        this.meterRepo.fid
-                (newMeter.getSerialNumber());
+        this.meterRepo.save(newMeter);
+
 
 
     }

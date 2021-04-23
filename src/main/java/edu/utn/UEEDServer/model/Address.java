@@ -1,61 +1,33 @@
 package edu.utn.UEEDServer.model;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
+@Table(name= "addresses")
 public class Address {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    @Column(name= "street")
     private String street;
+    @Column(name="number")
     private Integer number;
+    @OneToOne
+    @JoinColumn(name="rateId")
     private Rate rate;
+    @OneToOne
+    @JoinColumn(name="meterId")
     private Meter meter;
 
-    public Address(String street, Integer number, Rate rate) {
-        this.street = street;
-        this.number = number;
-        this.rate = rate;
-        this.meter = null;
-    }
 
-    public Address(String street, Integer number, Rate rate, Meter meter) {
-        this.street = street;
-        this.number = number;
-        this.rate = rate;
-        this.meter = meter;
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public String getStreet() {
-        return street;
-    }
-
-    public void setStreet(String street) {
-        this.street = street;
-    }
-
-    public Integer getNumber() {
-        return number;
-    }
-
-    public void setNumber(Integer number) {
-        this.number = number;
-    }
-
-    public Rate getRate() {
-        return rate;
-    }
-
-    public void setRate(Rate rate) {
-        this.rate = rate;
-    }
-
-    public Meter getMeter() {
-        return meter;
-    }
-
-    public void setMeter(Meter meter) {
-        this.meter = meter;
-    }
 
 }

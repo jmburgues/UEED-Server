@@ -14,8 +14,13 @@ import java.util.UUID;
 @RequestMapping("/meter")
 public class MeterController {
 
-    @Autowired
+
     private MeterService meterService;
+
+    @Autowired
+    public MeterController(MeterService meterService) {
+        this.meterService = meterService;
+    }
 
     @GetMapping
     public List<Meter> getAll(){
@@ -29,7 +34,7 @@ public class MeterController {
 
     @PostMapping
     public void add(@RequestBody Meter newMeter){
-        this.meterService.
+        this.meterService.add(newMeter);
     }
 
 

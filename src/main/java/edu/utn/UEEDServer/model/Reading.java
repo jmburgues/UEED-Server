@@ -1,62 +1,32 @@
 package edu.utn.UEEDServer.model;
-import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
+import javax.persistence.*;
+import java.time.LocalDateTime;
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Table(name="readings")
 public class Reading {
+
+    @Id
+    @Column(name="readingId")
     private Integer id;
+    @Column(name="readDate")
     private LocalDateTime readDate;
+    @Column(name = "totalKw")
     private float totalKw;
+    @Column(name = "readingPrice")
     private float readingPrice;
+    @OneToOne
+    @JoinColumn(name="meterSerialNumber")
     private Meter meter;
+    @OneToOne
+    @JoinColumn(name="billId")
     private Bill bill;
 
-    public Reading() {
-    }
 
-    public Reading(Integer id, LocalDateTime readDate, float totalKw, Meter meter, Bill bill){
-            this.id = id;
-            this.readDate = readDate;
-            this.totalKw = totalKw;
-            this.meter = meter;
-            this.bill = bill;
-    }
-
-    public Integer getId () {
-        return id;
-    }
-
-    public void setId (Integer id){
-        this.id = id;
-    }
-
-    public LocalDateTime getReadDate () {
-        return readDate;
-    }
-
-    public void setReadDate (LocalDateTime readDate){
-        this.readDate = readDate;
-    }
-
-    public float getTotalKw () {
-        return totalKw;
-    }
-
-    public void setTotalKw ( float totalKw){
-        this.totalKw = totalKw;
-    }
-
-    public Meter getMeter () {
-        return meter;
-    }
-
-    public void setMeter (Meter meter){
-        this.meter = meter;
-    }
-
-    public Bill getBill () {
-        return bill;
-    }
-
-    public void setBill (Bill bill){
-        this.bill = bill;
-    }
 }
