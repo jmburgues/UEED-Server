@@ -1,4 +1,5 @@
 package edu.utn.UEEDServer.model;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -21,9 +22,6 @@ public class Reading {
     private float totalKw;
     @Column(name = "readingPrice")
     private float readingPrice;
-    @OneToOne
-    @JoinColumn(name="meterSerialNumber")
-    private Meter meter;
     @OneToOne
     @JoinColumn(name="billId")
     private Bill bill;

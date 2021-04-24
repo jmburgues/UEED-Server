@@ -16,7 +16,7 @@ import java.util.UUID;
 public class ReadingService {
 
     private MeterRepository meterRepo;
-    private ReadingRepository readingRepo;
+    private ReadingRepository readingRepo; /// aca creo que va el service
 
     @Autowired
     public ReadingService(ReadingRepository readingRepo, MeterRepository meterRepo){
@@ -38,8 +38,8 @@ public class ReadingService {
     }
 
     public void addToMeter(Reading newReading, UUID meterSerialNumber){
-        Meter existentMeter = this.meterRepo.findById(meterSerialNumber)
-                .orElseThrow(new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        Meter existentMeter = this.meterRepo.findById(meterSerialNumber) //aca podemos usar el get by id del service que ya controla la excepcion
+                .orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
         existentMeter.getReadings().add(newReading);
         meterRepo.save(existentMeter);
     }

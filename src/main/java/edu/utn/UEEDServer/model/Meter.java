@@ -29,8 +29,13 @@ public class Meter {
     @JoinColumn(name = "meterSerialNumber")
     private List<Reading> readings;
 
+
     @OneToOne
-    private Brand brand;
+    @JoinColumn(name="addressId")
+    private Address address;
+    @OneToOne
+    @JoinColumn(name="modelId")
+    private Model model;
 
 
 

@@ -22,7 +22,7 @@ public class Client {
     @OneToMany
     private List<Address> adresses;
     @OneToMany
-    private List<Bill> billings;
+    private List<Bill> bills;
 
 
 }

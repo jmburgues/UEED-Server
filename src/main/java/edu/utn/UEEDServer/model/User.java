@@ -24,6 +24,7 @@ public class User {
     @Column(name = "employee")
     private Boolean employee;
     @OneToOne
+    @JoinColumn(name="clientId")
     private Client client;
 
 
