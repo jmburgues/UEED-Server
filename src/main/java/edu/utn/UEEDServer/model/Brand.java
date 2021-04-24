@@ -9,15 +9,18 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name="brands")
+@Table(name="BRANDS")
 public class Brand {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "brandId")
     private Integer id;
+
     @Column(name= "name")
     private String name;
-    @OneToOne
+
+    @OneToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "brandId")
     private Model model;
 }

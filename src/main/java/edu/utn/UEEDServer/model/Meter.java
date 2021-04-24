@@ -18,12 +18,17 @@ public class Meter {
     @Id
     @GeneratedValue
     private UUID serialNumber; // Set type UUID instead of String
+
     @Column(name="lastReading")
     private LocalDateTime lastMeasurementDate;
+
     @Column(name="accumulatedConsumption")
     private double accumulatedConsumption;
-    @OneToMany
+
+    @OneToMany(fetch = FetchType.EAGER)
+    @JoinColumn(name = "meterSerialNumber")
     private List<Reading> readings;
+
     @OneToOne
     private Brand brand;
 
