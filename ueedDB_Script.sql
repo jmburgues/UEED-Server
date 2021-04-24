@@ -146,8 +146,18 @@ CREATE TRIGGER `tai_watchRates` AFTER UPDATE ON RATES FOR EACH ROW
 
 DELIMITER ;
 
+   # /*Calculate consumed kws between intervals of time*/
+DELIMITER $$
+CREATE PROCEDURE sp_consumeBtwTimes (pSerialNumber VARCHAR(40),pDateFrom DATETIME ,pDateTo DATETIME,OUT pConsume FLOAT)
+BEGIN
+DECLARE  consumeFrom FLOAT DEFAULT 0;
+DECLARE consumeTo FLOAT DEFAULT 0;
+SELECT totalKw INTO consumeFrom FROM readings WHERE meterSerialNumber = pSerialNumber AND readDate = pDateFrom;
+SELECT totalKw INTO consumeTo FROM readings WHERE meterSerialNumber = pSerialNumber AND readDate = pDateTo;
 
+SET pConsume = consumeTo-consumeFrom;
 
+END
 
 
 
