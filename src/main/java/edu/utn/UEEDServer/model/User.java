@@ -21,7 +21,7 @@ public class User {
     private String name;
     @Column(name = "surname")
     private String surname;
-    @Column(name = "employee")
+    @Column(columnDefinition = "bool default 0")
     private Boolean employee;
     @OneToOne
     private Client client;

@@ -15,15 +15,11 @@ import javax.persistence.Table;
 @NoArgsConstructor
 
 @Table(name="rates")
-
 public class Rate {
     @Id
-    @Column(name="rateId")
+    @Column(columnDefinition = "integer auto_increment")
     private Integer id;
-    @Column(name ="category")
+    @Column(columnDefinition = "varchar(40) unique")
     private String category;
-    @Column(name="kwPrice")
     private Float price;
-
-
 }

@@ -25,9 +25,6 @@ public class Address {
     @JoinColumn(name="rateId")
     private Rate rate;
     @OneToOne
-    @JoinColumn(name="meterId")
+    @JoinColumn(name="addressId")
     private Meter meter;
-
-
-
 }

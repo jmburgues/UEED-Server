@@ -22,11 +22,7 @@ public class Reading {
     @Column(name = "readingPrice")
     private float readingPrice;
     @OneToOne
-    @JoinColumn(name="meterSerialNumber")
-    private Meter meter;
-    @OneToOne
     @JoinColumn(name="billId")
     private Bill bill;
-
 
 }

@@ -56,10 +56,11 @@ CREATE TABLE ADDRESSES
 
 CREATE TABLE METERS
 (
-    serialNumber  varchar(40),
-    modelId  int not null,
+    serialNumber  binary(16),
     lastReading datetime default now(), # This field will be set by a trigger
     accumulatedConsumption double default 0,  # This field will be set by a trigger
+
+    modelId  int not null,
     addressId integer UNIQUE,
     CONSTRAINT pk_serialNumber primary key (serialNumber),
     CONSTRAINT fk_METERS_modelId foreign key (modelId) references MODELS (modelId),
@@ -145,10 +146,6 @@ CREATE TRIGGER `tai_watchRates` AFTER UPDATE ON RATES FOR EACH ROW
     end;
 
 DELIMITER ;
-
-
-
-
 
 
 

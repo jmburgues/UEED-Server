@@ -5,10 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -18,7 +16,10 @@ import javax.persistence.Table;
 public class Model {
     @Id
     @Column(name ="modelId")
-    private Integer id;
+    private Integer modelId;
     @Column (name="name")
     private String name;
+    @OneToOne
+    @JoinColumn(name = "brandId")
+    private Brand brand;
 }
