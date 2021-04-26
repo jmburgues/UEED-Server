@@ -21,5 +21,6 @@ public class Rate {
     private Integer id;
     @Column(columnDefinition = "varchar(40) unique")
     private String category;
-    private Float price;
+    @Column(name="kwPrice")
+    private Float kwPrice;
 }

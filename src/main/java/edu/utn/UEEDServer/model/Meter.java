@@ -33,7 +33,7 @@ public class Meter {
     private List<Reading> readings;
 
     /*
-    ManyToOne: A meter can be present in more than one brand.
+    ManyToOne: Several meters can have the same model.
     optional false: this Object is mandatory for every meter.
     CascadeType: Test difference between ALL and PERSIST
      */

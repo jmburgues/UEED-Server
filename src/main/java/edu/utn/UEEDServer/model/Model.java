@@ -16,7 +16,8 @@ import java.util.List;
 public class Model {
     @Id
     @Column(name ="modelId")
-    private Integer modelId;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
     @Column (name="name")
     private String name;
     @OneToOne

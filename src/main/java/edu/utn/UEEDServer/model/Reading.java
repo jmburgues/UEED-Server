@@ -24,5 +24,4 @@ public class Reading {
     @OneToOne
     @JoinColumn(name="billId")
     private Bill bill;
-
 }

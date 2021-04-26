@@ -11,7 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name="BRANDS")
+@Table(name="brands")
 public class Brand {
 
     @Id

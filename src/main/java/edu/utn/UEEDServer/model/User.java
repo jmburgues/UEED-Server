@@ -23,7 +23,8 @@ public class User {
     private String surname;
     @Column(columnDefinition = "bool default 0")
     private Boolean employee;
-    @OneToOne
+    @OneToOne(mappedBy="clients", cascade = CascadeType.ALL)
+    @JoinColumn(name = "clientId")
     private Client client;
 
 
