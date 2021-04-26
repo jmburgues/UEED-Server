@@ -49,9 +49,11 @@ CREATE TABLE ADDRESSES
     number   int not null,
     clientId int not null,
     rateId   int not null,
+    meterId binary(16) not null unique,
     CONSTRAINT pk_addressId primary key (addressId),
     CONSTRAINT fk_ADDRESS_clientId foreign key (clientId) references CLIENTS(clientId),
-    CONSTRAINT fk_ADDRESS_rateId foreign key (rateId) references RATES (rateId)
+    CONSTRAINT fk_ADDRESS_rateId foreign key (rateId) references RATES (rateId),
+    CONSTRAINT fk_ADDRESS_meterId foreign key (meterId) references METERS(meterId)
 );
 
 CREATE TABLE METERS
@@ -59,12 +61,9 @@ CREATE TABLE METERS
     serialNumber  binary(16),
     lastReading datetime default now(), # This field will be set by a trigger
     accumulatedConsumption double default 0,  # This field will be set by a trigger
-
     modelId  int not null,
-    addressId integer UNIQUE,
     CONSTRAINT pk_serialNumber primary key (serialNumber),
     CONSTRAINT fk_METERS_modelId foreign key (modelId) references MODELS (modelId),
-    CONSTRAINT fk_METERS_addressId foreign key (addressId) references ADDRESSES (addressId)
 );
 
 CREATE TABLE BILLS(

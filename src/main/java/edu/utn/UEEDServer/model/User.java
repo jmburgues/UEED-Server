@@ -10,7 +10,7 @@ import javax.persistence.*;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name="users")
+@Table(name="USERS")
 public class User {
 
     @Id
@@ -23,9 +23,4 @@ public class User {
     private String surname;
     @Column(columnDefinition = "bool default 0")
     private Boolean employee;
-    @OneToOne(mappedBy="clients", cascade = CascadeType.ALL)
-    @JoinColumn(name = "clientId")
-    private Client client;
-
-
 }

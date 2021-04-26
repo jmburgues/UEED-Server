@@ -14,10 +14,9 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @NoArgsConstructor
 
-@Table(name="rates")
+@Table(name="RATES")
 public class Rate {
     @Id
-    @Column(columnDefinition = "integer auto_increment")
     private Integer id;
     @Column(columnDefinition = "varchar(40) unique")
     private String category;

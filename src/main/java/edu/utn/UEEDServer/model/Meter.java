@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name = "meters")
+@Table(name = "METERS")
 public class Meter {
     @Id
     @GeneratedValue(generator = "uuid2")
@@ -24,10 +24,8 @@ public class Meter {
 
     @Column(columnDefinition = "datetime default now()")
     private LocalDateTime lastReading;
-
     @Column(columnDefinition = "double default 0")
     private double accumulatedConsumption;
-
     @OneToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "meterSerialNumber")
     private List<Reading> readings;

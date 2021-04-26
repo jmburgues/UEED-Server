@@ -10,19 +10,19 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "clients")
+@Table(name = "CLIENTS")
 public class Client {
 
     @Id
-    @Column(name="clientId" )
+    @Column(name="clientId")
     private Integer id;
-    @OneToOne
-    @JoinColumn(name = "username")
-    private User user;
     @OneToMany
-    private List<Address> adresses;
-    @OneToMany
+    @JoinColumn(name = "clientId")
+    private List<Address> addresses;
+    @OneToMany // on OneToMany JoinColumn creates fk column on destiny table
+    @JoinColumn(name = "clientId")
     private List<Bill> bills;
-
-
+    @OneToOne // on OneToOne JoinColumn creates fk column on source table
+    @JoinColumn(name="username")
+    private User user;
 }

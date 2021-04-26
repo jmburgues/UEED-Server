@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Entity
-@Table(name ="models")
+@Table(name ="MODELS")
 public class Model {
     @Id
     @Column(name ="modelId")
