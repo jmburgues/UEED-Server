@@ -1,5 +1,4 @@
 package edu.utn.UEEDServer.model;
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,6 +24,4 @@ public class Reading {
     @OneToOne
     @JoinColumn(name="billId")
     private Bill bill;
-
-
 }

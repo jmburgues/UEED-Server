@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 
 import javax.persistence.*;
+import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -20,6 +21,6 @@ public class Model {
     @Column (name="name")
     private String name;
     @OneToOne
-    @JoinColumn(name="brandId")
+    @JoinColumn(name = "brandId")
     private Brand brand;
 }

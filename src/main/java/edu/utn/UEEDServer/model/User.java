@@ -14,7 +14,6 @@ import javax.persistence.*;
 public class User {
 
     @Id
-    @Column(name="username")
     private String username;
     @Column(name = "password")
     private String password;
@@ -22,10 +21,10 @@ public class User {
     private String name;
     @Column(name = "surname")
     private String surname;
-    @Column(name = "employee")
+    @Column(columnDefinition = "bool default 0")
     private Boolean employee;
-    @OneToOne
-    @JoinColumn(name="clientId")
+    @OneToOne(mappedBy="clients", cascade = CascadeType.ALL)
+    @JoinColumn(name = "clientId")
     private Client client;
 
 
