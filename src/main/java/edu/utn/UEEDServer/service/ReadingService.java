@@ -1,9 +1,11 @@
 package edu.utn.UEEDServer.service;
 
 import edu.utn.UEEDServer.model.Meter;
+import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.repository.MeterRepository;
 import edu.utn.UEEDServer.repository.ReadingRepository;
+import edu.utn.UEEDServer.utils.EntityURLBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -15,12 +17,14 @@ import java.util.UUID;
 @Service
 public class ReadingService {
 
-    private MeterRepository meterRepo;
-    private ReadingRepository readingRepo; /// aca creo que va el service
+    private static final String READING_PATH = "reading";
+
+    private MeterService meterService;
+    private ReadingRepository readingRepo;
 
     @Autowired
-    public ReadingService(ReadingRepository readingRepo, MeterRepository meterRepo){
-        this.meterRepo = meterRepo;
+    public ReadingService(ReadingRepository readingRepo, MeterService meterService){
+        this.meterService = meterService;
         this.readingRepo = readingRepo;
     }
 
@@ -38,10 +42,10 @@ public class ReadingService {
     }
 
     public void addToMeter(Reading newReading, UUID meterSerialNumber){
-        Meter existentMeter = this.meterRepo.findById(meterSerialNumber) //aca podemos usar el get by id del service que ya controla la excepcion
-                .orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
+
+        Meter existentMeter = this.meterService.getById(meterSerialNumber);
         existentMeter.getReadings().add(newReading);
-        meterRepo.save(existentMeter);
+        meterService.add(existentMeter);
     }
 
     public void update(Reading existentReading){
@@ -56,5 +60,25 @@ public class ReadingService {
             this.readingRepo.deleteById(readingId);
         else
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+    }
+
+    public List<Reading> getByMeterId(UUID serialNumber) {
+
+        return readingRepo.findByMeterId(serialNumber);
+    }
+
+    public PostResponse add(Reading reading) {
+
+        Reading r = readingRepo.save(reading);
+        return PostResponse.builder()
+                .status(HttpStatus.CREATED)
+                .url(EntityURLBuilder.buildURL(READING_PATH,r.getId()))
+                .build();
+
+    }
+
+    public List<Reading> getNotBilledReadings(UUID meterSerialNumber) {
+
+        return readingRepo.getNotBilledReadings(meterSerialNumber);
     }
 }

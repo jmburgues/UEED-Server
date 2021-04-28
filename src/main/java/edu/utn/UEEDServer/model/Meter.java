@@ -19,15 +19,15 @@ public class Meter {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(columnDefinition = "BINARY(16)")
+    @Column(name="serialNumber",columnDefinition = "BINARY(16)")
     private UUID serialNumber;
 
-    @Column(columnDefinition = "datetime default now()")
+    @Column(name="lastReading",columnDefinition = "datetime default now()")
     private LocalDateTime lastReading;
-    @Column(columnDefinition = "double default 0")
+    @Column(name="accumulatedConsumption",columnDefinition = "double default 0")
     private double accumulatedConsumption;
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "meterSerialNumber")
+    @JoinColumn(name = "meterSerialNumber",foreignKey = @ForeignKey(name="meters_readings"))
     private List<Reading> readings;
 
     /*
@@ -36,6 +36,6 @@ public class Meter {
     CascadeType: Test difference between ALL and PERSIST
      */
     @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name="modelId")
+    @JoinColumn(name="modelId",foreignKey = @ForeignKey(name="meters_models"))
     private Model model;
 }

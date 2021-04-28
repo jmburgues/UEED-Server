@@ -3,6 +3,7 @@ package edu.utn.UEEDServer.controller;
 
 
 import edu.utn.UEEDServer.model.Meter;
+import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.service.MeterService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -33,8 +34,8 @@ public class MeterController {
     }
 
     @PostMapping
-    public void add(@RequestBody Meter newMeter){
-        this.meterService.add(newMeter);
+    public PostResponse add(@RequestBody Meter newMeter){
+        return meterService.add(newMeter);
     }
 
 

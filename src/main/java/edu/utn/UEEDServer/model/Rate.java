@@ -17,8 +17,9 @@ import javax.persistence.Table;
 @Table(name="RATES")
 public class Rate {
     @Id
+    @Column(name="rateId")
     private Integer id;
-    @Column(columnDefinition = "varchar(40) unique")
+    @Column(name="category",columnDefinition = "varchar(40) unique")
     private String category;
     @Column(name="kwPrice")
     private Float kwPrice;

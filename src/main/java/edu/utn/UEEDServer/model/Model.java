@@ -20,7 +20,7 @@ public class Model {
     private Integer id;
     @Column (name="name")
     private String name;
-    @OneToOne
-    @JoinColumn(name = "brandId")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "brandId",foreignKey = @ForeignKey(name="models_brands"))
     private Brand brand;
 }

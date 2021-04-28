@@ -1,9 +1,11 @@
 package edu.utn.UEEDServer.service;
 
 import edu.utn.UEEDServer.model.Meter;
+import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.repository.MeterRepository;
 import edu.utn.UEEDServer.repository.ReadingRepository;
+import edu.utn.UEEDServer.utils.EntityURLBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import java.util.UUID;
 @Service
 public class MeterService {
 
+    private static final String METER_PATH="meter";
     private MeterRepository meterRepo;
     private ReadingRepository readingRepo;
 
@@ -38,14 +41,16 @@ public class MeterService {
                 .orElseThrow( () -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
     }
 
-    public void add(Meter newMeter){
+    public PostResponse add(Meter newMeter){
         UUID serialNum = newMeter.getSerialNumber();
+        Meter m = meterRepo.save(newMeter);
         if(serialNum != null && this.meterRepo.existsById(serialNum)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,"Meter nº " + serialNum + " already exists.");
         }
-        else{
-            this.meterRepo.save(newMeter);
-        }
+        return PostResponse.builder().
+                status(HttpStatus.CREATED)
+                .url(EntityURLBuilder.buildURL(METER_PATH,m.getSerialNumber().toString()))
+                .build();
     }
 
     public void update(Meter existentMeter){

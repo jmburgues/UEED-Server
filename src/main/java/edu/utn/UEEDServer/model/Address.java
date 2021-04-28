@@ -17,15 +17,16 @@ public class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name="addressId")
     private Integer addressId;
     @Column(name= "street")
     private String street;
     @Column(name="number")
     private Integer number;
     @OneToOne
-    @JoinColumn(name="rateId")
+    @JoinColumn(name="rateId",foreignKey = @ForeignKey(name= "addresses_rates"))
     private Rate rate;
     @OneToOne
-    @JoinColumn(name="meterId", columnDefinition = "BINARY(16) not null unique")
+    @JoinColumn(name="meterId", columnDefinition = "BINARY(16) not null unique",foreignKey = @ForeignKey(name = "addresses_meters"))
     private Meter meter;
 }

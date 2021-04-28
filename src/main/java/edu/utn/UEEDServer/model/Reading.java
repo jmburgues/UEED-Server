@@ -14,6 +14,7 @@ public class Reading {
 
     @Id
     @Column(name="readingId")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @Column(name="readDate")
     private LocalDateTime readDate;
@@ -22,6 +23,6 @@ public class Reading {
     @Column(name = "readingPrice")
     private float readingPrice;
     @OneToOne
-    @JoinColumn(name="billId")
+    @JoinColumn(name="billId")//Maybe replace this object with just an Integer??
     private Bill bill;
 }

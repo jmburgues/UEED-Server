@@ -14,6 +14,7 @@ import javax.persistence.*;
 public class User {
 
     @Id
+    @Column(name="username")
     private String username;
     @Column(name = "password")
     private String password;
