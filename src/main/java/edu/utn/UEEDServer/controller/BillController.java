@@ -21,13 +21,11 @@ public class BillController {
         this.billService = billService;
     }
 
-
     @PostMapping
     public PostResponse add(@RequestBody Bill bill)
     {
         return billService.add(bill);
     }
-
 
     @GetMapping
     public List<Bill>getAll()
@@ -42,7 +40,7 @@ public class BillController {
     }
 
     // [PROG - ITEM 2] As an employee I want to query client's bills filtered by date ranges.
-    @GetMapping("{/filter")
+    @GetMapping("/filter")
     public List<Bill> filter(@RequestParam(required = false) Integer clientId,
                              @RequestParam @DateTimeFormat(pattern="yyyy-MM") LocalDateTime from,
                              @RequestParam @DateTimeFormat(pattern="yyyy-MM") LocalDateTime to){

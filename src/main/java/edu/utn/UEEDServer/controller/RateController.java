@@ -32,7 +32,7 @@ public class RateController {
         return rateService.getAll();
     }
 
-    @GetMapping("{id}")
+    @GetMapping("/{id}")
     public Rate getById(@PathVariable Integer id)
     {
             return rateService.getById(id);

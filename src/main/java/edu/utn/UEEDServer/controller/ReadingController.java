@@ -21,14 +21,13 @@ public class ReadingController {
         this.readingService = readingService;
     }
 
-
-    @PostMapping
-    public PostResponse add(@RequestBody Reading reading)
+    @GetMapping
+    public List<Reading>getAll()
     {
-         return readingService.add(reading);
+        return readingService.getAll();
     }
 
-    @GetMapping("/{meterSerialNumber}")
+    @GetMapping("/meter/{meterSerialNumber}")
 
     public List<Reading> getByMeterId(@PathVariable UUID meterSerialNumber)
     {
@@ -41,7 +40,19 @@ public class ReadingController {
     return readingService.getById(readingId);
     }
 
-    @PutMapping("/{meterSerialNumber}/")
+    @GetMapping("/NotBilled/{meterSerialNumber}")
+    public List<Reading> getNotBilledReadings(@PathVariable UUID meterSerialNumber) {
+
+        return  readingService.getNotBilledReadings(meterSerialNumber);
+    }
+
+    @PostMapping
+    public PostResponse add(@RequestBody Reading reading)
+    {
+        return readingService.add(reading);
+    }
+
+    @PutMapping("/meter/{meterSerialNumber}/")
     public void addToMeter(@RequestBody Reading reading,@PathVariable UUID meterSerialNumber)
     {
         readingService.addToMeter(reading,meterSerialNumber);
@@ -51,18 +62,6 @@ public class ReadingController {
     public void delete(@PathVariable Integer readingId)
     {
         readingService.delete(readingId);
-    }
-
-    @GetMapping("/NotBilled/{meterSerialNumber}")
-    public List<Reading> getNotBilledReadings(@PathVariable UUID meterSerialNumber) {
-
-       return  readingService.getNotBilledReadings(meterSerialNumber);
-    }
-
-    @GetMapping
-    public List<Reading>getAll()
-    {
-        return readingService.getAll();
     }
 }
 
