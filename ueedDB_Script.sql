@@ -72,6 +72,8 @@ CREATE TABLE BILLS(
     initialConsumption float default 0,
     finalConsumption float default 0,
     totalConsumption float default 0,
+    initialReadingDate datetime,
+    finalReadingDate datetime,
     meterId varchar(40) not null,
     rateCategory varchar(40) not null,
     ratePrice float not null,

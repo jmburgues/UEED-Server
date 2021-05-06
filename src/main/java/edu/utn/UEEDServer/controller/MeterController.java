@@ -38,6 +38,12 @@ public class MeterController {
         return meterService.add(newMeter);
     }
 
+    @PostMapping("/update/{serialNumber}")
+    public PostResponse updateMeter(@RequestBody Meter meter,@PathVariable UUID serialNumber)
+    {
+        return meterService.updateMeter(meter,serialNumber);
+    }
+
 
 
 

@@ -1,5 +1,6 @@
 package edu.utn.UEEDServer.controller;
 
+import edu.utn.UEEDServer.model.Bill;
 import edu.utn.UEEDServer.model.Client;
 import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.service.ClientService;
@@ -35,5 +36,12 @@ public class ClientController {
     public Client getById(@PathVariable Integer id)
     {
         return clientService.getById(id);
+    }
+
+    @GetMapping("/{clientId}/bills/unpaid")
+    public List<Bill> getUnpaidBills(@PathVariable  Integer clientId){
+
+        return clientService.getUnpaidBills(clientId);
+
     }
 }

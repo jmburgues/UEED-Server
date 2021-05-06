@@ -1,6 +1,7 @@
 package edu.utn.UEEDServer.service;
 
 import edu.utn.UEEDServer.model.Bill;
+import edu.utn.UEEDServer.model.Client;
 import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.repository.BillRepository;
 import edu.utn.UEEDServer.utils.EntityURLBuilder;
@@ -17,10 +18,12 @@ public class BillService {
 
     private static final String BILL_PATH="bill";
     BillRepository billRepository;
+    ClientService clientService;
 
     @Autowired
-    public BillService(BillRepository billRepository) {
+    public BillService(BillRepository billRepository,ClientService clientService) {
         this.billRepository = billRepository;
+        this.clientService=clientService;
     }
 
 
@@ -48,5 +51,11 @@ public class BillService {
             return this.billRepository.dateFilter(from,to);
         else
             return this.billRepository.dateAndClientFilter(clientId,from,to);
+    }
+
+    public List<Bill> getUnpaidBillsByClient(Integer clientId) {
+
+        Client client = clientService.getById(clientId);
+        return clientService.getUnpaidBills(clientId);
     }
 }

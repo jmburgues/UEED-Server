@@ -1,5 +1,6 @@
 package edu.utn.UEEDServer.service;
 
+import edu.utn.UEEDServer.model.Bill;
 import edu.utn.UEEDServer.model.Client;
 import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.repository.ClientRepository;
@@ -39,5 +40,10 @@ public class ClientService {
 
         return clientRepository.findById(id).
                 orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
+    }
+
+    public List<Bill> getUnpaidBills(Integer clientId) {
+
+        return clientRepository.getUnpaidBills(clientId);
     }
 }

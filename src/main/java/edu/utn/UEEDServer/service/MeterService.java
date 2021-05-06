@@ -66,4 +66,12 @@ public class MeterService {
             else
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
     }
+
+    public PostResponse updateMeter(Meter meter, UUID serialNumber) {
+
+        if(meterRepo.existsById(serialNumber))
+            return add(meter);
+        else
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+    }
 }

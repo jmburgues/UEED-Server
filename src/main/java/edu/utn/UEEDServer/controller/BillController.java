@@ -16,6 +16,7 @@ public class BillController {
 
     BillService billService;
 
+
     @Autowired
     public BillController(BillService billService) {
         this.billService = billService;
@@ -45,5 +46,11 @@ public class BillController {
                              @RequestParam @DateTimeFormat(pattern="yyyy-MM") LocalDateTime from,
                              @RequestParam @DateTimeFormat(pattern="yyyy-MM") LocalDateTime to){
         return this.billService.filter(clientId,from,to);
+    }
+
+    @GetMapping("/unpaid/{clientId}")
+    public List<Bill>getUnpaidBillsByClient(@PathVariable Integer clientId)
+    {
+        return billService.getUnpaidBillsByClient(clientId);
     }
 }

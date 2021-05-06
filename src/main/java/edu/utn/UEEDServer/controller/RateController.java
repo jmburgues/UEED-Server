@@ -38,4 +38,16 @@ public class RateController {
             return rateService.getById(id);
     }
 
+    @DeleteMapping("{id}")
+    public void delete(@PathVariable Integer id)
+    {
+        rateService.delete(id);
+    }
+
+    @PostMapping("/update/{rateId}")
+    public PostResponse updateRate(@RequestBody Rate rate,@PathVariable Integer rateId)
+    {
+        return rateService.updateRate(rate,rateId);
+    }
+
 }

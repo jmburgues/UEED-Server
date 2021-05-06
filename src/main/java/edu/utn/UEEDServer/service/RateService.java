@@ -42,4 +42,20 @@ public class RateService {
         return rateRepository.findById(id).
                 orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
     }
+
+    public void delete(Integer id) {
+
+        if(rateRepository.existsById(id))
+            rateRepository.deleteById(id);
+        else
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+    }
+
+    public PostResponse updateRate(Rate rate, Integer rateId) {
+
+        if(rateRepository.existsById(rateId))
+            return add(rate);
+        else
+            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+    }
 }
