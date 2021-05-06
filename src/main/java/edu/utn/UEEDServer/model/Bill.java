@@ -17,10 +17,8 @@ public class Bill {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name ="billId")
     private Integer billId;
-    @Column(name="dateFrom")
-    private LocalDateTime dateFrom; ///how do we convert this into java.sql.date to store in DB?
-    @Column(name="dateTo")
-    private LocalDateTime dateTo;
+    @Column(name="billedDate")
+    private LocalDateTime billedDate; ///how do we convert this into java.sql.date to store in DB?
     @Column(name="initialConsumption")
     private Integer initialConsumption;
     @Column(name="finalConsumption")

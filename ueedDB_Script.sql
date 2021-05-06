@@ -68,8 +68,7 @@ CREATE TABLE METERS
 
 CREATE TABLE BILLS(
     billId int auto_increment,
-    dateFrom datetime not null,
-    dateTo datetime not null,
+    billedDate datetime not null,
     initialConsumption float default 0,
     finalConsumption float default 0,
     totalConsumption float default 0,

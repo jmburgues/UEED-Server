@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -40,5 +41,12 @@ public class BillService {
 
         return billRepository.findById(id).
                 orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
+    }
+
+    public List<Bill> filter(Integer clientId, LocalDateTime from, LocalDateTime to) {
+        if(clientId == null)
+            return this.billRepository.dateFilter(from,to);
+        else
+            return this.billRepository.dateAndClientFilter(clientId,from,to);
     }
 }
