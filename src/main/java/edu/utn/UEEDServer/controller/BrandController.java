@@ -31,7 +31,7 @@ public class BrandController {
         return brandService.getAll();
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     public Brand getById(@PathVariable Integer id)
     {
         return brandService.getById(id);

@@ -31,7 +31,7 @@ public class ModelController {
         return modelService.getAll();
     }
 
-    @GetMapping
+    @GetMapping("/{id}")
     public Model getById(@PathVariable Integer id)
     {
         return modelService.getById(id);

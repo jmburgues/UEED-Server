@@ -38,7 +38,7 @@ public class RateController {
             return rateService.getById(id);
     }
 
-    @DeleteMapping("{id}")
+    @DeleteMapping("/{id}")
     public void delete(@PathVariable Integer id)
     {
         rateService.delete(id);
