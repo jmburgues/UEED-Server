@@ -24,7 +24,7 @@ public class Address {
     @Column(name="number")
     private Integer number;
     @OneToOne
-    @JoinColumn(name="rateId",foreignKey = @ForeignKey(name= "addresses_rates"))
+    @JoinColumn(name="rateId")
     private Rate rate;
     @OneToOne
     @JoinColumn(name="meterId", columnDefinition = "BINARY(16) not null unique",foreignKey = @ForeignKey(name = "addresses_meters"))

@@ -20,7 +20,7 @@ public class Client {
     @JoinColumn(name = "clientId",foreignKey = @ForeignKey(name="clients_addresses"))
     private List<Address> addresses;
     @OneToMany // on OneToMany JoinColumn creates fk column on destiny table
-    @JoinColumn(name = "clientId",foreignKey = @ForeignKey(name="cleints_bills"))
+    @JoinColumn(name = "clientId",foreignKey = @ForeignKey(name="clients_bills"))
     private List<Bill> bills;
     @OneToOne // on OneToOne JoinColumn creates fk column on source table
     @JoinColumn(name="username",foreignKey = @ForeignKey(name="clients_users"))
