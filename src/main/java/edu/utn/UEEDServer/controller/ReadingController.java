@@ -37,9 +37,15 @@ public class ReadingController {
     }
 
     @GetMapping("/meter/{meterSerialNumber}")
-    public List<Reading> getByMeterId(@PathVariable UUID meterSerialNumber)
-    {
-        return readingService.getByMeterId(meterSerialNumber);
+    public List<Reading> getByMeterId(@PathVariable UUID meterSerialNumber,
+                                      @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd")LocalDateTime from,
+                                      @RequestParam(required = false) @DateTimeFormat(pattern ="yyyy-MM-dd")LocalDateTime to){
+        if(from != null && to != null){
+            return readingService.getByDate(meterSerialNumber,from,to);
+        }
+        else{
+            return readingService.getByMeterId(meterSerialNumber);
+        }
     }
 
     @GetMapping("/meter/{meterSerialNumber}/consumption")

@@ -20,7 +20,7 @@ public interface ReadingRepository extends JpaRepository<Reading,Integer> {
 
     // [PROG] - ITEM 5 - Query readings by date range
     @Query(value = "SELECT * FROM READINGS WHERE meterSerialNumber = ?1 readDate BETWEEN ?2 AND ?3", nativeQuery = true)
-    List<Reading> getReadingsBetweenDates(LocalDateTime from, LocalDateTime to);
+    List<Reading> getByDate(UUID meterSerialNumber, LocalDateTime from, LocalDateTime to);
 
     @Query(value = "SELECT SUM(totalKw) AS TOTAL_CONSUMPTION,SUM(readingPrice) AS TOTAL_PRICE FROM READINGS WHERE meterSerialNumber = ?1 AND readDate BETWEEN ?2 AND ?3 GROUP BY readingId", nativeQuery = true)
     Map<String, Float> getConsuption(UUID meterSerialNumber, LocalDateTime from, LocalDateTime to);

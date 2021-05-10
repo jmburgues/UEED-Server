@@ -23,12 +23,6 @@ public class AddressController {
         this.addressService = addressService;
     }
 
-    @PostMapping
-    public PostResponse add(@RequestBody Address address)
-    {
-        return addressService.add(address);
-    }
-
     @GetMapping
     public List<Address>getAll()
     {
@@ -47,19 +41,16 @@ public class AddressController {
         addressService.delete(addressId);
     }
 
+    @PostMapping
+    public PostResponse add(@RequestBody Address address)
+    {
+        return addressService.add(address);
+    }
+
     @PostMapping("/update/{addressId}")
     public PostResponse updateAddress(@RequestBody Address address,@PathVariable Integer addressId)
     {
        return  addressService.updateAddress(address,addressId);
     }
-
-    @GetMapping("/readings") //Is this endpoint correct??
-    public List<Reading> getReadingsBetweenDates(@RequestParam(required = false)Integer addressId,
-                                                 @RequestParam @DateTimeFormat (pattern = "yyyy-MM")LocalDateTime from,
-                                                 @RequestParam @DateTimeFormat(pattern ="yyyy_MM")LocalDateTime to){
-
-        return addressService.getReadingsBetweenDates(addressId,from,to);
-    }
-
 
 }

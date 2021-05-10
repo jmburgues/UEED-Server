@@ -73,7 +73,7 @@ public class ReadingService {
         Reading r = readingRepo.save(reading);
         return PostResponse.builder()
                 .status(HttpStatus.CREATED)
-                .url(EntityURLBuilder.buildURL(READING_PATH,r.getId()))
+                .url(EntityURLBuilder.buildURL(READING_PATH,r.getReadingId()))
                 .build();
     }
 
@@ -83,5 +83,9 @@ public class ReadingService {
 
     public Map<String, Float> getConsumption(UUID meterSerialNumber, LocalDateTime from, LocalDateTime to) {
         return this.readingRepo.getConsuption(meterSerialNumber,from,to);
+    }
+
+    public List<Reading> getByDate(UUID meterSerialNumber, LocalDateTime from, LocalDateTime to) {
+        return this.readingRepo.getByDate(meterSerialNumber,from,to);
     }
 }

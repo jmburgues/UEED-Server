@@ -44,6 +44,10 @@ public class MeterController {
         return meterService.updateMeter(meter,serialNumber);
     }
 
+    @DeleteMapping("/{serialNumber}")
+    public void delete(@PathVariable UUID serialNumber){
+        this.meterService.delete(serialNumber);
+    }
 
 
 

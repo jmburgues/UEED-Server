@@ -25,7 +25,6 @@ public class AddressService {
         this.addressRepository = addressRepository;
     }
 
-
     public PostResponse add(Address address) {
 
         Address a = addressRepository.save(address);
@@ -58,13 +57,5 @@ public class AddressService {
           return  add(address);
         else
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
-    }
-
-    public List<Reading> getReadingsBetweenDates(Integer addressId, LocalDateTime from, LocalDateTime to) {
-
-        if(addressId==null)
-         return addressRepository.getReadingsBetweenDates(from,to);
-        else
-            return addressRepository.getReadingsBetweenDatesByAddress(addressId,from,to);
     }
 }
