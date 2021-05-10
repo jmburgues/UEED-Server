@@ -11,7 +11,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -49,7 +51,7 @@ public class ReadingService {
     }
 
     public void update(Reading existentReading){
-        if(this.readingRepo.existsById(existentReading.getId()))
+        if(this.readingRepo.existsById(existentReading.getReadingId()))
             this.readingRepo.save(existentReading);
         else
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
@@ -68,17 +70,18 @@ public class ReadingService {
     }
 
     public PostResponse add(Reading reading) {
-
         Reading r = readingRepo.save(reading);
         return PostResponse.builder()
                 .status(HttpStatus.CREATED)
                 .url(EntityURLBuilder.buildURL(READING_PATH,r.getId()))
                 .build();
-
     }
 
     public List<Reading> getNotBilledReadings(UUID meterSerialNumber) {
-
         return readingRepo.getNotBilledReadings(meterSerialNumber);
+    }
+
+    public Map<String, Float> getConsumption(UUID meterSerialNumber, LocalDateTime from, LocalDateTime to) {
+        return this.readingRepo.getConsuption(meterSerialNumber,from,to);
     }
 }

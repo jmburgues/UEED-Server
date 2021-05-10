@@ -5,9 +5,12 @@ import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.service.ReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -27,17 +30,23 @@ public class ReadingController {
         return readingService.getAll();
     }
 
-    @GetMapping("/meter/{meterSerialNumber}")
+    @GetMapping("/{readingId}")
+    public Reading getById(@PathVariable Integer readingId)
+    {
+        return readingService.getById(readingId);
+    }
 
+    @GetMapping("/meter/{meterSerialNumber}")
     public List<Reading> getByMeterId(@PathVariable UUID meterSerialNumber)
     {
         return readingService.getByMeterId(meterSerialNumber);
     }
 
-    @GetMapping("/{readingId}")
-    public Reading getById(@PathVariable Integer readingId)
-    {
-    return readingService.getById(readingId);
+    @GetMapping("/meter/{meterSerialNumber}/consumption")
+    public Map<String,Float> getConsumption(@PathVariable UUID meterSerialNumber,
+                                            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime from,
+                                            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime to){
+        return this.readingService.getConsumption(meterSerialNumber,from,to);
     }
 
     @GetMapping("/NotBilled/{meterSerialNumber}")

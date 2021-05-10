@@ -13,14 +13,10 @@ import java.time.LocalDateTime;
 public class Reading {
 
     @Id
-    @Column(name="readingId")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
-    @Column(name="readDate")
+    private Integer readingId;
     private LocalDateTime readDate;
-    @Column(name = "totalKw")
     private float totalKw;
-    @Column(name = "readingPrice")
     private float readingPrice;
     @OneToOne
     @JoinColumn(name="billId")//Maybe replace this object with just an Integer??
