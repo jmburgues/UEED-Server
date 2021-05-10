@@ -16,28 +16,30 @@ public class BillController {
 
     BillService billService;
 
-
     @Autowired
     public BillController(BillService billService) {
         this.billService = billService;
     }
 
-    @PostMapping
-    public PostResponse add(@RequestBody Bill bill)
-    {
-        return billService.add(bill);
-    }
-
     @GetMapping
-    public List<Bill>getAll()
-    {
+    public List<Bill> getAll(){
         return billService.getAll();
     }
 
     @GetMapping("/{id}")
-    public Bill getById(@PathVariable Integer id)
-    {
+    public Bill getById(@PathVariable Integer id){
         return billService.getById(id);
+    }
+
+    @GetMapping("/client/{clientId}")
+    public List<Bill> getByClientId(@PathVariable Integer clientId){
+        return this.billService.getByClientId(clientId);
+    }
+
+    @GetMapping("/unpaid")
+    public List<Bill>getUnpaid(@RequestParam(required = false) Integer clientId,
+                                            @RequestParam(required = false) Boolean paid){
+        return this.billService.getUnpaid(clientId,paid);
     }
 
     // [PROG - ITEM 2] As an employee I want to query client's bills filtered by date ranges.
@@ -48,9 +50,9 @@ public class BillController {
         return this.billService.filter(clientId,from,to);
     }
 
-    @GetMapping("/unpaid/{clientId}")
-    public List<Bill>getUnpaidBillsByClient(@PathVariable Integer clientId)
+    @PostMapping
+    public PostResponse add(@RequestBody Bill bill)
     {
-        return billService.getUnpaidBillsByClient(clientId);
+        return billService.add(bill);
     }
 }

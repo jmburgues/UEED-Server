@@ -69,16 +69,17 @@ CREATE TABLE METERS
 CREATE TABLE BILLS(
     billId int auto_increment,
     billedDate datetime not null,
+    initialReadingDate datetime,
+    finalReadingDate datetime,
     initialConsumption float default 0,
     finalConsumption float default 0,
     totalConsumption float default 0,
-    initialReadingDate datetime,
-    finalReadingDate datetime,
     meterId varchar(40) not null,
     rateCategory varchar(40) not null,
     ratePrice float not null,
     totalPrice float default 0,
     clientId int not null,
+    paid bool default 0,
     CONSTRAINT pk_billId primary key (billId),
     CONSTRAINT fk_BILLS_clientId foreign key (clientId) references CLIENTS(clientId)
 );

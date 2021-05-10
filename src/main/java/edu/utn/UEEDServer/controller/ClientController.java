@@ -37,11 +37,4 @@ public class ClientController {
     {
         return clientService.getById(id);
     }
-
-    @GetMapping("/{clientId}/bills/unpaid")
-    public List<Bill> getUnpaidBills(@PathVariable  Integer clientId){
-
-        return clientService.getUnpaidBills(clientId);
-
-    }
 }

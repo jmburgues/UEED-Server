@@ -26,7 +26,6 @@ public class BillService {
         this.clientService=clientService;
     }
 
-
     public PostResponse add(Bill bill) {
 
         Bill b = billRepository.save(bill);
@@ -46,16 +45,22 @@ public class BillService {
                 orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
     }
 
+    public List<Bill> getByClientId(Integer clientId){
+        return this.billRepository.getByClientId(clientId);
+    }
+
+    public List<Bill> getUnpaid(Integer clientId,Boolean paid) {
+        if (clientId == null) {
+            return billRepository.getUnpaid();
+        } else {
+            return billRepository.getUnpaidByClient(clientId);
+        }
+    }
+
     public List<Bill> filter(Integer clientId, LocalDateTime from, LocalDateTime to) {
         if(clientId == null)
             return this.billRepository.dateFilter(from,to);
         else
             return this.billRepository.dateAndClientFilter(clientId,from,to);
-    }
-
-    public List<Bill> getUnpaidBillsByClient(Integer clientId) {
-
-        Client client = clientService.getById(clientId);
-        return clientService.getUnpaidBills(clientId);
     }
 }

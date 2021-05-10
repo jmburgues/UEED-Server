@@ -15,32 +15,19 @@ public class Bill {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name ="billId")
     private Integer billId;
-    @Column(name="billedDate")
     private LocalDateTime billedDate; ///how do we convert this into java.sql.date to store in DB?
-    @Column(name="initialReadingDate")
     private LocalDateTime initialReadingDate;
-    @Column(name="finalReadingDate")
     private LocalDateTime finalReadingDate;
-    @Column(name="initialConsumption")
     private Integer initialConsumption;
-    @Column(name="finalConsumption")
     private Integer finalConsumption;
-    @Column(name="totalConsumption")
     private Integer totalConsumption;
-    @Column(name="meterId")
     private String meterId; // just for info, not for linking to Meter object.
-
     private RateCategory rateCategory;
-    @Column(name="ratePrice")
     private float ratePrice;
-    @Column(name="totalPrice")
-    private float totalPrice;
-    @Column(name="clientId")
     private Integer clientId; // just for info, not for linking to Client object.
     @Column(columnDefinition = "bool default 0")
-    private Boolean payed;
+    private Boolean paid;
 
     // is this model ok??
 

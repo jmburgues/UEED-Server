@@ -10,7 +10,4 @@ import java.util.List;
 
 @Repository
 public interface ClientRepository extends JpaRepository<Client,Integer> {
-
-    @Query(value = "SELECT * from bills where clientId =?1 and payed=false",nativeQuery = true)
-    List<Bill> getUnpaidBills(Integer clientId);
 }

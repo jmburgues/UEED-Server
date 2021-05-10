@@ -10,7 +10,17 @@ import java.util.List;
 
 @Repository
 public interface BillRepository extends JpaRepository<Bill,Integer> {
-   @Query(value = "SELECT * FROM BILLS WHERE clientId = ?1 AND billedDate BETWEEN ?2 AND ?3", nativeQuery = true)
+
+    @Query(value = "SELECT * FROM BILLS WHERE clientId=?1",nativeQuery = true)
+    List<Bill> getByClientId(Integer clientId);
+
+    @Query(value = "SELECT * FROM BILLS WHERE paid=false",nativeQuery = true)
+    List<Bill> getUnpaid();
+
+    @Query(value = "SELECT * from bills where clientId =?1 and paid=false",nativeQuery = true)
+    List<Bill> getUnpaidByClient(Integer clientId);
+
+    @Query(value = "SELECT * FROM BILLS WHERE clientId = ?1 AND billedDate BETWEEN ?2 AND ?3", nativeQuery = true)
     List<Bill> dateAndClientFilter(Integer clientId, LocalDateTime from, LocalDateTime to);
 
    @Query(value = "SELECT * FROM BILLS WHERE billedDate BETWEEN ?2 AND ?3",nativeQuery = true)
