@@ -51,9 +51,9 @@ public class RateService {
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
     }
 
-    public PostResponse updateRate(Rate rate, Integer rateId) {
+    public PostResponse updateRate(Rate rate) {
 
-        if(rateRepository.existsById(rateId))
+        if(rateRepository.existsById(rate.getId()))
             return add(rate);
         else
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND);

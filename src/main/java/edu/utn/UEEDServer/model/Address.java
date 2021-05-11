@@ -1,6 +1,7 @@
 package edu.utn.UEEDServer.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 
 @Table(name= "ADDRESSES")
 public class Address {
@@ -24,9 +26,9 @@ public class Address {
     @Column(name="number")
     private Integer number;
     @OneToOne
-    @JoinColumn(name="rateId",foreignKey = @ForeignKey(name= "addresses_rates"))
+    @JoinColumn(name="rateId",foreignKey = @ForeignKey(name= "FK_addresses_rates"))
     private Rate rate;
     @OneToOne
-    @JoinColumn(name="meterId", columnDefinition = "BINARY(16) not null unique",foreignKey = @ForeignKey(name = "addresses_meters"))
+    @JoinColumn(name="meterId", columnDefinition = "BINARY(16) not null unique",foreignKey = @ForeignKey(name = "FK_addresses_meters"))
     private Meter meter;
 }

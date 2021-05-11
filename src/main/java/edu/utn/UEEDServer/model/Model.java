@@ -1,6 +1,7 @@
 package edu.utn.UEEDServer.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -12,6 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 @Entity
+@Builder
 @Table(name ="MODELS")
 public class Model {
     @Id
@@ -21,6 +23,6 @@ public class Model {
     @Column (name="name")
     private String name;
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "brandId",foreignKey = @ForeignKey(name="models_brands"))
+    @JoinColumn(name = "brandId",foreignKey = @ForeignKey(name="FK_models_brands"))
     private Brand brand;
 }

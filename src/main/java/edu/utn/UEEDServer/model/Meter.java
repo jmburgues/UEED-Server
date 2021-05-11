@@ -1,6 +1,7 @@
 package edu.utn.UEEDServer.model;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 @Entity
+@Builder
 @Table(name = "METERS")
 public class Meter {
     @Id
@@ -27,7 +29,7 @@ public class Meter {
     @Column(name="accumulatedConsumption",columnDefinition = "double default 0")
     private double accumulatedConsumption;
     @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "meterSerialNumber",foreignKey = @ForeignKey(name="meters_readings"))
+    @JoinColumn(name = "meterSerialNumber",foreignKey = @ForeignKey(name="FK_meters_readings"))
     private List<Reading> readings;
 
     /*
@@ -36,6 +38,6 @@ public class Meter {
     CascadeType: Test difference between ALL and PERSIST
      */
     @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name="modelId",foreignKey = @ForeignKey(name="meters_models"))
+    @JoinColumn(name="modelId",foreignKey = @ForeignKey(name="FK_meters_models"))
     private Model model;
 }

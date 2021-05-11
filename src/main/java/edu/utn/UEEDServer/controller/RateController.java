@@ -44,10 +44,10 @@ public class RateController {
         rateService.delete(id);
     }
 
-    @PostMapping("/update/{rateId}")
-    public PostResponse updateRate(@RequestBody Rate rate,@PathVariable Integer rateId)
+    @PutMapping()
+    public PostResponse updateRate(@RequestBody Rate rate)
     {
-        return rateService.updateRate(rate,rateId);
+        return rateService.updateRate(rate);
     }
 
 }

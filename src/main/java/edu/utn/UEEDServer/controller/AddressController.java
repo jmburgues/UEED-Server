@@ -35,7 +35,7 @@ public class AddressController {
         return addressService.getById(id);
     }
 
-    @DeleteMapping("{addressId}")
+    @DeleteMapping("/{addressId}")
     public void delete(@PathVariable Integer addressId)
     {
         addressService.delete(addressId);
@@ -47,10 +47,10 @@ public class AddressController {
         return addressService.add(address);
     }
 
-    @PostMapping("/update/{addressId}")
-    public PostResponse updateAddress(@RequestBody Address address,@PathVariable Integer addressId)
+    @PutMapping()
+    public PostResponse updateAddress(@RequestBody Address address)
     {
-       return  addressService.updateAddress(address,addressId);
+       return  addressService.updateAddress(address);
     }
 
 }

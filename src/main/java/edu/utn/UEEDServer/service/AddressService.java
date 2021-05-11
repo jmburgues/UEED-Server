@@ -51,9 +51,9 @@ public class AddressService {
         addressRepository.deleteById(addressId);
     }
 
-    public PostResponse updateAddress(Address address, Integer addressId) {
+    public PostResponse updateAddress(Address address) {
 
-        if (addressRepository.existsById(addressId))
+        if (addressRepository.existsById(address.getAddressId()))
           return  add(address);
         else
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
