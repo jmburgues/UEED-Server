@@ -88,4 +88,8 @@ public class ReadingService {
     public List<Reading> getByDate(UUID meterSerialNumber, LocalDateTime from, LocalDateTime to) {
         return this.readingRepo.getByDate(meterSerialNumber,from,to);
     }
+
+    public Map<Integer, Float> getTopConsumers(LocalDateTime from, LocalDateTime to) {
+        return this.readingRepo.getTopConsumers(from,to);
+    }
 }

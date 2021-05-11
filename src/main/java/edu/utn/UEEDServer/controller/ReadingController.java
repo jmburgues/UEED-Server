@@ -55,6 +55,13 @@ public class ReadingController {
         return this.readingService.getConsumption(meterSerialNumber,from,to);
     }
 
+    @GetMapping("/consumers")
+        public Map<Integer,Float> getTopConsumers(
+                                            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime from,
+                                            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime to){
+        return this.readingService.getTopConsumers(from,to);
+    }
+
     @GetMapping("/NotBilled/{meterSerialNumber}")
     public List<Reading> getNotBilledReadings(@PathVariable UUID meterSerialNumber) {
 

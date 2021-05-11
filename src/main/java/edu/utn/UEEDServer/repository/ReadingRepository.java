@@ -24,5 +24,17 @@ public interface ReadingRepository extends JpaRepository<Reading,Integer> {
 
     @Query(value = "SELECT SUM(totalKw) AS TOTAL_CONSUMPTION,SUM(readingPrice) AS TOTAL_PRICE FROM READINGS WHERE meterSerialNumber = ?1 AND readDate BETWEEN ?2 AND ?3 GROUP BY readingId", nativeQuery = true)
     Map<String, Float> getConsuption(UUID meterSerialNumber, LocalDateTime from, LocalDateTime to);
+
+    @Query(value = "SELECT C.clientId, SUM(R.totalKw) AS TOTAL_CONSUMPTION " +
+            "FROM READINGS R " +
+            "INNER JOIN ADDRESSES A " +
+            "ON R.meterSerialNumber = A.meterId " +
+            "INNER JOIN CLIENTS C " +
+            "ON A.clientId = C.clientId " +
+            "WHERE R.readDate BETWEEN ?2 AND ?3 " +
+            "GROUP BY readingId " +
+            "ORDER BY SUM(R.totalKw) DESC " +
+            "LIMIT 20;", nativeQuery = true)
+    Map<Integer, Float> getTopConsumers(LocalDateTime from, LocalDateTime to);
     // Its OK to return a MAP ????
 }
