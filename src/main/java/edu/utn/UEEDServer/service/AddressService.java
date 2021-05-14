@@ -1,6 +1,7 @@
 package edu.utn.UEEDServer.service;
 
 import edu.utn.UEEDServer.model.Address;
+import edu.utn.UEEDServer.model.Brand;
 import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.repository.AddressRepository;
@@ -35,27 +36,32 @@ public class AddressService {
     }
 
     public List<Address> getAll() {
-
-        return addressRepository.findAll();
+        List<Address> list = addressRepository.findAll();
+        if(list.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT,"Address list is empty");
+        return list;
     }
 
-    public Address getById(Integer id) {
+    public Address getById(Integer addressId) {
 
-        return addressRepository.findById(id).
-                orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND));
-
+        return addressRepository.findById(addressId).
+                orElseThrow(()->new HttpClientErrorException(HttpStatus.NOT_FOUND,"No address found under id: " + addressId));
     }
 
     public void delete(Integer addressId) {
-
+        if(!addressRepository.existsById(addressId))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No address found under id: " + addressId);
         addressRepository.deleteById(addressId);
     }
 
     public PostResponse updateAddress(Address address) {
+        this.getById(address.getAddressId());
 
-        if (addressRepository.existsById(address.getAddressId()))
-          return  add(address);
-        else
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        Address saved = addressRepository.save(address);
+
+        return PostResponse.builder().
+                status(HttpStatus.OK)
+                .url(EntityURLBuilder.buildURL(ADDRESS_PATH,saved.getAddressId().toString()))
+                .build();
     }
 }

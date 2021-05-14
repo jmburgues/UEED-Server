@@ -1,5 +1,6 @@
 package edu.utn.UEEDServer.service;
 
+import edu.utn.UEEDServer.model.Bill;
 import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.model.Reading;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,52 +23,35 @@ public class ReadingService {
 
     private static final String READING_PATH = "reading";
 
-    private MeterService meterService;
+    private MeterRepository meterRepo;
     private ReadingRepository readingRepo;
 
     @Autowired
-    public ReadingService(ReadingRepository readingRepo, MeterService meterService){
-        this.meterService = meterService;
+    public ReadingService(ReadingRepository readingRepo, MeterRepository meterRepo){
+        this.meterRepo = meterRepo;
         this.readingRepo = readingRepo;
     }
 
-    public List<Reading> getAll(){
-        List<Reading> readingList = this.readingRepo.findAll();
-        if(!readingList.isEmpty())
-            return readingList;
-        else
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+    public List<Reading> getAll() {
+        List<Reading> list = readingRepo.findAll();
+        if (list.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Readings list is empty");
+        return list;
     }
 
     public Reading getById(Integer readingId){
         return this.readingRepo.findById(readingId)
-                .orElseThrow( () -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
-    }
-
-    public void addToMeter(Reading newReading, UUID meterSerialNumber){
-
-        Meter existentMeter = this.meterService.getById(meterSerialNumber);
-        existentMeter.getReadings().add(newReading);
-        meterService.add(existentMeter);
-    }
-
-    public void update(Reading existentReading){
-        if(this.readingRepo.existsById(existentReading.getReadingId()))
-            this.readingRepo.save(existentReading);
-        else
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
-    }
-
-    public void delete(Integer readingId){
-        if(this.readingRepo.existsById(readingId))
-            this.readingRepo.deleteById(readingId);
-        else
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+                .orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No readings found under id: " + readingId));
     }
 
     public List<Reading> getByMeterId(UUID serialNumber) {
 
-        return readingRepo.findByMeterId(serialNumber);
+        Meter meter = this.meterRepo.getOne(serialNumber);
+
+        List<Reading> list = meter.getReadings();
+        if(list.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT,"No readings found under meter id: " + serialNumber);
+        return list;
     }
 
     public PostResponse add(Reading reading) {
@@ -77,16 +62,19 @@ public class ReadingService {
                 .build();
     }
 
-    public List<Reading> getNotBilledReadings(UUID meterSerialNumber) {
-        return readingRepo.getNotBilledReadings(meterSerialNumber);
+    public List<Reading> getNotBilledReadings(UUID serialNumber) {
+        this.meterRepo.getOne(serialNumber);
+        return readingRepo.getNotBilledReadings(serialNumber);
     }
 
-    public Map<String, Float> getConsumption(UUID meterSerialNumber, LocalDateTime from, LocalDateTime to) {
-        return this.readingRepo.getConsuption(meterSerialNumber,from,to);
+    public Map<String, Float> getConsumption(UUID serialNumber, LocalDateTime from, LocalDateTime to) {
+        this.meterRepo.getOne(serialNumber);
+        return this.readingRepo.getConsuption(serialNumber,from,to);
     }
 
-    public List<Reading> getByDate(UUID meterSerialNumber, LocalDateTime from, LocalDateTime to) {
-        return this.readingRepo.getByDate(meterSerialNumber,from,to);
+    public List<Reading> getByDate(UUID serialNumber, LocalDateTime from, LocalDateTime to) {
+        this.meterRepo.getOne(serialNumber);
+        return this.readingRepo.getByDate(serialNumber,from,to);
     }
 
     public Map<Integer, Float> getTopConsumers(LocalDateTime from, LocalDateTime to) {

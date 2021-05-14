@@ -29,35 +29,32 @@ public class MeterService {
     }
 
     public List<Meter> getAll(){
-        List<Meter> meterList = this.meterRepo.findAll();
-        if(!meterList.isEmpty())
-            return meterList;
-        else
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        List<Meter> list = this.meterRepo.findAll();
+        if(list.isEmpty())
+            throw new ResponseStatusException(HttpStatus.NO_CONTENT,"Meter list is empty");
+        return list;
     }
 
     public Meter getById(UUID serialNumber){
         return this.meterRepo.findById(serialNumber)
-                .orElseThrow( () -> new HttpClientErrorException(HttpStatus.NOT_FOUND));
+                .orElseThrow( () -> new HttpClientErrorException(HttpStatus.NOT_FOUND,"No meter found under serial number: " + serialNumber));
     }
 
     public PostResponse add(Meter newMeter){
         UUID serialNum = newMeter.getSerialNumber();
+
+        if(serialNum == null)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Meter serial number cannot be null");
+
+        if(this.meterRepo.existsById(serialNum))
+            throw new ResponseStatusException(HttpStatus.ALREADY_REPORTED,"Meter serial number: " + serialNum + " already registered. No action performed.");
+
         Meter m = meterRepo.save(newMeter);
-        if(serialNum != null && this.meterRepo.existsById(serialNum)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT,"Meter nº " + serialNum + " already exists.");
-        }
+
         return PostResponse.builder().
                 status(HttpStatus.CREATED)
                 .url(EntityURLBuilder.buildURL(METER_PATH,m.getSerialNumber().toString()))
                 .build();
-    }
-
-    public void update(Meter existentMeter){
-        if(this.meterRepo.existsById(existentMeter.getSerialNumber()))
-            this.meterRepo.save(existentMeter);
-        else
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
     }
 
     public void delete(UUID serialNumber){
@@ -67,11 +64,14 @@ public class MeterService {
                 throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
     }
 
-    public PostResponse updateMeter(Meter meter) {
+    public PostResponse update(Meter meter){
+        this.getById(meter.getSerialNumber());
 
-        if(meterRepo.existsById(meter.getSerialNumber()))
-            return add(meter);
-        else
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+        Meter m = meterRepo.save(meter);
+
+        return PostResponse.builder().
+                status(HttpStatus.OK)
+                .url(EntityURLBuilder.buildURL(METER_PATH,m.getSerialNumber().toString()))
+                .build();
     }
 }
