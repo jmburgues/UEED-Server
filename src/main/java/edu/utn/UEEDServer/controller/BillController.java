@@ -37,13 +37,17 @@ public class BillController {
     }
 
     @GetMapping("/unpaid")
-    public List<Bill>getUnpaid(@RequestParam(required = false) Integer clientId,
-                                            @RequestParam(required = false) Boolean paid){
-        return this.billService.getUnpaid(clientId,paid);
+    public List<Bill>getUnpaid(){
+        return this.billService.getUnpaid(null);
+    }
+
+    @GetMapping("/unpaid/{clientId}")
+    public List<Bill>getUnpaid(@PathVariable Integer clientId){
+        return this.billService.getUnpaid(clientId);
     }
 
     // [PROG - ITEM 2] As an employee I want to query client's bills filtered by date ranges.
-    @GetMapping("/filter")
+    @GetMapping("/filter") // VER QUERY DSL PARA LOS DIFERENTES FILTERS
     public List<Bill> filter(@RequestParam(required = false) Integer clientId,
                              @RequestParam @DateTimeFormat(pattern="yyyy-MM") LocalDateTime from,
                              @RequestParam @DateTimeFormat(pattern="yyyy-MM") LocalDateTime to){

@@ -49,21 +49,21 @@ CREATE TABLE ADDRESSES
     number   int not null,
     clientId int not null,
     rateId   int not null,
-    meterId binary(16) not null unique,
+    meterId varchar(40) not null unique,
     CONSTRAINT pk_addressId primary key (addressId),
     CONSTRAINT fk_ADDRESS_clientId foreign key (clientId) references CLIENTS(clientId),
     CONSTRAINT fk_ADDRESS_rateId foreign key (rateId) references RATES (rateId),
-    CONSTRAINT fk_ADDRESS_meterId foreign key (meterId) references METERS(meterId)
+    CONSTRAINT fk_ADDRESS_meterId foreign key (meterId) references METERS(serialNumber)
 );
 
 CREATE TABLE METERS
 (
-    serialNumber  binary(16),
+    serialNumber  VARCHAR(40),
     lastReading datetime default now(), # This field will be set by a trigger
     accumulatedConsumption double default 0,  # This field will be set by a trigger
     modelId  int not null,
     CONSTRAINT pk_serialNumber primary key (serialNumber),
-    CONSTRAINT fk_METERS_modelId foreign key (modelId) references MODELS (modelId),
+    CONSTRAINT fk_METERS_modelId foreign key (modelId) references MODELS (modelId)
 );
 
 CREATE TABLE BILLS(
@@ -118,7 +118,7 @@ BEGIN
          ON R.rateId = A.rateId
          INNER JOIN
          METERS M
-         ON A.addressId = M.addressId
+         ON A.meterId = M.serialNumber
     WHERE M.serialNumber = meterSerialNumber;
 end //
 
@@ -152,12 +152,12 @@ DELIMITER ;
 DELIMITER $$
 CREATE PROCEDURE sp_consumeBtwTimes (pSerialNumber VARCHAR(40),pDateFrom DATETIME ,pDateTo DATETIME,OUT pConsume FLOAT)
 BEGIN
-DECLARE  consumeFrom FLOAT DEFAULT 0;
-DECLARE consumeTo FLOAT DEFAULT 0;
-SELECT totalKw INTO consumeFrom FROM readings WHERE meterSerialNumber = pSerialNumber AND readDate = pDateFrom;
-SELECT totalKw INTO consumeTo FROM readings WHERE meterSerialNumber = pSerialNumber AND readDate = pDateTo;
+    DECLARE  consumeFrom FLOAT DEFAULT 0;
+    DECLARE consumeTo FLOAT DEFAULT 0;
+    SELECT totalKw INTO consumeFrom FROM READINGS WHERE meterSerialNumber = pSerialNumber AND readDate = pDateFrom;
+    SELECT totalKw INTO consumeTo FROM READINGS WHERE meterSerialNumber = pSerialNumber AND readDate = pDateTo;
 
-SET pConsume = consumeTo-consumeFrom;
+    SET pConsume = consumeTo-consumeFrom;
 
-END
+END $$
 

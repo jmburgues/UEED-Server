@@ -8,22 +8,21 @@ import org.springframework.data.jpa.repository.Query;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 public interface ReadingRepository extends JpaRepository<Reading,Integer> {
 
     @Query(value = "SELECT * from readings where meterSerialNumber = ?1",nativeQuery = true)
-    List<Reading> findByMeterId(UUID serialNumber);
+    List<Reading> findByMeterId(String serialNumber);
 
     @Query(value= "SELECT * FROM READINGS WHERE meterSerialNumber = ?1 AND billId=null",nativeQuery = true)
-    List<Reading> getNotBilledReadings(UUID meterSerialNumber);
+    List<Reading> getNotBilledReadings(String meterSerialNumber);
 
     // [PROG] - ITEM 5 - Query readings by date range
     @Query(value = "SELECT * FROM READINGS WHERE meterSerialNumber = ?1 readDate BETWEEN ?2 AND ?3", nativeQuery = true)
-    List<Reading> getByDate(UUID meterSerialNumber, LocalDateTime from, LocalDateTime to);
+    List<Reading> getByDate(String meterSerialNumber, LocalDateTime from, LocalDateTime to);
 
     @Query(value = "SELECT SUM(totalKw) AS TOTAL_CONSUMPTION,SUM(readingPrice) AS TOTAL_PRICE FROM READINGS WHERE meterSerialNumber = ?1 AND readDate BETWEEN ?2 AND ?3 GROUP BY readingId", nativeQuery = true)
-    Map<String, Float> getConsuption(UUID meterSerialNumber, LocalDateTime from, LocalDateTime to);
+    Map<String, Float> getConsuption(String meterSerialNumber, LocalDateTime from, LocalDateTime to);
 
     @Query(value =
             "SELECT C.clientId, C.dni, C.name, C.surname, SUM(consumption) " +

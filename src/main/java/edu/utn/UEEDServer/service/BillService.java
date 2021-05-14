@@ -58,8 +58,7 @@ public class BillService {
             throw new ResponseStatusException(HttpStatus.NO_CONTENT,"No bills found under client id: " + clientId);
         return list;
     }
-
-    public List<Bill> getUnpaid(Integer clientId,Boolean paid) {
+    public List<Bill> getUnpaid(Integer clientId) {
 
         List<Bill> list;
 

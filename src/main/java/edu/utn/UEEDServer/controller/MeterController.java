@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/meter")
@@ -29,7 +28,7 @@ public class MeterController {
     }
 
     @GetMapping("/{serialNumber}")
-    public Meter getById(@PathVariable UUID serialNumber){
+    public Meter getById(@PathVariable String serialNumber){
         return this.meterService.getById(serialNumber);
     }
 
@@ -41,11 +40,11 @@ public class MeterController {
     @PutMapping()
     public PostResponse updateMeter(@RequestBody Meter meter)
     {
-        return meterService.updateMeter(meter);
+        return meterService.update(meter);
     }
 
     @DeleteMapping("/{serialNumber}")
-    public void delete(@PathVariable UUID serialNumber){
+    public void delete(@PathVariable String serialNumber){
         this.meterService.delete(serialNumber);
     }
 

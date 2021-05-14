@@ -49,8 +49,6 @@ public class RateService {
     }
 
     public PostResponse updateRate(Rate rate) {
-
-
         this.getById(rate.getId());
 
         Rate saved = rateRepository.save(rate);
@@ -59,5 +57,11 @@ public class RateService {
                 status(HttpStatus.OK)
                 .url(EntityURLBuilder.buildURL(RATE_PATH,saved.getId().toString()))
                 .build();
+    }
+
+    public void delete(Integer rateId) {
+        if(!rateRepository.existsById(rateId))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No rate found under id: " + rateId);
+        rateRepository.deleteById(rateId);
     }
 }

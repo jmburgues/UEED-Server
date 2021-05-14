@@ -21,8 +21,7 @@ public class Meter {
     @Id
     @GeneratedValue(generator = "uuid2")
     @GenericGenerator(name = "uuid2", strategy = "uuid2")
-    @Column(name="serialNumber",columnDefinition = "BINARY(16)")
-    private UUID serialNumber;
+    private String serialNumber;
 
     @Column(name="lastReading",columnDefinition = "datetime default now()")
     private LocalDateTime lastReading;

@@ -35,13 +35,13 @@ public class MeterService {
         return list;
     }
 
-    public Meter getById(UUID serialNumber){
+    public Meter getById(String serialNumber){
         return this.meterRepo.findById(serialNumber)
                 .orElseThrow( () -> new HttpClientErrorException(HttpStatus.NOT_FOUND,"No meter found under serial number: " + serialNumber));
     }
 
     public PostResponse add(Meter newMeter){
-        UUID serialNum = newMeter.getSerialNumber();
+        String serialNum = newMeter.getSerialNumber();
 
         if(serialNum == null)
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Meter serial number cannot be null");
@@ -57,7 +57,7 @@ public class MeterService {
                 .build();
     }
 
-    public void delete(UUID serialNumber){
+    public void delete(String serialNumber){
             if(this.meterRepo.existsById(serialNumber))
                 this.meterRepo.deleteById(serialNumber);
             else

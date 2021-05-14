@@ -1,6 +1,5 @@
 package edu.utn.UEEDServer.service;
 
-import edu.utn.UEEDServer.model.Bill;
 import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.model.Reading;
@@ -10,13 +9,11 @@ import edu.utn.UEEDServer.utils.EntityURLBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class ReadingService {
@@ -44,7 +41,7 @@ public class ReadingService {
                 .orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No readings found under id: " + readingId));
     }
 
-    public List<Reading> getByMeterId(UUID serialNumber) {
+    public List<Reading> getByMeterId(String serialNumber) {
 
         Meter meter = this.meterRepo.getOne(serialNumber);
 
@@ -62,17 +59,17 @@ public class ReadingService {
                 .build();
     }
 
-    public List<Reading> getNotBilledReadings(UUID serialNumber) {
+    public List<Reading> getNotBilledReadings(String serialNumber) {
         this.meterRepo.getOne(serialNumber);
         return readingRepo.getNotBilledReadings(serialNumber);
     }
 
-    public Map<String, Float> getConsumption(UUID serialNumber, LocalDateTime from, LocalDateTime to) {
+    public Map<String, Float> getConsumption(String serialNumber, LocalDateTime from, LocalDateTime to) {
         this.meterRepo.getOne(serialNumber);
         return this.readingRepo.getConsuption(serialNumber,from,to);
     }
 
-    public List<Reading> getByDate(UUID serialNumber, LocalDateTime from, LocalDateTime to) {
+    public List<Reading> getByDate(String serialNumber, LocalDateTime from, LocalDateTime to) {
         this.meterRepo.getOne(serialNumber);
         return this.readingRepo.getByDate(serialNumber,from,to);
     }

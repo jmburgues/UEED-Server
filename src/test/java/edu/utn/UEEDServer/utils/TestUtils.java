@@ -87,7 +87,7 @@ public class TestUtils {
     private static Meter aMeter() {
 
         return Meter.builder()
-                .serialNumber(UUID.randomUUID())
+                .serialNumber("1")
                 .lastReading(LocalDateTime.now())
                 .model(new Model())
                 .readings(new ArrayList<>())
