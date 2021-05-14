@@ -21,9 +21,9 @@ CREATE TABLE USERS(
 CREATE TABLE CLIENTS(
     clientId int auto_increment,
     username varchar(40) not null,
-    /*
-     * AGREGAR MAS INFO. DEUDA, ULTIMO PAGO, FORMA DE PAGO...
-     */
+    name varchar(50),
+    surname varchar(50),
+    dni long,
     CONSTRAINT pk_clientId primary key (clientId),
     CONSTRAINT fk_CLIENTS_username foreign key (username) references USERS(username)
 );
