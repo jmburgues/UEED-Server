@@ -1,40 +1,53 @@
 package edu.utn.UEEDServer.controller;
 
 import edu.utn.UEEDServer.model.Bill;
-import edu.utn.UEEDServer.model.Client;
-import edu.utn.UEEDServer.model.PostResponse;
-import edu.utn.UEEDServer.service.ClientService;
+import edu.utn.UEEDServer.model.Reading;
+import edu.utn.UEEDServer.service.BillService;
+import edu.utn.UEEDServer.service.ReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/client")
 public class ClientController {
 
-    ClientService clientService;
+    ReadingService readingService;
+    BillService billService;
 
     @Autowired
-    public ClientController(ClientService clientService) {
-        this.clientService = clientService;
+    public ClientController(ReadingService readingService, BillService billService) {
+        this.readingService = readingService;
+        this.billService = billService;
     }
 
-    @PostMapping
-    public PostResponse add(@RequestBody Client client)
-    {
-        return clientService.add(client);
+    @GetMapping("/{clientId}/bill") // VER QUERY DSL PARA LOS DIFERENTES FILTERS
+    public List<Bill> filterByClientAndDate(@PathVariable Integer clientId,
+                                   @RequestParam @DateTimeFormat(pattern="yyyy-MM") LocalDateTime from,
+                                   @RequestParam @DateTimeFormat(pattern="yyyy-MM") LocalDateTime to){
+        return this.billService.filterByClientAndDate(clientId,from,to);
     }
 
-    @GetMapping
-    public List<Client> getAll()
-    {
-        return clientService.getAll();
+    @GetMapping("/{clientId}/unpaid")
+    public List<Bill>getUnpaidBillClient(@PathVariable Integer clientId){
+        return billService.getClientUnpaid(clientId);
     }
 
-    @GetMapping("/{id}")
-    public Client getById(@PathVariable Integer id)
-    {
-        return clientService.getById(id);
+    @GetMapping("/{clientId}/consumption")
+    public Map<String, Float> getClientConsumption(@PathVariable Integer clientId,
+                                                   @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime from,
+                                                   @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime to){
+        return this.readingService.getClientConsumption(clientId,from,to);
+    }
+
+    @GetMapping("/{clientId}/readings")
+    public List<Reading> getClientReadingsByDate(@PathVariable Integer clientId,
+                                            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime from,
+                                            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime to){
+        return this.readingService.getClientReadingsByDate(clientId,from,to);
     }
 }

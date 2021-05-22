@@ -16,22 +16,11 @@ import java.util.List;
 @Service
 public class RateService {
 
-    private static final String RATE_PATH="rate";
     RateRepository rateRepository;
 
     @Autowired
     public RateService(RateRepository rateRepository) {
         this.rateRepository = rateRepository;
-    }
-
-    public PostResponse add(Rate rate) {
-
-        Rate r = rateRepository.save(rate);
-
-        return PostResponse.builder().
-                status(HttpStatus.CREATED).
-                url(EntityURLBuilder.buildURL(RATE_PATH,r.getId())).
-                build();
     }
 
     public List<Rate> getAll() {
@@ -48,15 +37,17 @@ public class RateService {
                 orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "No rates found under id: " + rateId));
     }
 
-    public PostResponse updateRate(Rate rate) {
+    public Rate add(Rate rate) {
+
+        return rateRepository.save(rate);
+    }
+
+    public Rate update(Rate rate) {
         this.getById(rate.getId());
 
         Rate saved = rateRepository.save(rate);
 
-        return PostResponse.builder().
-                status(HttpStatus.OK)
-                .url(EntityURLBuilder.buildURL(RATE_PATH,saved.getId().toString()))
-                .build();
+        return saved;
     }
 
     public void delete(Integer rateId) {

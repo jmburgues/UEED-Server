@@ -1,15 +1,14 @@
 package edu.utn.UEEDServer.service;
 
-import edu.utn.UEEDServer.model.Meter;
+import edu.utn.UEEDServer.model.Address;
+import edu.utn.UEEDServer.model.Client;
 import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.model.Reading;
-import edu.utn.UEEDServer.repository.MeterRepository;
 import edu.utn.UEEDServer.repository.ReadingRepository;
 import edu.utn.UEEDServer.utils.EntityURLBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -20,35 +19,15 @@ public class ReadingService {
 
     private static final String READING_PATH = "reading";
 
-    private MeterRepository meterRepo;
+    private MeterService meterService;
     private ReadingRepository readingRepo;
+    private AddressService addressService;
 
     @Autowired
-    public ReadingService(ReadingRepository readingRepo, MeterRepository meterRepo){
-        this.meterRepo = meterRepo;
+    public ReadingService(MeterService meterService, ReadingRepository readingRepo, AddressService addressService) {
+        this.meterService = meterService;
         this.readingRepo = readingRepo;
-    }
-
-    public List<Reading> getAll() {
-        List<Reading> list = readingRepo.findAll();
-        if (list.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT, "Readings list is empty");
-        return list;
-    }
-
-    public Reading getById(Integer readingId){
-        return this.readingRepo.findById(readingId)
-                .orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "No readings found under id: " + readingId));
-    }
-
-    public List<Reading> getByMeterId(String serialNumber) {
-
-        Meter meter = this.meterRepo.getOne(serialNumber);
-
-        List<Reading> list = meter.getReadings();
-        if(list.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT,"No readings found under meter id: " + serialNumber);
-        return list;
+        this.addressService = addressService;
     }
 
     public PostResponse add(Reading reading) {
@@ -60,21 +39,32 @@ public class ReadingService {
     }
 
     public List<Reading> getNotBilledReadings(String serialNumber) {
-        this.meterRepo.getOne(serialNumber);
+        this.meterService.getById(serialNumber);
         return readingRepo.getNotBilledReadings(serialNumber);
     }
 
+    public List<Reading>getAddressReadingsByDate(Integer addressId, LocalDateTime from, LocalDateTime to) {
+        Address address = this.addressService.getById(addressId);
+        String serialNumber = address.getMeter().getSerialNumber();
+        return this.readingRepo.getAddressReadingsByDate(serialNumber,from,to);
+    }
+
+    public List<Reading>getClientReadingsByDate(Integer clientId, LocalDateTime from, LocalDateTime to) {
+        return this.readingRepo.getClientReadingsByDate(clientId,from,to);
+    }
+
+    public Map<String, Float> getClientConsumption(Integer clientId, LocalDateTime from, LocalDateTime to) {
+        return this.readingRepo.getClientConsumption(clientId,from,to);
+    }
+
     public Map<String, Float> getConsumption(String serialNumber, LocalDateTime from, LocalDateTime to) {
-        this.meterRepo.getOne(serialNumber);
-        return this.readingRepo.getConsuption(serialNumber,from,to);
+        this.meterService.getById(serialNumber);
+        return this.readingRepo.getConsumption(serialNumber,from,to);
     }
 
-    public List<Reading> getByDate(String serialNumber, LocalDateTime from, LocalDateTime to) {
-        this.meterRepo.getOne(serialNumber);
-        return this.readingRepo.getByDate(serialNumber,from,to);
-    }
-
-    public Map<Integer, Float> getTopConsumers(LocalDateTime from, LocalDateTime to) {
+    public List<Client> getTopConsumers(LocalDateTime from, LocalDateTime to) {
         return this.readingRepo.getTopConsumers(from,to);
     }
+
+
 }

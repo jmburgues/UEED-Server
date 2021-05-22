@@ -18,7 +18,7 @@ import java.util.List;
 @Service
 public class AddressService {
 
-    private static final String ADDRESS_PATH = "address";
+
     AddressRepository addressRepository;
 
     @Autowired
@@ -26,13 +26,8 @@ public class AddressService {
         this.addressRepository = addressRepository;
     }
 
-    public PostResponse add(Address address) {
-
-        Address a = addressRepository.save(address);
-        return PostResponse.builder().
-                status(HttpStatus.CREATED).
-                url(EntityURLBuilder.buildURL(ADDRESS_PATH,a.getAddressId())).
-                build();
+    public Address add(Address address) {
+        return addressRepository.save(address);
     }
 
     public List<Address> getAll() {
@@ -54,14 +49,9 @@ public class AddressService {
         addressRepository.deleteById(addressId);
     }
 
-    public PostResponse updateAddress(Address address) {
+    public Address update(Address address) {
         this.getById(address.getAddressId());
 
-        Address saved = addressRepository.save(address);
-
-        return PostResponse.builder().
-                status(HttpStatus.OK)
-                .url(EntityURLBuilder.buildURL(ADDRESS_PATH,saved.getAddressId().toString()))
-                .build();
+        return addressRepository.save(address);
     }
 }
