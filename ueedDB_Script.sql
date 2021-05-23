@@ -42,6 +42,17 @@ CREATE TABLE MODELS(
     CONSTRAINT fk_MODELS_brandId foreign key (brandId) references BRANDS(brandId)
 );
 
+CREATE TABLE METERS
+(
+    serialNumber VARCHAR(40),
+    lastReading datetime default now(), # This field will be set by a trigger
+    accumulatedConsumption double default 0,  # This field will be set by a trigger
+    modelId int not null,
+    password VARCHAR(40) not null,
+    CONSTRAINT pk_serialNumber primary key (serialNumber),
+    CONSTRAINT fk_METERS_modelId foreign key (modelId) references MODELS (modelId)
+);
+
 CREATE TABLE ADDRESSES
 (
     addressId int auto_increment,
@@ -54,16 +65,6 @@ CREATE TABLE ADDRESSES
     CONSTRAINT fk_ADDRESS_clientId foreign key (clientId) references CLIENTS(clientId),
     CONSTRAINT fk_ADDRESS_rateId foreign key (rateId) references RATES (rateId),
     CONSTRAINT fk_ADDRESS_meterId foreign key (meterId) references METERS(serialNumber)
-);
-
-CREATE TABLE METERS
-(
-    serialNumber  VARCHAR(40),
-    lastReading datetime default now(), # This field will be set by a trigger
-    accumulatedConsumption double default 0,  # This field will be set by a trigger
-    modelId  int not null,
-    CONSTRAINT pk_serialNumber primary key (serialNumber),
-    CONSTRAINT fk_METERS_modelId foreign key (modelId) references MODELS (modelId)
 );
 
 CREATE TABLE BILLS(
@@ -140,13 +141,13 @@ DELIMITER ;
 
 ## ITEM 3 - Second part
 ## Updates
-CREATE TRIGGER `tai_watchRates` AFTER UPDATE ON RATES FOR EACH ROW
-    BEGIN
-        CALL getKwPrice()
-        // working..
-    end;
-
-DELIMITER ;
+##CREATE TRIGGER `tai_watchRates` AFTER UPDATE ON RATES FOR EACH ROW
+##    BEGIN
+##        CALL getKwPrice()
+##        // working..
+##    end;
+##
+##DELIMITER ;
 
    # /*Calculate consumed kws between intervals of time*/
 DELIMITER $$
@@ -161,3 +162,8 @@ BEGIN
 
 END $$
 
+# INSERT VALUES
+
+insert into BRANDS(name) values ('Motorola');
+insert into MODELS(name,brandId) values ('M001',1);
+insert into METERS(serialNumber, modelId, password) values ('001',1,1234);

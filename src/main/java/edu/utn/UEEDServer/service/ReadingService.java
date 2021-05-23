@@ -2,12 +2,9 @@ package edu.utn.UEEDServer.service;
 
 import edu.utn.UEEDServer.model.Address;
 import edu.utn.UEEDServer.model.Client;
-import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.repository.ReadingRepository;
-import edu.utn.UEEDServer.utils.EntityURLBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,12 +27,8 @@ public class ReadingService {
         this.addressService = addressService;
     }
 
-    public PostResponse add(Reading reading) {
-        Reading r = readingRepo.save(reading);
-        return PostResponse.builder()
-                .status(HttpStatus.CREATED)
-                .url(EntityURLBuilder.buildURL(READING_PATH,r.getReadingId()))
-                .build();
+    public Reading add(Reading reading) {
+        return readingRepo.save(reading);
     }
 
     public List<Reading> getNotBilledReadings(String serialNumber) {

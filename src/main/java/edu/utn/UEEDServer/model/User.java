@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 
@@ -24,6 +25,7 @@ public class User {
     private String name;
     @Column(name = "surname")
     private String surname;
-    @Column(columnDefinition = "bool default 0")
+    @Column(columnDefinition = "BIT default 0")
+    @Type(type = "org.hibernate.type.NumericBooleanType")
     private Boolean employee;
 }

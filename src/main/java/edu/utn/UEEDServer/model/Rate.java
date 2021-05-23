@@ -19,7 +19,6 @@ public class Rate {
     @Column(name="rateId")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @Column(name="category",columnDefinition = "varchar(40) unique")
     private String category;
     @Column(name="kwPrice")
     private Float kwPrice;

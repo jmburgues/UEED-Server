@@ -21,14 +21,13 @@ public class Bill {
     private LocalDateTime billedDate; ///how do we convert this into java.sql.date to store in DB?
     private LocalDateTime initialReadingDate;
     private LocalDateTime finalReadingDate;
-    private Integer initialConsumption;
-    private Integer finalConsumption;
-    private Integer totalConsumption;
+    private Float initialConsumption;
+    private Float finalConsumption;
+    private Float totalConsumption;
     private String meterId; // just for info, not for linking to Meter object.
-    private RateCategory rateCategory;
+    private String rateCategory;
     private float ratePrice;
     private Integer clientId; // just for info, not for linking to Client object.
-    @Column(columnDefinition = "bool default 0")
     private Boolean paid;
 
     // is this model ok??

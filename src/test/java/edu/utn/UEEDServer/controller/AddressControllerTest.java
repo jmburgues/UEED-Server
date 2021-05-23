@@ -15,7 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static edu.utn.UEEDServer.utils.TestUtils.aAddressJSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-
+/*
 @SpringBootTest(classes = AddressController.class)
 public class AddressControllerTest  extends AbstractController {
 
@@ -105,3 +105,4 @@ public class AddressControllerTest  extends AbstractController {
 
 
 }
+*/
