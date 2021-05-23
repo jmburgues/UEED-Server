@@ -59,4 +59,8 @@ public class MeterService {
         else
             throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
     }
+
+    public Meter getByAddressId(Integer addressId) {
+        return this.meterRepo.findByAddressId(addressId);
+    }
 }

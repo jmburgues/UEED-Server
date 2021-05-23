@@ -19,7 +19,7 @@ public interface ReadingRepository extends JpaRepository<Reading,Integer> {
     // [PROG] - ITEM 5 - Query readings by date range
     @Query(value = "SELECT * FROM READINGS " +
             "WHERE meterSerialNumber = ?1 AND readDate BETWEEN ?2 AND ?3", nativeQuery = true)
-    List<Reading> getAddressReadingsByDate(String meterSerialNumber, LocalDateTime from, LocalDateTime to);
+    List<Reading> getReadingsByMeterAndDate(String meterSerialNumber, LocalDateTime from, LocalDateTime to);
 
     @Query(value = "SELECT * FROM READINGS R " +
             "INNER JOIN ADDRESSES A " +

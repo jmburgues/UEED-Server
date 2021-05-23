@@ -2,6 +2,7 @@ package edu.utn.UEEDServer.service;
 
 import edu.utn.UEEDServer.model.Address;
 import edu.utn.UEEDServer.model.Client;
+import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.repository.ReadingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +38,8 @@ public class ReadingService {
     }
 
     public List<Reading>getAddressReadingsByDate(Integer addressId, LocalDateTime from, LocalDateTime to) {
-        Address address = this.addressService.getById(addressId);
-        String serialNumber = address.getMeter().getSerialNumber();
-        return this.readingRepo.getAddressReadingsByDate(serialNumber,from,to);
+        Meter meter = this.meterService.getByAddressId(addressId);
+        return this.readingRepo.getReadingsByMeterAndDate(meter.getSerialNumber(),from,to);
     }
 
     public List<Reading>getClientReadingsByDate(Integer clientId, LocalDateTime from, LocalDateTime to) {
