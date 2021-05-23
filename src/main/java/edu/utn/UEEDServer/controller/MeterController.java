@@ -34,7 +34,6 @@ public class MeterController {
     public PostResponse addReading(@RequestBody ReadingDTO incoming){
         System.out.println("INCOMING !!! " + incoming.toString());
         Meter existent = meterService.getById(incoming.getMeterSerialNumber());
-        System.out.printf("MATCH !!! meter: " + existent.toString());
         if(existent.getPassword().equals(incoming.getPassword())){
             System.out.println("ADDING reading" + conversionService.convert(incoming,Reading.class).toString());
             Reading added = readingService.add(conversionService.convert(incoming, Reading.class));
@@ -45,10 +44,5 @@ public class MeterController {
         return PostResponse.builder()
                 .status(HttpStatus.CREATED)
                 .build();
-    }
-
-    @GetMapping
-    public List<Meter> getAll(){
-        return meterService.getAll();
     }
 }

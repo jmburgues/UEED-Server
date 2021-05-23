@@ -132,12 +132,13 @@ end //
 DELIMITER //
 CREATE TRIGGER `tbi_updateMeterWithReading` AFTER INSERT ON READINGS FOR EACH ROW
     BEGIN
-        UPDATE METERS SET lastReading = new.readDate, accumulatedConsumption = totalKw WHERE serialNumber = new.meterSerialNumber;
-        CALL getKwPrice(new.meterSerialNumber);
+        UPDATE METERS SET lastReading = new.readDate, accumulatedConsumption = new.totalKw WHERE serialNumber = new.meterSerialNumber;
+        CALL getKwPrice(new.meterSerialNumber,@actualPrice);
         UPDATE READINGS SET readingPrice = (new.totalKw * @actualPrice) WHERE readingId = new.readingId;
         # Reading price must be calculated from accumulatedConsumption or by subtracting last reading consumption to latest one?
     end //
 DELIMITER ;
+SELECT * FROM METERS;
 
 ## ITEM 3 - Second part
 ## Updates
@@ -167,3 +168,7 @@ END $$
 insert into BRANDS(name) values ('Motorola');
 insert into MODELS(name,brandId) values ('M001',1);
 insert into METERS(serialNumber, modelId, password) values ('001',1,1234);
+insert into USERS(username, password, name, surname) values ('user1','1234','User','One');
+insert into CLIENTS(username) values ('user1');
+insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),11,'001',null);
+

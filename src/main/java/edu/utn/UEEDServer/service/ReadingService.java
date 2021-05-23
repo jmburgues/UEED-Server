@@ -58,6 +58,4 @@ public class ReadingService {
     public List<Client> getTopConsumers(LocalDateTime from, LocalDateTime to) {
         return this.readingRepo.getTopConsumers(from,to);
     }
-
-
 }

@@ -18,9 +18,9 @@ public class Reading {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer readingId;
     private LocalDateTime readDate;
-    private float totalKw;
-    private float readingPrice;
+    private Float totalKw;
     private String meterSerialNumber;
+    private Float readingPrice;
     @OneToOne
     @JoinColumn(name="billId")//Maybe replace this object with just an Integer??
     private Bill bill;
