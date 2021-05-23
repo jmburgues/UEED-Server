@@ -19,16 +19,10 @@ public class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="addressId")
     private Integer addressId;
-    @Column(name= "street")
     private String street;
-    @Column(name="number")
     private Integer number;
     @OneToOne
     @JoinColumn(name="rateId",foreignKey = @ForeignKey(name= "FK_addresses_rates"))
     private Rate rate;
-    @OneToOne
-    @JoinColumn(name="meterId", columnDefinition = "VARCHAR(40) not null unique",foreignKey = @ForeignKey(name = "FK_addresses_meters"))
-    private Meter meter;
 }

@@ -42,17 +42,6 @@ CREATE TABLE MODELS(
     CONSTRAINT fk_MODELS_brandId foreign key (brandId) references BRANDS(brandId)
 );
 
-CREATE TABLE METERS
-(
-    serialNumber VARCHAR(40),
-    lastReading datetime default now(), # This field will be set by a trigger
-    accumulatedConsumption double default 0,  # This field will be set by a trigger
-    modelId int not null,
-    password VARCHAR(40) not null,
-    CONSTRAINT pk_serialNumber primary key (serialNumber),
-    CONSTRAINT fk_METERS_modelId foreign key (modelId) references MODELS (modelId)
-);
-
 CREATE TABLE ADDRESSES
 (
     addressId int auto_increment,
@@ -60,11 +49,22 @@ CREATE TABLE ADDRESSES
     number   int not null,
     clientId int not null,
     rateId   int not null,
-    meterId varchar(40) not null unique,
     CONSTRAINT pk_addressId primary key (addressId),
     CONSTRAINT fk_ADDRESS_clientId foreign key (clientId) references CLIENTS(clientId),
-    CONSTRAINT fk_ADDRESS_rateId foreign key (rateId) references RATES (rateId),
-    CONSTRAINT fk_ADDRESS_meterId foreign key (meterId) references METERS(serialNumber)
+    CONSTRAINT fk_ADDRESS_rateId foreign key (rateId) references RATES (rateId)
+);
+
+CREATE TABLE METERS
+(
+    serialNumber VARCHAR(40),
+    lastReading datetime default now(), # This field will be set by a trigger
+    accumulatedConsumption double default 0,  # This field will be set by a trigger
+    modelId int not null,
+    password VARCHAR(40) not null,
+    addressId int not null unique,
+    CONSTRAINT pk_serialNumber primary key (serialNumber),
+    CONSTRAINT fk_METERS_modelId foreign key (modelId) references MODELS (modelId),
+    CONSTRAINT fk_METERS_addressId foreign key (addressId) references ADDRESSES(addressId)
 );
 
 CREATE TABLE BILLS(
@@ -119,7 +119,7 @@ BEGIN
          ON R.rateId = A.rateId
          INNER JOIN
          METERS M
-         ON A.meterId = M.serialNumber
+         ON M.addressId = A.addressId
     WHERE M.serialNumber = meterSerialNumber;
 end //
 
@@ -160,15 +160,15 @@ BEGIN
     SELECT totalKw INTO consumeTo FROM READINGS WHERE meterSerialNumber = pSerialNumber AND readDate = pDateTo;
 
     SET pConsume = consumeTo-consumeFrom;
-
 END $$
 
 # INSERT VALUES
 
 insert into BRANDS(name) values ('Motorola');
 insert into MODELS(name,brandId) values ('M001',1);
-insert into METERS(serialNumber, modelId, password) values ('001',1,1234);
+insert into RATES(category, kwPrice) values ('RESIDENTIAL','1');
 insert into USERS(username, password, name, surname) values ('user1','1234','User','One');
 insert into CLIENTS(username) values ('user1');
+insert into ADDRESSES(street, number, clientId, rateId) values ('Calle Falsa',123,1,1);
+insert into METERS(serialNumber, modelId, password, addressId) values ('001',1,1234,1);
 insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),11,'001',null);
-

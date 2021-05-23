@@ -32,6 +32,10 @@ public class Meter {
     @JoinColumn(name="modelId",foreignKey = @ForeignKey(name="FK_meters_models"))
     private Model model;
     private String password;
+
+    @OneToOne
+    @JoinColumn(name="addressId", columnDefinition = "int not null unique",foreignKey = @ForeignKey(name = "fk_METERS_addressId"))
+    private Address address;
 }
     /*
     ManyToOne: Several meters can have the same model.
