@@ -112,7 +112,7 @@ CREATE TRIGGER `tbi_checkRegisteredMeter` BEFORE INSERT ON READINGS FOR EACH ROW
 DELIMITER //
 CREATE PROCEDURE getKwPrice(IN meterSerialNumber VARCHAR(40), OUT actualPrice FLOAT)
 BEGIN
-    SELECT R.kwPrice INTO @actualPrice
+    SELECT R.kwPrice INTO actualPrice
     FROM RATES R
          INNER JOIN
          ADDRESSES A
@@ -161,6 +161,22 @@ BEGIN
 
     SET pConsume = consumeTo-consumeFrom;
 END $$
+
+
+#INDEXES
+/*to prevent duplicates addresses*/
+CREATE UNIQUE INDEX index_address ON addresses (street,number)
+USING BTREE;
+
+#TRIGGERS
+/*Adjust reading price after update on rate price*/
+DELIMITER $$
+CREATE TRIGGER tau_readingPriceAdjustment AFTER UPDATE ON rates
+    FOR EACH ROW
+BEGIN
+    UPDATE readings SET reading_price = new.kw_price;
+END
+
 
 # INSERT VALUES
 
