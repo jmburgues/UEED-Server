@@ -1,5 +1,6 @@
 package edu.utn.UEEDServer.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,11 +20,8 @@ public class User {
     @Id
     @Column(name="username")
     private String username;
-    @Column(name = "password")
     private String password;
-    @Column(name = "name")
     private String name;
-    @Column(name = "surname")
     private String surname;
     @Column(columnDefinition = "BIT default 0")
     @Type(type = "org.hibernate.type.NumericBooleanType")
