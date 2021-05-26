@@ -38,7 +38,9 @@ public class RateService {
     }
 
     public Rate add(Rate rate) {
-
+        Integer rateId = rate.getId();
+        if(rateId != null && rateRepository.findById(rateId).isPresent())
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"Rate ID " + rateId + " already exists.");
         return rateRepository.save(rate);
     }
 

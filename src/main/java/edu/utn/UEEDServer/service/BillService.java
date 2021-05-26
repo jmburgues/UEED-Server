@@ -18,8 +18,6 @@ import java.util.List;
 @Service
 public class BillService {
 
-    private static final String BILL_PATH="bill";
-
     @Autowired
     BillRepository billRepository;
 

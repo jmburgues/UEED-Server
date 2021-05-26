@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,25 +15,27 @@ import java.util.List;
 @RequestMapping("/backoffice")
 public class BackofficeController {
 
-    private static final String RATE_PATH = "rate";
-    private static final String ADDRESS_PATH = "address";
-    private static final String METER_PATH = "meter";
+    private static final String RATE_PATH = "backoffice/rate";
+    private static final String ADDRESS_PATH = "backoffice/address";
+    private static final String METER_PATH = "backoffice/meter";
+    private static final String CLIENT_PATH = "backoffice/client";
 
     private RateService rateService;
     private AddressService addressService;
     private MeterService meterService;
     private BillService billService;
     private ReadingService readingService;
+    private ClientService clientService;
 
     @Autowired
-    public BackofficeController(RateService rateService, AddressService addressService, MeterService meterService, BillService billService, ReadingService readingService) {
+    public BackofficeController(RateService rateService, AddressService addressService, MeterService meterService, BillService billService, ReadingService readingService, ClientService clientService) {
         this.rateService = rateService;
         this.addressService = addressService;
         this.meterService = meterService;
         this.billService = billService;
         this.readingService = readingService;
+        this.clientService = clientService;
     }
-
 
 /* RATES ENDPOINTS */
 
@@ -87,23 +88,23 @@ public class BackofficeController {
         return addressService.getById(id);
     }
 
-    @PostMapping("/address")
-    public PostResponse addAddress(@RequestBody Address address) {
-        Address added = addressService.add(address);
+    @PostMapping("/client/{clientId}/address")
+    public PostResponse addAddress(@PathVariable Integer clientId, @RequestBody Address address) {
+        addressService.add(clientId, address);
 
         return PostResponse.builder().
                 status(HttpStatus.CREATED).
-                url(EntityURLBuilder.buildURL(ADDRESS_PATH, added.getAddressId())).
+                url(EntityURLBuilder.buildURL(CLIENT_PATH+"/"+clientId, ADDRESS_PATH+"/"+address.getAddressId())).
                 build();
     }
 
-    @PutMapping("/address")
-    public PostResponse updateAddress(@RequestBody Address address) {
-        Address updated = addressService.update(address);
+    @PutMapping("/client/{clientId}/address")
+    public PostResponse updateAddress(@PathVariable Integer clientId, @RequestBody Address address) {
+        Client updated = addressService.update(clientId, address);
 
         return PostResponse.builder().
                 status(HttpStatus.OK)
-                .url(EntityURLBuilder.buildURL(ADDRESS_PATH, updated.getAddressId().toString()))
+                .url(EntityURLBuilder.buildURL(CLIENT_PATH, clientId))
                 .build();
     }
 

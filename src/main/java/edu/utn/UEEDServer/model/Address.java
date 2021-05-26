@@ -1,5 +1,6 @@
 package edu.utn.UEEDServer.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,4 +26,8 @@ public class Address {
     @OneToOne
     @JoinColumn(name="rateId",foreignKey = @ForeignKey(name= "FK_addresses_rates"))
     private Rate rate;
+    @JsonBackReference
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "clientId")
+    private Client client;
 }
