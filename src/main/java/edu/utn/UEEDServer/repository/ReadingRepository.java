@@ -12,11 +12,6 @@ import java.util.Map;
 
 public interface ReadingRepository extends JpaRepository<Reading,Integer> {
 
-    @Query(value= "SELECT * FROM READINGS " +
-            "WHERE meterSerialNumber = ?1 AND billId=null",nativeQuery = true)
-    List<Reading> getNotBilledReadings(String meterSerialNumber);
-
-    // [PROG] - ITEM 5 - Query readings by date range
     @Query(value = "SELECT * FROM READINGS " +
             "WHERE meterSerialNumber = ?1 AND readDate BETWEEN ?2 AND ?3", nativeQuery = true)
     List<Reading> getReadingsByMeterAndDate(String meterSerialNumber, LocalDateTime from, LocalDateTime to);
@@ -28,12 +23,6 @@ public interface ReadingRepository extends JpaRepository<Reading,Integer> {
             "ON A.clientId = C.clientId " +
             "WHERE C.clientId = ?1 AND R.readDate BETWEEN ?2 AND ?3", nativeQuery = true)
     List<Reading> getClientReadingsByDate(Integer clientId, LocalDateTime from, LocalDateTime to);
-
-    @Query(value = "SELECT SUM(totalKw) AS TOTAL_CONSUMPTION,SUM(readingPrice) AS TOTAL_PRICE " +
-            "FROM READINGS " +
-            "WHERE meterSerialNumber = ?1 AND readDate BETWEEN ?2 AND ?3 " +
-            "GROUP BY readingId", nativeQuery = true)
-    Map<String, Float> getConsumption(String meterSerialNumber, LocalDateTime from, LocalDateTime to);
 
     @Query(value = "SELECT SUM(R.totalKw) AS TOTAL_CONSUMPTION, SUM(R.readingPrice) AS TOTAL_PRICE " +
             "FROM READINGS R " +

@@ -20,6 +20,5 @@ public class Rate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String category;
-    @Column(name="kwPrice")
     private Float kwPrice;
 }
