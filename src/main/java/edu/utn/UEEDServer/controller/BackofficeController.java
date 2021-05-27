@@ -1,6 +1,7 @@
 package edu.utn.UEEDServer.controller;
 
 import edu.utn.UEEDServer.model.*;
+import edu.utn.UEEDServer.model.dto.ConsumersDTO;
 import edu.utn.UEEDServer.service.*;
 import edu.utn.UEEDServer.utils.EntityURLBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -156,8 +157,8 @@ public class BackofficeController {
 
     @GetMapping("/client/{clientId}/bills") // VER QUERY DSL PARA LOS DIFERENTES FILTERS
     public List<Bill> filterByDate(@PathVariable Integer clientId,
-                                   @RequestParam @DateTimeFormat(pattern="yyyy-MM") LocalDateTime from,
-                                   @RequestParam @DateTimeFormat(pattern="yyyy-MM") LocalDateTime to){
+                                   @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date from,
+                                   @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date to){
         return this.billService.filterByClientAndDate(clientId,from,to);
     }
 
@@ -175,8 +176,8 @@ public class BackofficeController {
 
     @GetMapping("/address/{addressId}/readings")
     public List<Reading> getAddressReadings(@PathVariable Integer addressId,
-                                            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime from,
-                                            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime to){
+                                            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
+                                            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to){
         return this.readingService.getAddressReadingsByDate(addressId,from,to);
     }
 
@@ -184,9 +185,9 @@ public class BackofficeController {
 /* CLIENT ENDPOINTS */
 
     @GetMapping("/client/topconsumers")
-    public List<Client> getTopConsumers( // Hacer un proyection
-                                               @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime from,
-                                               @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") LocalDateTime to){
+    public List<ConsumersDTO> getTopConsumers( // Hacer un proyection
+                                               @RequestParam("from") @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
+                                               @RequestParam("to") @DateTimeFormat(pattern = "yyyy-MM-dd") Date to){
         return this.readingService.getTopConsumers(from,to);
     }
 }

@@ -4,6 +4,7 @@ import edu.utn.UEEDServer.AbstractController;
 import edu.utn.UEEDServer.service.AddressService;
 
 
+/*
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -15,7 +16,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import static edu.utn.UEEDServer.utils.TestUtils.aAddressJSON;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-/*
+
 @SpringBootTest(classes = AddressController.class)
 public class AddressControllerTest  extends AbstractController {
 

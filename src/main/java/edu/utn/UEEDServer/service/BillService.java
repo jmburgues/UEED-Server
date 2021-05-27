@@ -1,18 +1,13 @@
 package edu.utn.UEEDServer.service;
 
 import edu.utn.UEEDServer.model.Bill;
-import edu.utn.UEEDServer.model.Brand;
-import edu.utn.UEEDServer.model.Client;
-import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.repository.BillRepository;
-import edu.utn.UEEDServer.utils.EntityURLBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -45,9 +40,9 @@ public class BillService {
         return list;
     }
 
-    public List<Bill> filterByClientAndDate(Integer clientId, LocalDateTime from, LocalDateTime to) {
+    public List<Bill> filterByClientAndDate(Integer clientId, Date from, Date to) {
 
-        if(from.isAfter(to))
+        if(from.after(to))
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Date From (" + from + ") can not be after date To (" + to + ")");
 
         List<Bill> list;
