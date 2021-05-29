@@ -130,15 +130,27 @@ end //
   * WARNING: MUST ADD readingPrice variable on Reading model !!!
  */
 DELIMITER //
-CREATE TRIGGER `tbi_updateMeterWithReading` AFTER INSERT ON READINGS FOR EACH ROW
-    BEGIN
-        UPDATE METERS SET lastReading = new.readDate, accumulatedConsumption = new.totalKw WHERE serialNumber = new.meterSerialNumber;
-        CALL getKwPrice(new.meterSerialNumber,@actualPrice);
-        UPDATE READINGS SET readingPrice = (new.totalKw * @actualPrice) WHERE readingId = new.readingId;
-        # Reading price must be calculated from accumulatedConsumption or by subtracting last reading consumption to latest one?
-    end //
-DELIMITER ;
-SELECT * FROM METERS;
+CREATE TRIGGER `tbi_setReadingPrice` BEFORE INSERT ON READINGS FOR EACH ROW
+BEGIN
+    DECLARE pReadDate DATETIME DEFAULT NULL;
+    DECLARE pPrice FLOAT DEFAULT 0;
+    DECLARE pRateId,pAddressId INT;
+    DECLARE pLastReading FLOAT DEFAULT 0;
+
+    CALL getKwPrice(new.meterSerialNumber,@actualPrice);
+
+    SET pReadDate=(SELECT MAX(readDate) FROM READINGS WHERE readDate<new.readDate AND meterSerialNumber=new.meterSerialNumber);
+
+    IF(pReadDate IS NOT NULL)THEN
+
+        SET pLastReading=(SELECT totalKw FROM READINGS WHERE meterSerialNumber = new.meterSerialNumber AND readDate=pReadDate);
+        SET new.readingPrice = (new.totalKw-pLastReading)* @actualPrice;
+    END IF;
+    IF(pReadDate IS NULL) THEN
+        SET new.readingPrice = new.totalKw*@actualPrice;
+    END IF;
+
+END
 
 ## ITEM 3 - Second part
 ## Updates
@@ -177,6 +189,12 @@ BEGIN
     UPDATE readings SET reading_price = new.kw_price;
 END
 
+#VIEWS
+#Item 4
+CREATE VIEW report_readings_by_date_n_user_view AS
+SELECT c.name,c.surname,m.serialNumber,r.readDate,r.totalKw,r.readingPrice
+FROM addresses a JOIN meters m ON a.addressId=m.addressId JOIN
+     clients c ON c.clientId = a.clientId JOIN readings r ON r.meterSerialNumber =m.serialNumber;
 
 # INSERT VALUES
 
