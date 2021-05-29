@@ -20,7 +20,7 @@ CREATE TABLE USERS(
 
 CREATE TABLE CLIENTS(
     clientId int auto_increment,
-    username varchar(40) not null,
+    username varchar(40) not null unique,
     name varchar(50),
     surname varchar(50),
     dni long,
@@ -202,10 +202,16 @@ insert into BRANDS(name) values ('Motorola');
 insert into MODELS(name,brandId) values ('M001',1);
 insert into RATES(category, kwPrice) values ('RESIDENTIAL','1');
 insert into USERS(username, password, name, surname) values ('user1','1234','User','One');
+insert into USERS(username, password, name, surname,employee) values ('employee','1234','User','One',1);
 insert into CLIENTS(username) values ('user1');
 insert into ADDRESSES(street, number, clientId, rateId) values ('Calle Falsa',123,1,1);
+insert into ADDRESSES(street, number, clientId, rateId) values ('Calle Residencial',123,1,1);
 insert into METERS(serialNumber, modelId, password, addressId) values ('001',1,1234,1);
+insert into METERS(serialNumber, modelId, password, addressId) values ('002',1,1234,3);
 insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),11,'001',null);
+insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),12,'002',null);
+insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),13,'002',null);
+insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),14,'002',null);
 
 SELECT ONE.clientId, ONE.consumption
 FROM(
@@ -222,3 +228,22 @@ GROUP BY C.clientId, R.meterSerialNumber) AS ONE
 GROUP BY ONE.clientId, ONE.consumption
 ORDER BY SUM(consumption) DESC
 LIMIT 20
+/*
+# 3- Modifico el valor del precio de esas mediciones
+UPDATE READINGS Z SET Z.readingPrice = 0 WHERE Z.readingId IN (
+    # 2- Traigo las mediciones de estos medidores
+    (SELECT RE.readingId
+     FROM READINGS RE
+     WHERE RE.meterSerialNumber IN (
+         # 1- Traigo los medidores con nuevo RATE
+         SELECT M.serialNumber
+         FROM METERS M
+                  INNER JOIN ADDRESSES A
+                             ON M.addressId = A.addressId
+                  INNER JOIN
+              RATES RA
+              ON A.rateId = RA.rateId
+         WHERE RA.rateId = 1
+     )
+    )
+);*/
