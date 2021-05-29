@@ -1,12 +1,13 @@
 package edu.utn.UEEDServer.controller;
 
 import edu.utn.UEEDServer.model.*;
+import edu.utn.UEEDServer.model.dto.AddressDTO;
 import edu.utn.UEEDServer.model.dto.ConsumersDTO;
-import static edu.utn.UEEDServer.utils.Constants.*;
 
 import edu.utn.UEEDServer.model.dto.UserDTO;
 import edu.utn.UEEDServer.service.*;
 import edu.utn.UEEDServer.utils.EntityURLBuilder;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -18,30 +19,34 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Date;
 import java.util.List;
 
+import static edu.utn.UEEDServer.utils.Constants.*;
+
 @RestController
 @RequestMapping("/backoffice")
 public class BackofficeController {
 
-    private static final String RATE_PATH = "backoffice/rate";
-    private static final String ADDRESS_PATH = "backoffice/address";
-    private static final String METER_PATH = "backoffice/meter";
-    private static final String CLIENT_PATH = "backoffice/client";
+    private static final String RATE_PATH = "/rate";
+    private static final String ADDRESS_PATH = "/address";
+    private static final String METER_PATH = "/meter";
+    private static final String CLIENT_PATH = "/client";
 
     private RateService rateService;
     private AddressService addressService;
     private MeterService meterService;
     private BillService billService;
     private ReadingService readingService;
-    private ClientService clientService;
+    private ModelMapper modelMapper;
 
     @Autowired
-    public BackofficeController(RateService rateService, AddressService addressService, MeterService meterService, BillService billService, ReadingService readingService, ClientService clientService) {
+    public BackofficeController(RateService rateService, AddressService addressService,
+                                MeterService meterService, BillService billService,
+                                ReadingService readingService, ModelMapper modelMapper) {
         this.rateService = rateService;
         this.addressService = addressService;
         this.meterService = meterService;
         this.billService = billService;
         this.readingService = readingService;
-        this.clientService = clientService;
+        this.modelMapper = modelMapper;
     }
 
 /* RATES ENDPOINTS */
@@ -65,7 +70,7 @@ public class BackofficeController {
         Rate added = rateService.add(rate);
         return PostResponse.builder().
                 status(HttpStatus.CREATED).
-                url(EntityURLBuilder.buildURL(RATE_PATH, added.getId())).
+                url(EntityURLBuilder.buildURL(BACKOFFICE_PATH + RATE_PATH, added.getId())).
                 build();
     }
 
@@ -78,7 +83,7 @@ public class BackofficeController {
 
         return PostResponse.builder().
                 status(HttpStatus.OK)
-                .url(EntityURLBuilder.buildURL(RATE_PATH, saved.getId().toString()))
+                .url(EntityURLBuilder.buildURL(BACKOFFICE_PATH + RATE_PATH, saved.getId().toString()))
                 .build();
     }
 
@@ -93,43 +98,46 @@ public class BackofficeController {
 
 /* ADDRESSES ENDPOINTS */
 
-    @GetMapping("/address")
+    @GetMapping(ADDRESS_PATH)
     public List<Address> getAllAddress(Authentication auth) {
         return addressService.getAll();
     }
 
-    @GetMapping("/address/{id}")
+    @GetMapping(ADDRESS_PATH + "/{id}")
     public Address getByIdAddress(Authentication auth, @PathVariable Integer id) {
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
         return addressService.getById(id);
     }
 
-    @PostMapping("/client/{clientId}/address")
-    public PostResponse addAddress(Authentication auth, @PathVariable Integer clientId, @RequestBody Address address) {
+    @PostMapping(ADDRESS_PATH)
+    public PostResponse addAddress(Authentication auth, @RequestBody AddressDTO addressDTO) {
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
-        Address newAddress = addressService.add(clientId, address);
+        Address newAddress = modelMapper.map(addressDTO,Address.class);
+        Address savedAddress = addressService.add(addressDTO.getClientId(), addressDTO.getRateId(), newAddress);
 
         return PostResponse.builder().
                 status(HttpStatus.CREATED).
-                url(EntityURLBuilder.buildURL(CLIENT_PATH+"/"+clientId, ADDRESS_PATH+ "/"+ newAddress.getAddressId())).
+                url(EntityURLBuilder.buildURL(BACKOFFICE_PATH + ADDRESS_PATH, savedAddress.getAddressId())).
                 build();
     }
 
-    @PutMapping("/client/{clientId}/address")
-    public PostResponse updateAddress(Authentication auth, @PathVariable Integer clientId, @RequestBody Address address) {
+    @PutMapping(ADDRESS_PATH)
+    public PostResponse updateAddress(Authentication auth, @RequestBody AddressDTO addressDTO) {
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
-        Client updated = addressService.update(clientId, address);
+
+        Address newAddress = modelMapper.map(addressDTO,Address.class);
+        Address updated = addressService.update(addressDTO.getClientId(), addressDTO.getRateId(), newAddress);
 
         return PostResponse.builder().
                 status(HttpStatus.OK)
-                .url(EntityURLBuilder.buildURL(CLIENT_PATH, clientId))
+                .url(EntityURLBuilder.buildURL(BACKOFFICE_PATH + ADDRESS_PATH, updated.getAddressId()))
                 .build();
     }
 
-    @DeleteMapping("/address/{addressId}")
+    @DeleteMapping(ADDRESS_PATH + "/{addressId}")
     public void deleteAddress(Authentication auth, @PathVariable Integer addressId) {
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
@@ -161,7 +169,7 @@ public class BackofficeController {
 
         return PostResponse.builder().
                 status(HttpStatus.CREATED)
-                .url(EntityURLBuilder.buildURL(METER_PATH, saved.getSerialNumber().toString()))
+                .url(EntityURLBuilder.buildURL(BACKOFFICE_PATH + METER_PATH, saved.getSerialNumber().toString()))
                 .build();
     }
 

@@ -15,19 +15,21 @@ public class AddressService {
 
     AddressRepository addressRepository;
     ClientService clientService;
+    RateService rateService;
 
     @Autowired
-    public AddressService(AddressRepository addressRepository, ClientService clientService) {
+    public AddressService(AddressRepository addressRepository, ClientService clientService, RateService rateService) {
         this.addressRepository = addressRepository;
         this.clientService = clientService;
+        this.rateService = rateService;
     }
 
-    public Address add(Integer clientId, Address address) {
+    public Address add(Integer clientId, Integer rateId, Address address) {
+        Rate rate = rateService.getById(rateId);
         Client client = clientService.getById(clientId);
-        Address newAddress = addressRepository.save(address);
-        client.getAddresses().add(newAddress);
-        clientService.update(client);
-        return newAddress;
+        address.setRate(rate);
+        address.setClient(client);
+        return addressRepository.save(address);
     }
 
     public List<Address> getAll() {
@@ -49,12 +51,8 @@ public class AddressService {
         addressRepository.deleteById(addressId);
     }
 
-    public Client update(Integer clientId, Address newAddress) {
-        Client client = clientService.getById(clientId);
-        Address old = getById(newAddress.getAddressId());
-        List<Address> addresses = client.getAddresses();
-        addresses.remove(old);
-        addresses.add(newAddress);
-        return clientService.update(client);
+    public Address update(Integer clientId, Integer rateId, Address newAddress) {
+        getById(newAddress.getAddressId());
+        return add(clientId,rateId,newAddress);
     }
 }
