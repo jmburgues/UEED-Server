@@ -91,11 +91,11 @@ public class BackofficeController {
 
     @PostMapping("/client/{clientId}/address")
     public PostResponse addAddress(@PathVariable Integer clientId, @RequestBody Address address) {
-        addressService.add(clientId, address);
+        Address newAddress = addressService.add(clientId, address);
 
         return PostResponse.builder().
                 status(HttpStatus.CREATED).
-                url(EntityURLBuilder.buildURL(CLIENT_PATH+"/"+clientId, ADDRESS_PATH+"/"+address.getAddressId())).
+                url(EntityURLBuilder.buildURL(CLIENT_PATH+"/"+clientId, ADDRESS_PATH+ "/"+ newAddress.getAddressId())).
                 build();
     }
 
