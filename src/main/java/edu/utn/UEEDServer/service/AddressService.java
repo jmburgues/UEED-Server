@@ -22,13 +22,12 @@ public class AddressService {
         this.clientService = clientService;
     }
 
-    public Client add(Integer clientId, Address address) {
+    public Address add(Integer clientId, Address address) {
         Client client = clientService.getById(clientId);
-        Integer addressId = address.getAddressId();
-        if(addressId != null && addressRepository.findById(addressId).isPresent())
-            throw new ResponseStatusException(HttpStatus.CONFLICT,"Address ID " + addressId + " already exists.");
-        client.getAddresses().add(address);
-        return clientService.update(client);
+        Address newAddress = addressRepository.save(address);
+        client.getAddresses().add(newAddress);
+        clientService.update(client);
+        return newAddress;
     }
 
     public List<Address> getAll() {

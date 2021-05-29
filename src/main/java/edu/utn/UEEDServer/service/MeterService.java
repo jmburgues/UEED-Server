@@ -2,11 +2,9 @@ package edu.utn.UEEDServer.service;
 
 import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.repository.MeterRepository;
-import edu.utn.UEEDServer.repository.ReadingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
@@ -30,7 +28,7 @@ public class MeterService {
 
     public Meter getById(String serialNumber){
         return this.meterRepo.findById(serialNumber)
-                .orElseThrow( () -> new HttpClientErrorException(HttpStatus.NOT_FOUND,"No meter found under serial number: " + serialNumber));
+                .orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"No meter found under serial number: " + serialNumber));
     }
 
     public Meter add(Meter newMeter){
@@ -40,7 +38,7 @@ public class MeterService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Meter serial number cannot be null");
 
         if(this.meterRepo.existsById(serialNum))
-            throw new ResponseStatusException(HttpStatus.ALREADY_REPORTED,"Meter serial number: " + serialNum + " already registered. No action performed.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT,"Meter serial number: " + serialNum + " already registered. No action performed.");
 
         return meterRepo.save(newMeter);
     }
@@ -55,7 +53,7 @@ public class MeterService {
         if(this.meterRepo.existsById(serialNumber))
             this.meterRepo.deleteById(serialNumber);
         else
-            throw new HttpClientErrorException(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Meter serial number: " + serialNumber + " does not exists.");
     }
 
     public Meter getByAddressId(Integer addressId) {
