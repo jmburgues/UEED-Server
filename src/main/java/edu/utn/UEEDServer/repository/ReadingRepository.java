@@ -1,7 +1,5 @@
 package edu.utn.UEEDServer.repository;
 
-import edu.utn.UEEDServer.model.Bill;
-import edu.utn.UEEDServer.model.Client;
 import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.model.dto.ConsumersDTO;
 import org.springframework.data.jpa.repository.JpaRepository;
