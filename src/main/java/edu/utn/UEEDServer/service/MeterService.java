@@ -15,12 +15,10 @@ import java.util.List;
 public class MeterService {
 
     private MeterRepository meterRepo;
-    private ReadingRepository readingRepo;
 
     @Autowired
-    public MeterService(MeterRepository meterRepo, ReadingRepository readingRepo) {
+    public MeterService(MeterRepository meterRepo) {
         this.meterRepo = meterRepo;
-        this.readingRepo = readingRepo;
     }
 
     public List<Meter> getAll(){

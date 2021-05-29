@@ -24,7 +24,7 @@ public class Meter {
     @Column(name="accumulatedConsumption",columnDefinition = "double default 0")
     private double accumulatedConsumption;
 
-    @OneToMany(fetch = FetchType.EAGER)
+    @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "meterSerialNumber",foreignKey = @ForeignKey(name="FK_meters_readings"))
     private List<Reading> readings;
 

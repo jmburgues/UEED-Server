@@ -188,3 +188,19 @@ insert into CLIENTS(username) values ('user1');
 insert into ADDRESSES(street, number, clientId, rateId) values ('Calle Falsa',123,1,1);
 insert into METERS(serialNumber, modelId, password, addressId) values ('001',1,1234,1);
 insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),11,'001',null);
+
+SELECT ONE.clientId, ONE.consumption
+FROM(
+SELECT C.clientId, R.meterSerialNumber, MAX(R.totalKw) - MIN(R.TotalKw) as consumption
+FROM READINGS R
+INNER JOIN METERS M
+ON R.meterSerialNumber = M.serialNumber
+INNER JOIN ADDRESSES A
+ON A.addressId = M.addressId
+INNER JOIN CLIENTS C
+ON C.clientId = A.clientId
+WHERE R.readDate BETWEEN '2021/05/01' AND '2021/06/01'
+GROUP BY C.clientId, R.meterSerialNumber) AS ONE
+GROUP BY ONE.clientId, ONE.consumption
+ORDER BY SUM(consumption) DESC
+LIMIT 20
