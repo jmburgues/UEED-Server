@@ -250,6 +250,7 @@ BEGIN
     SELECT rateId INTO p_rateCategory FROM rates WHERE rateId=p_rateId;
     SELECT kwPrice INTO p_ratePrice FROM rates WHERE  rateId=p_rateId;
 
+    SET p_totalConsumption = p_finalConsumption-p_initialConsumption;
     SET p_totalPrice = p_ratePrice*p_totalConsumption;
 
     IF p_dateFrom IS NOT NULL THEN
@@ -291,6 +292,14 @@ END;
 CREATE EVENT billAllAddresses
 ON SCHEDULE EVERY 1 MINUTE STARTS NOW()
 DO CALL billAll();
+
+# ----TRIGGER SET BILL ID AFTER INSERT ON BILLS ----#
+DELIMITER $$
+CREATE TRIGGER tai_setBillId AFTER INSERT ON bills FOR EACH ROW
+BEGIN
+    UPDATE readings SET billId = new.billId WHERE meterSerialNumber = new.meterId;
+
+END
 
 
 
