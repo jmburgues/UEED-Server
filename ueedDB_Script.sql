@@ -125,10 +125,7 @@ end //
 
 ## ITEM 3
 # TRIGGER updates meter attributes with last readings and calculates consumption price.
-## Its ok to do subquerys or is it preferable to create a trigger and update a column to gain efficiency???
-/**
-  * WARNING: MUST ADD readingPrice variable on Reading model !!!
- */
+
 DELIMITER //
 CREATE TRIGGER `tbi_setReadingPrice` BEFORE INSERT ON READINGS FOR EACH ROW
 BEGIN
@@ -152,15 +149,40 @@ BEGIN
 
 END
 
-## ITEM 3 - Second part
-## Updates
-##CREATE TRIGGER `tai_watchRates` AFTER UPDATE ON RATES FOR EACH ROW
-##    BEGIN
-##        CALL getKwPrice()
-##        // working..
-##    end;
-##
-##DELIMITER ;
+#ITEM 3 PART II
+#TRIGGER UPDATE READING PRICES AFTER UPDATES ON RATES
+DELIMITER $$
+CREATE TRIGGER tau_updateReadingPrice AFTER UPDATE ON rates
+    FOR EACH ROW
+BEGIN
+
+    DECLARE endLoop INT DEFAULT 0;
+    DECLARE pReadingPrice,pTotalKw FLOAT;
+    DECLARE pReadingId INT;
+    DECLARE pSerialNumber VARCHAR(20);
+    DECLARE rUpdate CURSOR FOR SELECT readingId,totalKw,meterSerialNumber,readingPrice FROM readings r
+                                WHERE r.meterSerialNumber IN(
+                                                            SELECT m.serialNumber FROM meters m
+                                                            JOIN addresses a
+                                                            ON m.addressId = a.addressId
+                                                            JOIN rates ra
+                                                            ON a.rateId = ra.rateId
+                                                            WHERE ra.rateId = old.rateId
+                                                            );
+
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET endLoop=1;
+    OPEN rUpdate;
+    foreach: LOOP
+        FETCH rUpdate INTO pReadingId,pTotalKw,pSerialNumber,pReadingPrice;
+        IF endLoop = 1 THEN
+            LEAVE foreach;
+        END IF;
+        UPDATE readings SET readingPrice=(pReadingPrice/old.kwPrice)*new.kwPrice WHERE meterSerialNumber=pSerialNumber AND readingId = pReadingId;
+
+    END LOOP foreach;
+    CLOSE rUpdate;
+END
+
 
    # /*Calculate consumed kws between intervals of time*/
 DELIMITER $$
@@ -172,22 +194,9 @@ BEGIN
     SELECT totalKw INTO consumeTo FROM READINGS WHERE meterSerialNumber = pSerialNumber AND readDate = pDateTo;
 
     SET pConsume = consumeTo-consumeFrom;
-END $$
-
-
-#INDEXES
-/*to prevent duplicates addresses*/
-CREATE UNIQUE INDEX index_address ON addresses (street,number)
-USING BTREE;
-
-#TRIGGERS
-/*Adjust reading price after update on rate price*/
-DELIMITER $$
-CREATE TRIGGER tau_readingPriceAdjustment AFTER UPDATE ON rates
-    FOR EACH ROW
-BEGIN
-    UPDATE readings SET reading_price = new.kw_price;
 END
+
+
 
 #VIEWS
 #Item 4
@@ -196,23 +205,9 @@ SELECT c.name,c.surname,m.serialNumber,r.readDate,r.totalKw,r.readingPrice
 FROM addresses a JOIN meters m ON a.addressId=m.addressId JOIN
      clients c ON c.clientId = a.clientId JOIN readings r ON r.meterSerialNumber =m.serialNumber;
 
-# INSERT VALUES
 
-insert into BRANDS(name) values ('Motorola');
-insert into MODELS(name,brandId) values ('M001',1);
-insert into RATES(category, kwPrice) values ('RESIDENTIAL','1');
-insert into USERS(username, password, name, surname) values ('user1','1234','User','One');
-insert into USERS(username, password, name, surname,employee) values ('employee','1234','User','One',1);
-insert into CLIENTS(username) values ('user1');
-insert into ADDRESSES(street, number, clientId, rateId) values ('Calle Falsa',123,1,1);
-insert into ADDRESSES(street, number, clientId, rateId) values ('Calle Residencial',123,1,1);
-insert into METERS(serialNumber, modelId, password, addressId) values ('001',1,1234,1);
-insert into METERS(serialNumber, modelId, password, addressId) values ('002',1,1234,3);
-insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),11,'001',null);
-insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),12,'002',null);
-insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),13,'002',null);
-insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),14,'002',null);
 
+#TOP CONSUMERS
 SELECT ONE.clientId, ONE.consumption
 FROM(
 SELECT C.clientId, R.meterSerialNumber, MAX(R.totalKw) - MIN(R.TotalKw) as consumption
@@ -228,22 +223,9 @@ GROUP BY C.clientId, R.meterSerialNumber) AS ONE
 GROUP BY ONE.clientId, ONE.consumption
 ORDER BY SUM(consumption) DESC
 LIMIT 20
-/*
-# 3- Modifico el valor del precio de esas mediciones
-UPDATE READINGS Z SET Z.readingPrice = 0 WHERE Z.readingId IN (
-    # 2- Traigo las mediciones de estos medidores
-    (SELECT RE.readingId
-     FROM READINGS RE
-     WHERE RE.meterSerialNumber IN (
-         # 1- Traigo los medidores con nuevo RATE
-         SELECT M.serialNumber
-         FROM METERS M
-                  INNER JOIN ADDRESSES A
-                             ON M.addressId = A.addressId
-                  INNER JOIN
-              RATES RA
-              ON A.rateId = RA.rateId
-         WHERE RA.rateId = 1
-     )
-    )
-);*/
+
+
+#INDEXES
+/*to prevent duplicates addresses*/
+CREATE UNIQUE INDEX index_address ON addresses (street,number)
+    USING BTREE;
