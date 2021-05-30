@@ -105,7 +105,7 @@ CREATE TRIGGER `tbi_checkRegisteredMeter` BEFORE INSERT ON READINGS FOR EACH ROW
         IF(NOT EXISTS (SELECT * FROM METERS WHERE meterSerialNumber = new.meterSerialNumber)) THEN
             SIGNAL SQLSTATE '50000' SET MESSAGE_TEXT = 'Operation not allowed: Meter is not registered.';
         end if;
-    end //
+    end; //
 
 ## ITEM 3
 # STORED PROCEDURE: gets actual Rate price from meter Serial Number.
@@ -121,7 +121,7 @@ BEGIN
          METERS M
          ON M.addressId = A.addressId
     WHERE M.serialNumber = meterSerialNumber;
-end //
+end; //
 
 ## ITEM 3
 # TRIGGER updates meter attributes with last readings and calculates consumption price.
@@ -147,7 +147,7 @@ BEGIN
         SET new.readingPrice = new.totalKw*@actualPrice;
     END IF;
 
-END
+END;
 
 #ITEM 3 PART II
 #TRIGGER UPDATE READING PRICES AFTER UPDATES ON RATES
@@ -181,7 +181,7 @@ BEGIN
 
     END LOOP foreach;
     CLOSE rUpdate;
-END
+END;
 
 
    # /*Calculate consumed kws between intervals of time*/
@@ -194,7 +194,7 @@ BEGIN
     SELECT totalKw INTO consumeTo FROM READINGS WHERE meterSerialNumber = pSerialNumber AND readDate = pDateTo;
 
     SET pConsume = consumeTo-consumeFrom;
-END
+END;
 
 
 
@@ -222,7 +222,76 @@ WHERE R.readDate BETWEEN '2021/05/01' AND '2021/06/01'
 GROUP BY C.clientId, R.meterSerialNumber) AS ONE
 GROUP BY ONE.clientId, ONE.consumption
 ORDER BY SUM(consumption) DESC
-LIMIT 20
+LIMIT 20;
+
+#ITEM 4
+#----- Generate Bill --------#
+DELIMITER $$
+CREATE PROCEDURE sp_generateBill (p_addressId INT)
+BEGIN
+    DECLARE p_meterId VARCHAR(100);
+    DECLARE p_dateFrom,p_dateTo DATETIME;
+    DECLARE p_clientId,p_rateId,p_rateCategory INT;
+    DECLARE p_initialConsumption,p_finalConsumption,p_totalConsumption FLOAT;
+    DECLARE p_totalPrice,p_ratePrice FLOAT;
+
+    SELECT serialNumber INTO p_meterId FROM meters  WHERE addressId = p_addressId;
+
+    SELECT MIN(readDate)INTO p_dateFrom
+    FROM readings WHERE ISNULL(billId) AND meterSerialNumber=p_meterId;
+    SELECT MAX(readDate)INTO p_dateTo FROM readings
+    WHERE ISNULL(billId) AND meterSerialNumber=p_meterId;
+
+    SELECT clientId INTO p_clientId FROM addresses WHERE addressId = p_addressId;
+    SELECT totalKw INTO p_initialConsumption FROM readings WHERE readDate = p_dateFrom AND meterSerialNumber=p_meterId;
+    SELECT totalKw INTO p_finalConsumption FROM readings WHERE readDate = p_dateTo AND meterSerialNumber=p_meterId;
+    SELECT totalKw INTO p_totalConsumption FROM readings WHERE readDate = p_dateTo AND meterSerialNumber=p_meterId;
+    SELECT rateId INTO p_rateId FROM addresses WHERE addressId = p_addressId;
+    SELECT rateId INTO p_rateCategory FROM rates WHERE rateId=p_rateId;
+    SELECT kwPrice INTO p_ratePrice FROM rates WHERE  rateId=p_rateId;
+
+    SET p_totalPrice = p_ratePrice*p_totalConsumption;
+
+    IF p_dateFrom IS NOT NULL THEN
+        INSERT INTO bills (clientId,billedDate,initialReadingDate,finalReadingDate,finalConsumption,initialConsumption,meterId,rateCategory,ratePrice,
+                           totalConsumption,totalPrice) VALUES
+        (p_clientId,NOW(),p_dateFrom,p_dateTo,p_finalConsumption,p_initialConsumption,p_meterId,p_rateCategory,
+         p_ratePrice,p_totalConsumption,p_totalPrice);
+
+    END IF;
+END;
+
+#-------------------generate all bills --------------------
+DELIMITER $$
+CREATE PROCEDURE billAll()
+BEGIN
+
+    DECLARE endLoop INT DEFAULT 0;
+    DECLARE pAddressId INT;
+    DECLARE billCursor CURSOR FOR SELECT addressId FROM addresses;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET endLoop = 1;
+
+    OPEN billCursor;
+
+    foreach: LOOP
+
+        FETCH billCursor INTO pAddressId;
+             IF  endLoop = 1 THEN
+             LEAVE foreach;
+             END IF;
+        CALL sp_generateBill(pAddressId);
+
+    END LOOP foreach;
+    CLOSE billCursor;
+END;
+
+#----------------------------------#
+# Event for billing once a month
+
+CREATE EVENT billAllAddresses
+ON SCHEDULE EVERY 1 MINUTE STARTS NOW()
+DO CALL billAll();
+
 
 
 #INDEXES
