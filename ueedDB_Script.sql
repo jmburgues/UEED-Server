@@ -245,7 +245,6 @@ BEGIN
     SELECT clientId INTO p_clientId FROM addresses WHERE addressId = p_addressId;
     SELECT totalKw INTO p_initialConsumption FROM readings WHERE readDate = p_dateFrom AND meterSerialNumber=p_meterId;
     SELECT totalKw INTO p_finalConsumption FROM readings WHERE readDate = p_dateTo AND meterSerialNumber=p_meterId;
-    SELECT totalKw INTO p_totalConsumption FROM readings WHERE readDate = p_dateTo AND meterSerialNumber=p_meterId;
     SELECT rateId INTO p_rateId FROM addresses WHERE addressId = p_addressId;
     SELECT rateId INTO p_rateCategory FROM rates WHERE rateId=p_rateId;
     SELECT kwPrice INTO p_ratePrice FROM rates WHERE  rateId=p_rateId;
@@ -299,7 +298,40 @@ CREATE TRIGGER tai_setBillId AFTER INSERT ON bills FOR EACH ROW
 BEGIN
     UPDATE readings SET billId = new.billId WHERE meterSerialNumber = new.meterId;
 
-END
+END;
+
+#----------ADJUSTMENT BILL TRIGGER -------------
+DELIMITER $$
+CREATE TRIGGER tau_adjustmentBill AFTER UPDATE ON rates
+    FOR EACH ROW
+BEGIN
+    DECLARE endLoop INT DEFAULT 0;
+    DECLARE pBillId,pClientId INT;
+    DECLARE pDateFrom,pDateTo DATETIME;
+    DECLARE pMeterId VARCHAR (20);
+    DECLARE pInitialConsumption,pFinalConsumption,pTotalConsumption,pRatePrice,pTotalPrice FLOAT;
+
+    DECLARE adjust CURSOR FOR SELECT billId,initialReadingDate,finalReadingDate,initialConsumption,finalConsumption,totalConsumption,meterId,ratePrice,totalPrice,clientId
+                              FROM bills WHERE rateCategory = old.rateId;
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET endLoop = 1;
+
+    OPEN adjust;
+    foreach: LOOP
+        FETCH adjust INTO pBillId,pDateFrom,pDateTo,pInitialConsumption,pFinalConsumption,pTotalConsumption,pMeterId,pRatePrice,pTotalPrice,pClientId;
+        IF endLoop = 1 THEN
+            LEAVE foreach;
+        END IF;
+        IF old.kwPrice <> new.kwPrice THEN
+            SET pTotalPrice = -1*pTotalConsumption*(old.kwPrice-new.kwPrice);
+        END IF;
+        INSERT INTO bills
+        (billedDate,initialReadingDate,finalReadingDate,initialConsumption,finalConsumption,totalConsumption,meterId,rateCategory,ratePrice,totalPrice,clientId)
+        VALUES
+        (NOW(),pDateFrom,pDateTo,pInitialConsumption,pFinalConsumption,pTotalConsumption,pMeterId,new.rateId,new.kwPrice,pTotalPrice,pClientId);
+    END LOOP foreach;
+    CLOSE adjust;
+END;
+
 
 
 
