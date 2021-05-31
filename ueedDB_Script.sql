@@ -130,8 +130,6 @@ DELIMITER //
 CREATE TRIGGER `tbi_setReadingPrice` BEFORE INSERT ON READINGS FOR EACH ROW
 BEGIN
     DECLARE pReadDate DATETIME DEFAULT NULL;
-    DECLARE pPrice FLOAT DEFAULT 0;
-    DECLARE pRateId,pAddressId INT;
     DECLARE pLastReading FLOAT DEFAULT 0;
 
     CALL getKwPrice(new.meterSerialNumber,@actualPrice);
@@ -332,6 +330,23 @@ BEGIN
     CLOSE adjust;
 END;
 
+#USER PRIVILEGES
+
+CREATE USER 'backoffice' IDENTIFIED BY 'root';
+GRANT ALL PRIVILEGES ON ueed_db.meters TO backoffice;
+GRANT ALL PRIVILEGES ON ueed_db.rates TO backoffice;
+GRANT ALL PRIVILEGES ON ueed_db.clients TO backoffice;
+
+CREATE USER 'client' IDENTIFIED BY 'root';
+GRANT SELECT ON ueed_db.bills TO 'client';
+GRANT SELECT ON ueed_db.readings TO 'client';
+
+CREATE USER 'meter' IDENTIFIED BY 'root';
+GRANT INSERT ON ueed_db.readings TO 'meter';
+
+CREATE USER 'billing' IDENTIFIED BY 'root';
+GRANT SELECT ON ueed_db.* TO 'billing';
+GRANT INSERT ON ueed_db.bills TO 'billing';
 
 
 
