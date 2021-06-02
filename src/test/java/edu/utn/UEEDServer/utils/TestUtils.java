@@ -7,8 +7,7 @@ import edu.utn.UEEDServer.model.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.UUID;
-/*
+
 public class TestUtils {
 
     //TODO ver si hay alguna manera de no repetir tanto codigo acá
@@ -173,4 +172,3 @@ public class TestUtils {
 
 
 }
-*/

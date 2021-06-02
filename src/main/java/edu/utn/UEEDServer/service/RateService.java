@@ -1,5 +1,6 @@
 package edu.utn.UEEDServer.service;
 
+import edu.utn.UEEDServer.exceptions.AlreadyExistException;
 import edu.utn.UEEDServer.model.Bill;
 import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.model.Rate;
@@ -7,10 +8,12 @@ import edu.utn.UEEDServer.repository.RateRepository;
 import edu.utn.UEEDServer.utils.EntityURLBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.net.URI;
 import java.util.List;
 
 @Service
@@ -38,18 +41,17 @@ public class RateService {
     }
 
     public Rate add(Rate rate) {
-        Integer rateId = rate.getId();
-        if(rateId != null && rateRepository.findById(rateId).isPresent())
-            throw new ResponseStatusException(HttpStatus.CONFLICT,"Rate ID " + rateId + " already exists.");
-        return rateRepository.save(rate);
+
+        if(!rateRepository.existsById(rate.getId()))
+        return  rateRepository.save(rate);
+        else throw new ResponseStatusException(HttpStatus.CONFLICT);
+
     }
 
     public Rate update(Rate rate) {
         this.getById(rate.getId());
 
-        Rate saved = rateRepository.save(rate);
-
-        return saved;
+        return rateRepository.save(rate);
     }
 
     public void delete(Integer rateId) {
