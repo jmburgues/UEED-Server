@@ -7,10 +7,12 @@ import edu.utn.UEEDServer.model.dto.ConsumersDTO;
 import edu.utn.UEEDServer.model.dto.UserDTO;
 import edu.utn.UEEDServer.service.*;
 import edu.utn.UEEDServer.utils.EntityURLBuilder;
+import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -66,25 +68,23 @@ public class BackofficeController {
     }
 
     @PostMapping(RATE_PATH)
-    public PostResponse addRate(Authentication auth, @RequestBody Rate rate) {
+    public ResponseEntity addRate(Authentication auth, @RequestBody Rate rate) {
+
         Rate added = rateService.add(rate);
-        return PostResponse.builder().
-                status(HttpStatus.CREATED).
-                url(EntityURLBuilder.buildURL(BACKOFFICE_PATH + RATE_PATH, added.getId())).
-                build();
+       return ResponseEntity.created(EntityURLBuilder.buildURL(added.getId())).build();
     }
 
     @PutMapping(RATE_PATH)
-    public PostResponse updateRate(Authentication auth, @RequestBody Rate rate) {
+    public ResponseEntity updateRate(Authentication auth, @RequestBody Rate rate) {
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
 
-        Rate saved = rateService.update(rate);
+        if(rateService.getById(rate.getId())!=null)
+        return ResponseEntity.ok().build(); // si ya existe actualizo y devuelvo ok
 
-        return PostResponse.builder().
-                status(HttpStatus.OK)
-                .url(EntityURLBuilder.buildURL(BACKOFFICE_PATH + RATE_PATH, saved.getId().toString()))
-                .build();
+        else   //sino lo creo y devuelvo el nuevo recurso
+            return ResponseEntity.created(EntityURLBuilder.buildURL(rate.getId())).build();
+
     }
 
     // Shall we implement DELETE method??
@@ -111,30 +111,24 @@ public class BackofficeController {
     }
 
     @PostMapping(ADDRESS_PATH)
-    public PostResponse addAddress(Authentication auth, @RequestBody AddressDTO addressDTO) {
+    public ResponseEntity addAddress(Authentication auth, @RequestBody AddressDTO addressDTO) {
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
         Address newAddress = modelMapper.map(addressDTO,Address.class);
         Address savedAddress = addressService.add(addressDTO.getClientId(), addressDTO.getRateId(), newAddress);
 
-        return PostResponse.builder().
-                status(HttpStatus.CREATED).
-                url(EntityURLBuilder.buildURL(BACKOFFICE_PATH + ADDRESS_PATH, savedAddress.getAddressId())).
-                build();
+        return ResponseEntity.created(EntityURLBuilder.buildURL(savedAddress.getAddressId())).build();
     }
 
     @PutMapping(ADDRESS_PATH)
-    public PostResponse updateAddress(Authentication auth, @RequestBody AddressDTO addressDTO) {
+    public ResponseEntity updateAddress(Authentication auth, @RequestBody AddressDTO addressDTO) {
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
 
         Address newAddress = modelMapper.map(addressDTO,Address.class);
-        Address updated = addressService.update(addressDTO.getClientId(), addressDTO.getRateId(), newAddress);
+        addressService.update(addressDTO.getClientId(), addressDTO.getRateId(), newAddress);
 
-        return PostResponse.builder().
-                status(HttpStatus.OK)
-                .url(EntityURLBuilder.buildURL(BACKOFFICE_PATH + ADDRESS_PATH, updated.getAddressId()))
-                .build();
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping(ADDRESS_PATH + "/{addressId}")
@@ -162,27 +156,27 @@ public class BackofficeController {
     }
 
     @PostMapping(METER_PATH)
-    public PostResponse addMeter(Authentication auth, @RequestBody Meter newMeter) {
+    public ResponseEntity addMeter(Authentication auth, @RequestBody Meter newMeter) {
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
         Meter saved = meterService.add(newMeter);
 
-        return PostResponse.builder().
-                status(HttpStatus.CREATED)
-                .url(EntityURLBuilder.buildURL(BACKOFFICE_PATH + METER_PATH, saved.getSerialNumber().toString()))
-                .build();
+        return ResponseEntity
+                .created(EntityURLBuilder.buildURL(saved.getSerialNumber())).build();
     }
 
     @PutMapping(METER_PATH)
-    public PostResponse updateMeter(Authentication auth, @RequestBody Meter meter) {
+    public ResponseEntity updateMeter(Authentication auth, @RequestBody Meter meter) {
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
-        Meter m = meterService.update(meter);
 
-        return PostResponse.builder().
-                status(HttpStatus.OK)
-                .url(EntityURLBuilder.buildURL(METER_PATH, m.getSerialNumber().toString()))
-                .build();
+        meterService.update(meter);
+
+        if(meterService.getById(meter.getSerialNumber())!=null)
+        return ResponseEntity.ok().build(); //si esta actualizo
+
+        else return ResponseEntity //sino lo creo y devuelvo el recurso
+                .created(EntityURLBuilder.buildURL(meter.getSerialNumber())).build();
     }
 
     @DeleteMapping(METER_PATH + "/{serialNumber}")
