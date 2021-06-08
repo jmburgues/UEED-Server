@@ -1,5 +1,6 @@
 package edu.utn.UEEDServer.service;
 
+import edu.utn.UEEDServer.exceptions.IDnotFoundException;
 import edu.utn.UEEDServer.model.*;
 import edu.utn.UEEDServer.repository.AddressRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,21 +34,19 @@ public class AddressService {
     }
 
     public List<Address> getAll() {
-        List<Address> list = addressRepository.findAll();
-        if(list.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT,"Address list is empty");
-        return list;
+        return addressRepository.findAll();
     }
 
     public Address getById(Integer addressId) {
 
         return addressRepository.findById(addressId).
-                orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"No address found under id: " + addressId));
+                orElseThrow(()->new IDnotFoundException("Address",addressId.toString()));
+                // orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"No address found under id: " + addressId));
     }
 
     public void delete(Integer addressId) {
         if(!addressRepository.existsById(addressId))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No address found under id: " + addressId);
+            throw new IDnotFoundException("Address",addressId.toString());
         addressRepository.deleteById(addressId);
     }
 

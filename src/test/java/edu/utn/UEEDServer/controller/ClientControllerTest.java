@@ -61,5 +61,8 @@ public class ClientControllerTest {
             Assert.fail("parsing dates failed.");
         }
     }
+
+    /*@Test
+    public void testFilterByClientAndDateNoAuth() {*/
 }
 
