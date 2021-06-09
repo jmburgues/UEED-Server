@@ -11,6 +11,7 @@ import edu.utn.UEEDServer.service.ReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -18,6 +19,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static edu.utn.UEEDServer.utils.Response.response;
 
 @RestController
 @RequestMapping("/client")
@@ -35,22 +38,22 @@ public class ClientController {
     }
 
     @GetMapping("/{clientId}/bill") // VER QUERY DSL PARA LOS DIFERENTES FILTERS
-    public List<Bill> filterByClientAndDate(Authentication auth,
+    public ResponseEntity<List<Bill>> filterByClientAndDate(Authentication auth,
                                             @PathVariable Integer clientId,
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date from,
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date to){
         Client loggedClient = this.clientService.getByUsername( ((UserDTO) auth.getPrincipal()).getUsername() );
-        if(loggedClient.getId() != clientId)
+        if(!loggedClient.getId().equals(clientId))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access forbidden. Verify clientId.");
-        return this.billService.filterByClientAndDate(clientId,from,to);
+        return ResponseEntity.ok(billService.filterByClientAndDate(clientId,from,to));
     }
 
     @GetMapping("/{clientId}/unpaid")
-    public List<Bill>getUnpaidBillClient(Authentication auth, @PathVariable Integer clientId){
+    public ResponseEntity<List<Bill>> getUnpaidBillClient(Authentication auth, @PathVariable Integer clientId){
         Client loggedClient = this.clientService.getByUsername( ((UserDTO) auth.getPrincipal()).getUsername() );
-        if(loggedClient.getId() != clientId)
+        if(!loggedClient.getId().equals(clientId))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access forbidden. Verify clientId.");
-        return billService.getClientUnpaid(clientId);
+        return response(billService.getClientUnpaid(clientId));
     }
 
     @GetMapping("/{clientId}/consumption")
@@ -59,7 +62,7 @@ public class ClientController {
                                                    @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
                                                    @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to){
         Client loggedClient = this.clientService.getByUsername( ((UserDTO) auth.getPrincipal()).getUsername() );
-        if(loggedClient.getId() != clientId)
+        if(!loggedClient.getId().equals(clientId))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access forbidden. Verify clientId.");
         return this.readingService.getClientConsumption(clientId,from,to);
     }
@@ -70,7 +73,7 @@ public class ClientController {
                                                  @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
                                                  @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to){
         Client loggedClient = this.clientService.getByUsername( ((UserDTO) auth.getPrincipal()).getUsername() );
-        if(loggedClient.getId() != clientId)
+        if(!loggedClient.getId().equals(clientId))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access forbidden. Verify clientId.");
         return this.readingService.getClientReadingsByDate(clientId,from,to);
     }

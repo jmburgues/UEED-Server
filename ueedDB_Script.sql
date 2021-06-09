@@ -354,3 +354,23 @@ GRANT INSERT ON ueed_db.bills TO 'billing';
 /*to prevent duplicates addresses*/
 CREATE UNIQUE INDEX index_address ON addresses (street,number)
     USING BTREE;
+
+
+
+SELECT ONE.clientId, ONE.name, ONE.surname, ONE.consumption
+                    FROM(
+                    SELECT C.clientId, C.name, C.surname, MAX(R.totalKw) - MIN(R.TotalKw) as consumption
+                    FROM READINGS R
+                    INNER JOIN METERS M
+                    ON R.meterSerialNumber = M.serialNumber
+                    INNER JOIN ADDRESSES A
+                    ON A.addressId = M.addressId
+                    INNER JOIN CLIENTS C
+                    ON C.clientId = A.clientId
+                    WHERE R.readDate BETWEEN '2020-05-05' AND '2021-06-06'
+                    GROUP BY C.clientId, C.name, C.surname) AS ONE
+                    GROUP BY ONE.clientId, ONE.name, ONE.surname, ONE.consumption
+                    ORDER BY SUM(consumption) DESC
+                    LIMIT 20
+
+select * from CLIENTS

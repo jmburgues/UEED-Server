@@ -36,9 +36,9 @@ public interface ReadingRepository extends JpaRepository<Reading,Integer> {
     // VERIFICAR QUE FUNCIONE DEVOLVIENDO LIST<CLIENT> en lugar de un MAP
     // Puede tener ORDER BY SUM(consumption) y no estar en el primer SELECT de linea 31 ??
     @Query(value =
-            "SELECT ONE.clientId, ONE.consumption " +
+            "SELECT ONE.clientId as clientId, ONE.name as name, ONE.surname as surname, ONE.consumption as consumption " +
                     "FROM( " +
-                    "SELECT C.clientId, R.meterSerialNumber, MAX(R.totalKw) - MIN(R.TotalKw) as consumption " +
+                    "SELECT C.clientId, C.name, C.surname, MAX(R.totalKw) - MIN(R.TotalKw) as consumption " +
                     "FROM READINGS R " +
                     "INNER JOIN METERS M " +
                     "ON R.meterSerialNumber = M.serialNumber " +
@@ -47,8 +47,8 @@ public interface ReadingRepository extends JpaRepository<Reading,Integer> {
                     "INNER JOIN CLIENTS C " +
                     "ON C.clientId = A.clientId " +
                     "WHERE R.readDate BETWEEN ?1 AND ?2 " +
-                    "GROUP BY C.clientId, R.meterSerialNumber) AS ONE " +
-                    "GROUP BY ONE.clientId, ONE.consumption " +
+                    "GROUP BY C.clientId, C.name, C.surname) AS ONE " +
+                    "GROUP BY ONE.clientId, ONE.name, ONE.surname, ONE.consumption " +
                     "ORDER BY SUM(consumption) DESC " +
                     "LIMIT 20", nativeQuery = true)
     List<ConsumersDTO> getTopConsumers(Date from, Date to);

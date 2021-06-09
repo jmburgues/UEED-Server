@@ -1,13 +1,9 @@
 package edu.utn.UEEDServer.model.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+public interface ConsumersDTO {
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ConsumersDTO {
-    Integer clientId;
-    Float totalConsumption;
+    Integer getClientId();
+    String getSurname();
+    String getName();
+    Float getConsumption();
 }
