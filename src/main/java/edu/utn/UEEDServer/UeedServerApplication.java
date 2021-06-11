@@ -27,6 +27,7 @@ public class UeedServerApplication {
 					.addFilterAfter(new JWTAuthorizationFilter(), UsernamePasswordAuthenticationFilter.class)
 					.authorizeRequests()
 					.antMatchers(HttpMethod.POST, "/login").permitAll()
+					.antMatchers(HttpMethod.POST, "/measurements").permitAll()
 					.anyRequest().authenticated();
 		}
 	}

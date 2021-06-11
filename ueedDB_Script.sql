@@ -99,10 +99,11 @@ CREATE TABLE READINGS(
 
 
 # TRIGGER prevents unregistered meters from storing data.
+
 DELIMITER //
 CREATE TRIGGER `tbi_checkRegisteredMeter` BEFORE INSERT ON READINGS FOR EACH ROW
     BEGIN
-        IF(NOT EXISTS (SELECT * FROM METERS WHERE meterSerialNumber = new.meterSerialNumber)) THEN
+        IF(NOT EXISTS (SELECT * FROM METERS WHERE serialNumber = new.meterSerialNumber)) THEN
             SIGNAL SQLSTATE '50000' SET MESSAGE_TEXT = 'Operation not allowed: Meter is not registered.';
         end if;
     end; //
@@ -150,7 +151,7 @@ END;
 #ITEM 3 PART II
 #TRIGGER UPDATE READING PRICES AFTER UPDATES ON RATES
 DELIMITER $$
-CREATE TRIGGER tau_updateReadingPrice AFTER UPDATE ON rates
+CREATE TRIGGER tau_updateReadingPrice AFTER UPDATE ON RATES
     FOR EACH ROW
 BEGIN
 
@@ -158,12 +159,12 @@ BEGIN
     DECLARE pReadingPrice,pTotalKw FLOAT;
     DECLARE pReadingId INT;
     DECLARE pSerialNumber VARCHAR(20);
-    DECLARE rUpdate CURSOR FOR SELECT readingId,totalKw,meterSerialNumber,readingPrice FROM readings r
+    DECLARE rUpdate CURSOR FOR SELECT readingId,totalKw,meterSerialNumber,readingPrice FROM READINGS r
                                 WHERE r.meterSerialNumber IN(
-                                                            SELECT m.serialNumber FROM meters m
-                                                            JOIN addresses a
+                                                            SELECT m.serialNumber FROM METERS m
+                                                            JOIN ADDRESSES a
                                                             ON m.addressId = a.addressId
-                                                            JOIN rates ra
+                                                            JOIN RATES ra
                                                             ON a.rateId = ra.rateId
                                                             WHERE ra.rateId = old.rateId
                                                             );
@@ -175,7 +176,7 @@ BEGIN
         IF endLoop = 1 THEN
             LEAVE foreach;
         END IF;
-        UPDATE readings SET readingPrice=(pReadingPrice/old.kwPrice)*new.kwPrice WHERE meterSerialNumber=pSerialNumber AND readingId = pReadingId;
+        UPDATE READINGS SET readingPrice=(pReadingPrice/old.kwPrice)*new.kwPrice WHERE meterSerialNumber=pSerialNumber AND readingId = pReadingId;
 
     END LOOP foreach;
     CLOSE rUpdate;
@@ -266,7 +267,7 @@ BEGIN
 
     DECLARE endLoop INT DEFAULT 0;
     DECLARE pAddressId INT;
-    DECLARE billCursor CURSOR FOR SELECT addressId FROM addresses;
+    DECLARE billCursor CURSOR FOR SELECT addressId FROM ADDRESSES;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET endLoop = 1;
 
     OPEN billCursor;
@@ -292,7 +293,7 @@ DO CALL billAll();
 
 # ----TRIGGER SET BILL ID AFTER INSERT ON BILLS ----#
 DELIMITER $$
-CREATE TRIGGER tai_setBillId AFTER INSERT ON bills FOR EACH ROW
+CREATE TRIGGER tai_setBillId AFTER INSERT ON BILLS FOR EACH ROW
 BEGIN
     UPDATE READINGS SET billId = new.billId WHERE meterSerialNumber = new.meterId;
 
@@ -310,7 +311,7 @@ BEGIN
     DECLARE pInitialConsumption,pFinalConsumption,pTotalConsumption,pRatePrice,pTotalPrice FLOAT;
 
     DECLARE adjust CURSOR FOR SELECT billId,initialReadingDate,finalReadingDate,initialConsumption,finalConsumption,totalConsumption,meterId,ratePrice,totalPrice,clientId
-                              FROM bills WHERE rateCategory = old.rateId;
+                              FROM BILLS WHERE rateCategory = old.rateId;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET endLoop = 1;
 
     OPEN adjust;
