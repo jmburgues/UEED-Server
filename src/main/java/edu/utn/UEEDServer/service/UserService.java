@@ -9,10 +9,9 @@ import org.springframework.stereotype.Service;
 public class UserService {
 
     @Autowired
-    UserRepository userRepository;
+    private UserRepository userRepository;
 
     public User findByUserAndPass(String username, String password){
         return userRepository.findByUserAndPass(username,password);
     }
-
 }

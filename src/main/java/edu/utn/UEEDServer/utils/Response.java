@@ -5,7 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import java.util.List;
 
-public class Response {
+public class Response{
 
     public static ResponseEntity response(Page page){
 
@@ -19,5 +19,9 @@ public class Response {
         return ResponseEntity.status(list.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK)
 
                 .body(list);
+    }
+    
+    public static ResponseEntity response(Object element){
+        return ResponseEntity.status(HttpStatus.OK).body(element);
     }
 }

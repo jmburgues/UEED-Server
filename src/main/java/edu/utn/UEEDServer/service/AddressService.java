@@ -13,7 +13,6 @@ import java.util.List;
 @Service
 public class AddressService {
 
-
     AddressRepository addressRepository;
     ClientService clientService;
     RateService rateService;
@@ -41,7 +40,6 @@ public class AddressService {
 
         return addressRepository.findById(addressId).
                 orElseThrow(()->new IDnotFoundException("Address",addressId.toString()));
-                // orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND,"No address found under id: " + addressId));
     }
 
     public void delete(Integer addressId) {

@@ -1,5 +1,6 @@
 package edu.utn.UEEDServer.service;
 
+import edu.utn.UEEDServer.exceptions.IDnotFoundException;
 import edu.utn.UEEDServer.model.Rate;
 import edu.utn.UEEDServer.repository.RateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,25 +21,19 @@ public class RateService {
     }
 
     public List<Rate> getAll() {
-
-        List<Rate> list = rateRepository.findAll();
-        if(list.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT,"Rate list is empty");
-        return list;
+        return rateRepository.findAll();
     }
 
     public Rate getById(Integer rateId) {
-
         return rateRepository.findById(rateId).
-                orElseThrow(()->new ResponseStatusException(HttpStatus.NOT_FOUND, "No rates found under id: " + rateId));
+                orElseThrow(()->new IDnotFoundException("Rate",rateId.toString()));
     }
 
     public Rate add(Rate rate) {
+        if(this.rateRepository.findById(rate.getId()).isPresent())
+            throw new IllegalArgumentException("Rate " + rate.getId() + " already exists.");
 
-        if(!rateRepository.existsById(rate.getId()))
         return  rateRepository.save(rate);
-        else throw new ResponseStatusException(HttpStatus.CONFLICT);
-
     }
 
     public Rate update(Rate rate) {
@@ -48,8 +43,7 @@ public class RateService {
     }
 
     public void delete(Integer rateId) {
-        if(!rateRepository.existsById(rateId))
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"No rate found under id: " + rateId);
+        getById(rateId);
         rateRepository.deleteById(rateId);
     }
 }

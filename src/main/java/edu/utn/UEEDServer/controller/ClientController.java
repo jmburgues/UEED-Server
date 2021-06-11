@@ -3,8 +3,8 @@ package edu.utn.UEEDServer.controller;
 import edu.utn.UEEDServer.model.Bill;
 import edu.utn.UEEDServer.model.Client;
 import edu.utn.UEEDServer.model.Reading;
-import edu.utn.UEEDServer.model.User;
 import edu.utn.UEEDServer.model.dto.UserDTO;
+import edu.utn.UEEDServer.model.projections.ClientConsumption;
 import edu.utn.UEEDServer.service.BillService;
 import edu.utn.UEEDServer.service.ClientService;
 import edu.utn.UEEDServer.service.ReadingService;
@@ -26,9 +26,9 @@ import static edu.utn.UEEDServer.utils.Response.response;
 @RequestMapping("/client")
 public class ClientController {
 
-    ReadingService readingService;
-    BillService billService;
-    ClientService clientService;
+    private ReadingService readingService;
+    private BillService billService;
+    private ClientService clientService;
 
     @Autowired
     public ClientController(ReadingService readingService, BillService billService, ClientService clientService) {
@@ -42,39 +42,37 @@ public class ClientController {
                                             @PathVariable Integer clientId,
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date from,
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date to){
-        Client loggedClient = this.clientService.getByUsername( ((UserDTO) auth.getPrincipal()).getUsername() );
-        if(!loggedClient.getId().equals(clientId))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access forbidden. Verify clientId.");
-        return ResponseEntity.ok(billService.filterByClientAndDate(clientId,from,to));
+        verifyAuthentication(auth,clientId);
+        return response(billService.filterByClientAndDate(clientId,from,to));
     }
 
     @GetMapping("/{clientId}/unpaid")
     public ResponseEntity<List<Bill>> getUnpaidBillClient(Authentication auth, @PathVariable Integer clientId){
-        Client loggedClient = this.clientService.getByUsername( ((UserDTO) auth.getPrincipal()).getUsername() );
-        if(!loggedClient.getId().equals(clientId))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access forbidden. Verify clientId.");
+        verifyAuthentication(auth,clientId);
         return response(billService.getClientUnpaid(clientId));
     }
 
     @GetMapping("/{clientId}/consumption")
-    public Map<String, Float> getClientConsumption(Authentication auth,
-                                                   @PathVariable Integer clientId,
-                                                   @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
-                                                   @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to){
-        Client loggedClient = this.clientService.getByUsername( ((UserDTO) auth.getPrincipal()).getUsername() );
-        if(!loggedClient.getId().equals(clientId))
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access forbidden. Verify clientId.");
-        return this.readingService.getClientConsumption(clientId,from,to);
+    public ResponseEntity<ClientConsumption> getClientConsumption(Authentication auth,
+                                                                  @PathVariable Integer clientId,
+                                                                  @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
+                                                                  @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to){
+        verifyAuthentication(auth,clientId);
+        return response(this.readingService.getClientConsumption(clientId,from,to));
     }
 
     @GetMapping("/{clientId}/readings")
-    public List<Reading> getClientReadingsByDate(Authentication auth,
+    public ResponseEntity<List<Reading>> getClientReadingsByDate(Authentication auth,
                                                  @PathVariable Integer clientId,
                                                  @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
                                                  @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to){
+        verifyAuthentication(auth,clientId);
+        return response(readingService.getClientReadingsByDate(clientId,from,to));
+    }
+
+    private void verifyAuthentication(Authentication auth, Integer clientId){
         Client loggedClient = this.clientService.getByUsername( ((UserDTO) auth.getPrincipal()).getUsername() );
         if(!loggedClient.getId().equals(clientId))
             throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Access forbidden. Verify clientId.");
-        return this.readingService.getClientReadingsByDate(clientId,from,to);
     }
 }

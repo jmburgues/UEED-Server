@@ -1,10 +1,12 @@
 package edu.utn.UEEDServer.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -16,6 +18,7 @@ import java.util.List;
 @Table(name = "METERS")
 public class Meter {
     @Id
+    @NotNull
     private String serialNumber;
 
     @Column(name="lastReading",columnDefinition = "datetime default now()")
@@ -26,6 +29,7 @@ public class Meter {
 
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "meterSerialNumber",foreignKey = @ForeignKey(name="FK_meters_readings"))
+    @JsonIgnore
     private List<Reading> readings;
 
     @ManyToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
@@ -33,7 +37,7 @@ public class Meter {
     private Model model;
     private String password;
 
-    @OneToOne
+    @OneToOne(optional = false, cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     @JoinColumn(name="addressId", columnDefinition = "int not null unique",foreignKey = @ForeignKey(name = "fk_METERS_addressId"))
     private Address address;
 }

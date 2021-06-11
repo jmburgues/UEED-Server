@@ -19,7 +19,7 @@ public interface BillRepository extends JpaRepository<Bill,Integer> {
             "WHERE addressId = ?1 and paid = false",nativeQuery = true)
     List<Bill> getUnpaidByAddress(Integer addressId);
 
-    @Query(value = "SELECT * from bills where clientId =?1 and paid = false",nativeQuery = true)
+    @Query(value = "SELECT * from BILLS where clientId =?1 and paid = false",nativeQuery = true)
     List<Bill> getUnpaidByClient(Integer clientId);
 
     @Query(value = "SELECT * FROM BILLS WHERE clientId = ?1 AND billedDate BETWEEN ?2 AND ?3", nativeQuery = true)

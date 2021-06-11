@@ -4,6 +4,7 @@ import edu.utn.UEEDServer.model.Client;
 import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.model.dto.ConsumersDTO;
+import edu.utn.UEEDServer.model.projections.ClientConsumption;
 import edu.utn.UEEDServer.repository.ReadingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,8 +16,8 @@ import java.util.Map;
 @Service
 public class ReadingService {
 
-    private MeterService meterService;
-    private ReadingRepository readingRepo;
+    private final MeterService meterService;
+    private final ReadingRepository readingRepo;
 
     @Autowired
     public ReadingService(MeterService meterService, ReadingRepository readingRepo) {
@@ -29,19 +30,31 @@ public class ReadingService {
     }
 
     public List<Reading>getAddressReadingsByDate(Integer addressId, Date from, Date to) {
+        if(from.after(to))
+            throw new IllegalArgumentException("Date From (" + from + ") can not be after date To (" + to + ")");
+
         Meter meter = this.meterService.getByAddressId(addressId);
         return this.readingRepo.getReadingsByMeterAndDate(meter.getSerialNumber(),from,to);
     }
 
     public List<Reading>getClientReadingsByDate(Integer clientId, Date from, Date to) {
+        if(from.after(to))
+            throw new IllegalArgumentException("Date From (" + from + ") can not be after date To (" + to + ")");
+
         return this.readingRepo.getClientReadingsByDate(clientId,from,to);
     }
 
-    public Map<String, Float> getClientConsumption(Integer clientId, Date from, Date to) {
+    public ClientConsumption getClientConsumption(Integer clientId, Date from, Date to) {
+        if(from.after(to))
+            throw new IllegalArgumentException("Date From (" + from + ") can not be after date To (" + to + ")");
+
         return this.readingRepo.getClientConsumption(clientId,from,to);
     }
 
     public List<ConsumersDTO> getTopConsumers(Date from, Date to) {
+        if(from.after(to))
+            throw new IllegalArgumentException("Date From (" + from + ") can not be after date To (" + to + ")");
+
         return this.readingRepo.getTopConsumers(from,to);
     }
 }

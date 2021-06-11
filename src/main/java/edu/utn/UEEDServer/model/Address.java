@@ -27,7 +27,7 @@ public class Address {
     @JoinColumn(name="rateId",foreignKey = @ForeignKey(name= "FK_addresses_rates"))
     private Rate rate;
     @JsonBackReference
-    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @ManyToOne(optional = false, fetch = FetchType.EAGER)
     @JoinColumn(name = "clientId")
     private Client client;
 }
