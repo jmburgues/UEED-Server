@@ -4,6 +4,7 @@ import edu.utn.UEEDServer.model.Bill;
 import edu.utn.UEEDServer.model.Client;
 import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.model.dto.UserDTO;
+import edu.utn.UEEDServer.model.projections.ClientConsumption;
 import edu.utn.UEEDServer.service.BillService;
 import edu.utn.UEEDServer.service.ClientService;
 import edu.utn.UEEDServer.service.ReadingService;
@@ -52,12 +53,12 @@ public class ClientController {
     }
 
     @GetMapping("/{clientId}/consumption")
-    public Map<String, Float> getClientConsumption(Authentication auth,
-                                                   @PathVariable Integer clientId,
-                                                   @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
-                                                   @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to){
+    public ResponseEntity<ClientConsumption> getClientConsumption(Authentication auth,
+                                                                  @PathVariable Integer clientId,
+                                                                  @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
+                                                                  @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to){
         verifyAuthentication(auth,clientId);
-        return this.readingService.getClientConsumption(clientId,from,to);
+        return response(this.readingService.getClientConsumption(clientId,from,to));
     }
 
     @GetMapping("/{clientId}/readings")

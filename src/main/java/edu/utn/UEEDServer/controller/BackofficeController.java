@@ -7,7 +7,6 @@ import edu.utn.UEEDServer.model.dto.ConsumersDTO;
 import edu.utn.UEEDServer.model.dto.UserDTO;
 import edu.utn.UEEDServer.service.*;
 import edu.utn.UEEDServer.utils.EntityURLBuilder;
-import edu.utn.UEEDServer.utils.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;

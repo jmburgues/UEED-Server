@@ -4,6 +4,7 @@ import edu.utn.UEEDServer.model.Client;
 import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.model.dto.ConsumersDTO;
+import edu.utn.UEEDServer.model.projections.ClientConsumption;
 import edu.utn.UEEDServer.repository.ReadingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class ReadingService {
         return this.readingRepo.getClientReadingsByDate(clientId,from,to);
     }
 
-    public Map<String, Float> getClientConsumption(Integer clientId, Date from, Date to) {
+    public ClientConsumption getClientConsumption(Integer clientId, Date from, Date to) {
         if(from.after(to))
             throw new IllegalArgumentException("Date From (" + from + ") can not be after date To (" + to + ")");
 

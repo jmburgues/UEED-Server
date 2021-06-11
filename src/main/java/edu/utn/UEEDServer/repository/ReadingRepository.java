@@ -2,12 +2,12 @@ package edu.utn.UEEDServer.repository;
 
 import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.model.dto.ConsumersDTO;
+import edu.utn.UEEDServer.model.projections.ClientConsumption;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public interface ReadingRepository extends JpaRepository<Reading,Integer> {
 
@@ -25,7 +25,7 @@ public interface ReadingRepository extends JpaRepository<Reading,Integer> {
             "WHERE C.clientId = ?1 AND R.readDate BETWEEN ?2 AND ?3", nativeQuery = true)
     List<Reading> getClientReadingsByDate(Integer clientId, Date from, Date to);
 
-    @Query(value = "SELECT SUM(R.totalKw) AS TOTAL_CONSUMPTION, SUM(R.readingPrice) AS TOTAL_PRICE " +
+    @Query(value = "SELECT SUM(R.totalKw) AS totalConsumption, SUM(R.readingPrice) AS totalPrice " +
             "FROM READINGS R " +
             "INNER JOIN METERS M " +
             "ON R.meterSerialNumber = M.serialNumber " +
@@ -34,8 +34,8 @@ public interface ReadingRepository extends JpaRepository<Reading,Integer> {
             "INNER JOIN CLIENTS C " +
             "ON A.clientId = C.clientId " +
             "WHERE C.clientId = ?1 AND R.readDate BETWEEN ?2 AND ?3 " +
-            "GROUP BY R.readingId", nativeQuery = true)
-    Map<String, Float> getClientConsumption(Integer clientId, Date from, Date to);
+            "GROUP BY C.clientId", nativeQuery = true)
+    ClientConsumption getClientConsumption(Integer clientId, Date from, Date to);
 
     @Query(value =
             "SELECT ONE.clientId as clientId, ONE.name as name, ONE.surname as surname, ONE.consumption as consumption " +
