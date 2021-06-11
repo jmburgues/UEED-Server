@@ -56,7 +56,7 @@ public class MeterControllerTest {
     }
 
     @Test
-    public void addReadingTest_401() {
+    public void addReadingTest_401(){
         ReadingDTO readingDTO = aReadingDTO();
         String id = "aaa111";
         ResponseStatusException expectedException = null;
@@ -65,15 +65,16 @@ public class MeterControllerTest {
         when(meterService.getById(aReadingDTO().getMeterSerialNumber())).thenReturn(meter);
 
 
+
         try {
             meterController.addReading(readingDTO);
-        } catch (ResponseStatusException e) {
+        }catch(ResponseStatusException e){
             expectedException = e;
         }
 
         /*Assert.assertThrows(ResponseStatusException.class,()->meterController.addReading(aReadingDTO()));*/
         Assert.assertEquals(HttpStatus.UNAUTHORIZED, expectedException.getStatus());
-        Assert.assertEquals(ResponseStatusException.class, expectedException.getClass());
+        Assert.assertEquals(ResponseStatusException.class,expectedException.getClass());
 
 
     }
