@@ -7,6 +7,7 @@ import edu.utn.UEEDServer.model.dto.ConsumersDTO;
 import edu.utn.UEEDServer.model.dto.UserDTO;
 import edu.utn.UEEDServer.service.*;
 import edu.utn.UEEDServer.utils.EntityURLBuilder;
+import edu.utn.UEEDServer.utils.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,6 +21,8 @@ import org.springframework.web.server.ResponseStatusException;
 import java.util.Date;
 import java.util.List;
 
+import static edu.utn.UEEDServer.utils.Response.response;
+
 @RestController
 @RequestMapping("/backoffice")
 public class BackofficeController {
@@ -29,12 +32,12 @@ public class BackofficeController {
     private static final String METER_PATH = "/meter";
     private static final String CLIENT_PATH = "/client";
 
-    private RateService rateService;
-    private AddressService addressService;
-    private MeterService meterService;
-    private BillService billService;
-    private ReadingService readingService;
-    private ModelMapper modelMapper;
+    private final RateService rateService;
+    private final AddressService addressService;
+    private final MeterService meterService;
+    private final BillService billService;
+    private final ReadingService readingService;
+    private final ModelMapper modelMapper;
 
     @Autowired
     public BackofficeController(RateService rateService, AddressService addressService,
@@ -51,17 +54,15 @@ public class BackofficeController {
 /* RATES ENDPOINTS */
 
     @GetMapping(RATE_PATH)
-    public List<Rate> getAllRate(Authentication auth) {
+    public ResponseEntity<List<Rate>> getAllRate(Authentication auth) {
         verifyAuthentication(auth);
-        return rateService.getAll();
+        return response(rateService.getAll());
     }
 
     @GetMapping(RATE_PATH + "/{id}")
     public ResponseEntity<Rate> getByIdRate(Authentication auth, @PathVariable Integer id) {
         verifyAuthentication(auth);
-        Rate rate = rateService.getById(id);
-
-        return ResponseEntity.ok(rate);
+        return response(this.rateService.getById(id));
     }
 
     @PostMapping(RATE_PATH)

@@ -25,9 +25,9 @@ import static edu.utn.UEEDServer.utils.Response.response;
 @RequestMapping("/client")
 public class ClientController {
 
-    ReadingService readingService;
-    BillService billService;
-    ClientService clientService;
+    private ReadingService readingService;
+    private BillService billService;
+    private ClientService clientService;
 
     @Autowired
     public ClientController(ReadingService readingService, BillService billService, ClientService clientService) {
@@ -42,12 +42,12 @@ public class ClientController {
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date from,
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date to){
         verifyAuthentication(auth,clientId);
-        return ResponseEntity.ok(billService.filterByClientAndDate(clientId,from,to));
+        return response(billService.filterByClientAndDate(clientId,from,to));
     }
 
     @GetMapping("/{clientId}/unpaid")
     public ResponseEntity<List<Bill>> getUnpaidBillClient(Authentication auth, @PathVariable Integer clientId){
-        verifyAuthentication(auth);
+        verifyAuthentication(auth,clientId);
         return response(billService.getClientUnpaid(clientId));
     }
 
@@ -61,12 +61,12 @@ public class ClientController {
     }
 
     @GetMapping("/{clientId}/readings")
-    public List<Reading> getClientReadingsByDate(Authentication auth,
+    public ResponseEntity<List<Reading>> getClientReadingsByDate(Authentication auth,
                                                  @PathVariable Integer clientId,
                                                  @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
                                                  @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to){
         verifyAuthentication(auth,clientId);
-        return this.readingService.getClientReadingsByDate(clientId,from,to);
+        return response(readingService.getClientReadingsByDate(clientId,from,to));
     }
 
     private void verifyAuthentication(Authentication auth, Integer clientId){

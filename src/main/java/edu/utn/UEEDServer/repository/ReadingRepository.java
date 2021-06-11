@@ -16,8 +16,10 @@ public interface ReadingRepository extends JpaRepository<Reading,Integer> {
     List<Reading> getReadingsByMeterAndDate(String meterSerialNumber, Date from, Date to);
 
     @Query(value = "SELECT * FROM READINGS R " +
+            "INNER JOIN METERS M " +
+            "ON R.meterSerialNumber = M.serialNumber " +
             "INNER JOIN ADDRESSES A " +
-            "ON R.meterSerialNumber = A.meterId " +
+            "ON A.addressId = M.addressId " +
             "INNER JOIN CLIENTS C " +
             "ON A.clientId = C.clientId " +
             "WHERE C.clientId = ?1 AND R.readDate BETWEEN ?2 AND ?3", nativeQuery = true)
@@ -25,8 +27,10 @@ public interface ReadingRepository extends JpaRepository<Reading,Integer> {
 
     @Query(value = "SELECT SUM(R.totalKw) AS TOTAL_CONSUMPTION, SUM(R.readingPrice) AS TOTAL_PRICE " +
             "FROM READINGS R " +
+            "INNER JOIN METERS M " +
+            "ON R.meterSerialNumber = M.serialNumber " +
             "INNER JOIN ADDRESSES A " +
-            "ON R.meterSerialNumber = A.meterId " +
+            "ON A.addressId = M.addressId " +
             "INNER JOIN CLIENTS C " +
             "ON A.clientId = C.clientId " +
             "WHERE C.clientId = ?1 AND R.readDate BETWEEN ?2 AND ?3 " +

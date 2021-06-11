@@ -8,6 +8,7 @@ import edu.utn.UEEDServer.service.ReadingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -27,7 +28,7 @@ public class MeterController {
     }
 
     @PostMapping()
-    public PostResponse addReading(@RequestBody ReadingDTO incoming){
+    public ResponseEntity<Meter> addReading(@RequestBody ReadingDTO incoming){
         System.out.println("INCOMING !!! " + incoming.toString());
         Meter existent = meterService.getById(incoming.getMeterSerialNumber());
         if(existent.getPassword().equals(incoming.getPassword())){
@@ -37,8 +38,6 @@ public class MeterController {
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Invalid credentials.");
         }
 
-        return PostResponse.builder()
-                .status(HttpStatus.CREATED)
-                .build();
+        return ResponseEntity.ok(Meter.builder().build());
     }
 }

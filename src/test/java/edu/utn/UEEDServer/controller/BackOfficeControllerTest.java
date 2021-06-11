@@ -73,9 +73,9 @@ public class BackOfficeControllerTest {
         when(auth.getPrincipal()).thenReturn(employee);
         when(rateService.getAll()).thenReturn(List.of(aRate()));
 
-        List<Rate>actualList=backofficeController.getAllRate(auth);
+        ResponseEntity<List<Rate>>actualList=backofficeController.getAllRate(auth);
 
-        Assert.assertEquals(actualList.size(),rates.size());
+        Assert.assertEquals(actualList.getBody().size(),rates.size());
 
 
     }
