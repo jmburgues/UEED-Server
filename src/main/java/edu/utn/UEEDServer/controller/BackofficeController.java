@@ -93,14 +93,14 @@ public class BackofficeController {
 /* ADDRESSES ENDPOINTS */
 
     @GetMapping(ADDRESS_PATH)
-    public List<Address> getAllAddress(Authentication auth) {
-        return addressService.getAll();
+    public  ResponseEntity<List<Address>> getAllAddress(Authentication auth) {
+        return response(addressService.getAll());
     }
 
     @GetMapping(ADDRESS_PATH + "/{id}")
-    public Address getByIdAddress(Authentication auth, @PathVariable Integer id) {
+    public ResponseEntity<Address> getByIdAddress(Authentication auth, @PathVariable Integer id) {
         verifyAuthentication(auth);
-        return addressService.getById(id);
+        return response(addressService.getById(id));
     }
 
     @PostMapping(ADDRESS_PATH)
@@ -131,22 +131,21 @@ public class BackofficeController {
 /* METER ENDPOINTS */
 
     @GetMapping(METER_PATH)
-    public List<Meter> getAllMeter(Authentication auth) {
+    public ResponseEntity<List<Meter>> getAllMeter(Authentication auth) {
         verifyAuthentication(auth);
-        return this.meterService.getAll();
+        return response(this.meterService.getAll());
     }
 
     @GetMapping(METER_PATH + "/{serialNumber}")
-    public Meter getByIdMeter(Authentication auth, @PathVariable String serialNumber) {
+    public ResponseEntity<Meter> getByIdMeter(Authentication auth, @PathVariable String serialNumber) {
         verifyAuthentication(auth);
-        return this.meterService.getById(serialNumber);
+        return response(this.meterService.getById(serialNumber));
     }
 
     @PostMapping(METER_PATH)
     public ResponseEntity addMeter(Authentication auth, @RequestBody Meter newMeter) {
         verifyAuthentication(auth);
         Meter saved = meterService.add(newMeter);
-
         return ResponseEntity
                 .created(EntityURLBuilder.buildURL(saved.getSerialNumber())).build();
     }
@@ -173,47 +172,50 @@ public class BackofficeController {
 /* BILL ENDPOINTS */
 
     @GetMapping(CLIENT_PATH + "/{clientId}/bills") // VER QUERY DSL PARA LOS DIFERENTES FILTERS
-    public List<Bill> filterByDate(Authentication auth,
+    public ResponseEntity<List<Bill>> filterByDate(Authentication auth,
                                    @PathVariable Integer clientId,
                                    @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date from,
                                    @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date to){
         verifyAuthentication(auth);
-        return this.billService.filterByClientAndDate(clientId,from,to);
+        return response(this.billService.filterByClientAndDate(clientId,from,to));
     }
 
     @GetMapping(CLIENT_PATH + "/{clientId}/bills/unpaid")
-    public List<Bill>getUnpaidBillClient(Authentication auth, @PathVariable Integer clientId){
+    public ResponseEntity<List<Bill>> getUnpaidBillClient(Authentication auth, @PathVariable Integer clientId){
         verifyAuthentication(auth);
-        return billService.getClientUnpaid(clientId);
+        return response(billService.getClientUnpaid(clientId));
     }
 
     @GetMapping(ADDRESS_PATH + "/{addressId}/bills/unpaid")
-    public List<Bill>getUnpaidBillAddress(Authentication auth, @PathVariable Integer addressId){
+    public ResponseEntity<List<Bill>> getUnpaidBillAddress(Authentication auth, @PathVariable Integer addressId){
         verifyAuthentication(auth);
-        return billService.getAddressUnpaid(addressId);
+        return response(billService.getAddressUnpaid(addressId));
     }
 
 /* READING ENDPOINTS */
 
     @GetMapping(ADDRESS_PATH + "/{addressId}/readings")
-    public List<Reading> getAddressReadings(Authentication auth,
+    public ResponseEntity<List<Reading>> getAddressReadings(Authentication auth,
                                             @PathVariable Integer addressId,
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to){
         verifyAuthentication(auth);
-        return this.readingService.getAddressReadingsByDate(addressId,from,to);
+        return response(this.readingService.getAddressReadingsByDate(addressId,from,to));
     }
 
 
 /* CLIENT ENDPOINTS */
 
     @GetMapping(CLIENT_PATH + "/topconsumers")
-    public List<ConsumersDTO> getTopConsumers( Authentication auth,
+    public ResponseEntity<List<ConsumersDTO>> getTopConsumers( Authentication auth,
                                                @RequestParam("from") @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
                                                @RequestParam("to") @DateTimeFormat(pattern = "yyyy-MM-dd") Date to){
         verifyAuthentication(auth);
-        return this.readingService.getTopConsumers(from,to);
+        return response(this.readingService.getTopConsumers(from,to));
     }
+
+
+/* MISC */
 
     private void verifyAuthentication(Authentication auth){
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
