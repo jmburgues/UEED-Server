@@ -127,7 +127,7 @@ public class TestUtils {
         return gson.toJson(aRate());
     }
 
-    private static Rate aRate() {
+    public static Rate aRate() {
 
         return Rate.builder()
                 .id(1)
@@ -172,6 +172,18 @@ public class TestUtils {
                 .password("pass")
                 .employee(false)
                 .build();
+    }
+
+    public static UserDTO anEmployee(){
+
+        return  UserDTO
+                .builder()
+                .username("user")
+                .name("name")
+                .surname("surname")
+                .employee(true)
+                .build();
+
     }
 
     public static UserDTO aUserDTO(){
