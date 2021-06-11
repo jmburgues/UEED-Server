@@ -55,20 +55,24 @@ public class BackofficeController {
 
     @GetMapping(RATE_PATH)
     public List<Rate> getAllRate(Authentication auth) {
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        isAuthorized(auth);
         return rateService.getAll();
     }
 
     @GetMapping(RATE_PATH + "/{id}")
-    public Rate getByIdRate(Authentication auth, @PathVariable Integer id) {
+    public ResponseEntity<Rate> getByIdRate(Authentication auth, @PathVariable Integer id) {
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
-        return rateService.getById(id);
+        Rate rate = rateService.getById(id);
+
+        return ResponseEntity.ok(rate);
     }
 
     @PostMapping(RATE_PATH)
     public ResponseEntity addRate(Authentication auth, @RequestBody Rate rate) {
+
+        if(!((UserDTO) auth.getPrincipal()).getEmployee())//todo crear un metodo con esta autorizacion
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
 
         Rate added = rateService.add(rate);
        return ResponseEntity.created(EntityURLBuilder.buildURL(added.getId())).build();
@@ -80,7 +84,7 @@ public class BackofficeController {
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
 
         if(rateService.getById(rate.getId())!=null)
-        return ResponseEntity.ok().build(); // si ya existe actualizo y devuelvo ok
+        return ResponseEntity.ok(rate); // si ya existe actualizo y devuelvo ok
 
         else   //sino lo creo y devuelvo el nuevo recurso
             return ResponseEntity.created(EntityURLBuilder.buildURL(rate.getId())).build();
@@ -235,6 +239,13 @@ public class BackofficeController {
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
         return this.readingService.getTopConsumers(from,to);
+    }
+
+    public Boolean isAuthorized(Authentication auth){
+
+        if(!((UserDTO) auth.getPrincipal()).getEmployee())
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        return true;
     }
 }
 
