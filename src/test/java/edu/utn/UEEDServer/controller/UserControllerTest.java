@@ -61,27 +61,27 @@ public class UserControllerTest {
         when(modelMapper.map(user,UserDTO.class)).thenReturn(userDTO);
 
 
-             response = userController.login(loginRequestDto);
+        response = userController.login(loginRequestDto);
 
         Assert.assertEquals(HttpStatus.OK.value(),response.getStatusCode().value());
     }
 
     @SneakyThrows
     @Test
-    public void loginTest_401(){
+    public void loginTest_401() {
 
         ResponseStatusException expectedException = null;
 
-        when(userService.findByUserAndPass(loginRequestDto.getUsername(),loginRequestDto.getPassword()))
+        when(userService.findByUserAndPass(loginRequestDto.getUsername(), loginRequestDto.getPassword()))
                 .thenReturn(null);
 
-        try{
+        try {
             userController.login(loginRequestDto);
-        }catch (ResponseStatusException e){
-            expectedException=e;
+        } catch (ResponseStatusException e) {
+            expectedException = e;
         }
 
-        Assert.assertEquals(HttpStatus.UNAUTHORIZED.value(),expectedException.getStatus().value());
+        Assert.assertEquals(HttpStatus.UNAUTHORIZED.value(), expectedException.getStatus().value());
     }
 
 }
