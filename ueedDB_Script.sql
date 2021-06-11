@@ -200,8 +200,8 @@ END;
 #Item 4
 CREATE VIEW report_readings_by_date_n_user_view AS
 SELECT c.name,c.surname,m.serialNumber,r.readDate,r.totalKw,r.readingPrice
-FROM addresses a JOIN meters m ON a.addressId=m.addressId JOIN
-     clients c ON c.clientId = a.clientId JOIN readings r ON r.meterSerialNumber =m.serialNumber;
+FROM ADDRESSES a JOIN METERS m ON a.addressId=m.addressId JOIN
+     CLIENTS c ON c.clientId = a.clientId JOIN READINGS r ON r.meterSerialNumber =m.serialNumber;
 
 
 
@@ -233,25 +233,25 @@ BEGIN
     DECLARE p_initialConsumption,p_finalConsumption,p_totalConsumption FLOAT;
     DECLARE p_totalPrice,p_ratePrice FLOAT;
 
-    SELECT serialNumber INTO p_meterId FROM meters  WHERE addressId = p_addressId;
+    SELECT serialNumber INTO p_meterId FROM METERS  WHERE addressId = p_addressId;
 
     SELECT MIN(readDate)INTO p_dateFrom
-    FROM readings WHERE ISNULL(billId) AND meterSerialNumber=p_meterId;
-    SELECT MAX(readDate)INTO p_dateTo FROM readings
+    FROM READINGS WHERE ISNULL(billId) AND meterSerialNumber=p_meterId;
+    SELECT MAX(readDate)INTO p_dateTo FROM READINGS
     WHERE ISNULL(billId) AND meterSerialNumber=p_meterId;
 
-    SELECT clientId INTO p_clientId FROM addresses WHERE addressId = p_addressId;
-    SELECT totalKw INTO p_initialConsumption FROM readings WHERE readDate = p_dateFrom AND meterSerialNumber=p_meterId;
-    SELECT totalKw INTO p_finalConsumption FROM readings WHERE readDate = p_dateTo AND meterSerialNumber=p_meterId;
-    SELECT rateId INTO p_rateId FROM addresses WHERE addressId = p_addressId;
-    SELECT rateId INTO p_rateCategory FROM rates WHERE rateId=p_rateId;
-    SELECT kwPrice INTO p_ratePrice FROM rates WHERE  rateId=p_rateId;
+    SELECT clientId INTO p_clientId FROM ADDRESSES WHERE addressId = p_addressId;
+    SELECT totalKw INTO p_initialConsumption FROM READINGS WHERE readDate = p_dateFrom AND meterSerialNumber=p_meterId;
+    SELECT totalKw INTO p_finalConsumption FROM READINGS WHERE readDate = p_dateTo AND meterSerialNumber=p_meterId;
+    SELECT rateId INTO p_rateId FROM ADDRESSES WHERE addressId = p_addressId;
+    SELECT rateId INTO p_rateCategory FROM RATES WHERE rateId=p_rateId;
+    SELECT kwPrice INTO p_ratePrice FROM RATES WHERE  rateId=p_rateId;
 
     SET p_totalConsumption = p_finalConsumption-p_initialConsumption;
     SET p_totalPrice = p_ratePrice*p_totalConsumption;
 
     IF p_dateFrom IS NOT NULL THEN
-        INSERT INTO bills (clientId,billedDate,initialReadingDate,finalReadingDate,finalConsumption,initialConsumption,meterId,rateCategory,ratePrice,
+        INSERT INTO BILLS (clientId,billedDate,initialReadingDate,finalReadingDate,finalConsumption,initialConsumption,meterId,rateCategory,ratePrice,
                            totalConsumption,totalPrice) VALUES
         (p_clientId,NOW(),p_dateFrom,p_dateTo,p_finalConsumption,p_initialConsumption,p_meterId,p_rateCategory,
          p_ratePrice,p_totalConsumption,p_totalPrice);
@@ -294,13 +294,13 @@ DO CALL billAll();
 DELIMITER $$
 CREATE TRIGGER tai_setBillId AFTER INSERT ON bills FOR EACH ROW
 BEGIN
-    UPDATE readings SET billId = new.billId WHERE meterSerialNumber = new.meterId;
+    UPDATE READINGS SET billId = new.billId WHERE meterSerialNumber = new.meterId;
 
 END;
 
 #----------ADJUSTMENT BILL TRIGGER -------------
 DELIMITER $$
-CREATE TRIGGER tau_adjustmentBill AFTER UPDATE ON rates
+CREATE TRIGGER tau_adjustmentBill AFTER UPDATE ON RATES
     FOR EACH ROW
 BEGIN
     DECLARE endLoop INT DEFAULT 0;
@@ -322,7 +322,7 @@ BEGIN
         IF old.kwPrice <> new.kwPrice THEN
             SET pTotalPrice = -1*pTotalConsumption*(old.kwPrice-new.kwPrice);
         END IF;
-        INSERT INTO bills
+        INSERT INTO BILLS
         (billedDate,initialReadingDate,finalReadingDate,initialConsumption,finalConsumption,totalConsumption,meterId,rateCategory,ratePrice,totalPrice,clientId)
         VALUES
         (NOW(),pDateFrom,pDateTo,pInitialConsumption,pFinalConsumption,pTotalConsumption,pMeterId,new.rateId,new.kwPrice,pTotalPrice,pClientId);
@@ -333,44 +333,24 @@ END;
 #USER PRIVILEGES
 
 CREATE USER 'backoffice' IDENTIFIED BY 'root';
-GRANT ALL PRIVILEGES ON ueed_db.meters TO backoffice;
-GRANT ALL PRIVILEGES ON ueed_db.rates TO backoffice;
-GRANT ALL PRIVILEGES ON ueed_db.clients TO backoffice;
+GRANT ALL PRIVILEGES ON UEED_DB.METERS TO backoffice;
+GRANT ALL PRIVILEGES ON UEED_DB.RATES TO backoffice;
+GRANT ALL PRIVILEGES ON UEED_DB.CLIENTS TO backoffice;
 
 CREATE USER 'client' IDENTIFIED BY 'root';
-GRANT SELECT ON ueed_db.bills TO 'client';
-GRANT SELECT ON ueed_db.readings TO 'client';
+GRANT SELECT ON UEED_DB.BILLS TO 'client';
+GRANT SELECT ON UEED_DB.READINGS TO 'client';
 
 CREATE USER 'meter' IDENTIFIED BY 'root';
-GRANT INSERT ON ueed_db.readings TO 'meter';
+GRANT INSERT ON UEED_DB.READINGS TO 'meter';
 
 CREATE USER 'billing' IDENTIFIED BY 'root';
-GRANT SELECT ON ueed_db.* TO 'billing';
-GRANT INSERT ON ueed_db.bills TO 'billing';
+GRANT SELECT ON UEED_DB.* TO 'billing';
+GRANT INSERT ON UEED_DB.BILLS TO 'billing';
 
 
 
 #INDEXES
 /*to prevent duplicates addresses*/
-CREATE UNIQUE INDEX index_address ON addresses (street,number)
+CREATE UNIQUE INDEX index_address ON ADDRESSES (street,number)
     USING BTREE;
-
-
-
-SELECT ONE.clientId, ONE.name, ONE.surname, ONE.consumption
-                    FROM(
-                    SELECT C.clientId, C.name, C.surname, MAX(R.totalKw) - MIN(R.TotalKw) as consumption
-                    FROM READINGS R
-                    INNER JOIN METERS M
-                    ON R.meterSerialNumber = M.serialNumber
-                    INNER JOIN ADDRESSES A
-                    ON A.addressId = M.addressId
-                    INNER JOIN CLIENTS C
-                    ON C.clientId = A.clientId
-                    WHERE R.readDate BETWEEN '2020-05-05' AND '2021-06-06'
-                    GROUP BY C.clientId, C.name, C.surname) AS ONE
-                    GROUP BY ONE.clientId, ONE.name, ONE.surname, ONE.consumption
-                    ORDER BY SUM(consumption) DESC
-                    LIMIT 20
-
-select * from CLIENTS
