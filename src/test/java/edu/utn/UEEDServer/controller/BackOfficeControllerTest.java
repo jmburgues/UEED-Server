@@ -1,6 +1,8 @@
 package edu.utn.UEEDServer.controller;
 
+import edu.utn.UEEDServer.model.Address;
 import edu.utn.UEEDServer.model.Rate;
+import edu.utn.UEEDServer.model.dto.AddressDTO;
 import edu.utn.UEEDServer.model.dto.UserDTO;
 import edu.utn.UEEDServer.service.*;
 import org.junit.Assert;
@@ -23,7 +25,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static edu.utn.UEEDServer.utils.TestUtils.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 public class BackOfficeControllerTest {
@@ -225,6 +228,155 @@ public class BackOfficeControllerTest {
 
     }
 
+    @Test
+    public void getAllAddressTest_200(){
+
+        List<Address>addresses = List.of(anAddress());
+
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(addressService.getAll()).thenReturn(addresses);
+
+        List<Address>actual=backofficeController.getAllAddress(auth);
+
+        Assert.assertEquals(addresses.size(),actual.size());
+    }
+
+    @Test
+    public void getAllAddressTest_403(){
+
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+        try{
+            backofficeController.getAllAddress(auth);
+        }catch (ResponseStatusException e){
+            expectedException = e;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(),expectedException.getStatus().value());
+    }
+
+    @Test
+    public void getByIdAddress_200(){
+
+        Integer addressId = 1;
+        Address address = anAddress();
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(addressService.getById(addressId)).thenReturn(address);
+
+        ResponseEntity<Address>response = backofficeController.getByIdAddress(auth,addressId);
+
+        Assert.assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+        Assert.assertEquals(address,response.getBody());
+
+    }
+
+    @Test
+    public void getByIdAddress_403(){
+        Integer addressId = 1;
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+
+        try {
+            backofficeController.getByIdAddress(auth,addressId);
+
+        }catch (ResponseStatusException e){
+            expectedException =e;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(),expectedException.getStatus().value());
+    }
+
+    @Test
+    public void addAddressTest_201(){
+
+        //given
+        AddressDTO addressDTO = anAddressDTO();
+        Address address = anAddress();
+        Integer clientId=1;
+        Integer rateId = 1;
+
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(modelMapper.map(addressDTO,Address.class)).thenReturn(address);
+        when(addressService.add(clientId,rateId,address)).thenReturn(address);
+
+        ResponseEntity response =backofficeController.addAddress(auth,addressDTO);
+
+
+        Assert.assertEquals(HttpStatus.CREATED.value(),response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void addAddressTest_403(){
+
+
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+
+        try {
+            backofficeController.addAddress(auth,anAddressDTO());
+
+        }catch (ResponseStatusException e){
+            expectedException =e;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(),expectedException.getStatus().value());
+    }
+
+    @Test
+    public void updateAddressTest_200(){
+        //given
+        AddressDTO addressDTO = anAddressDTO();
+        Integer clientId = 1;
+        Integer rateId = 1;
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(modelMapper.map(addressDTO,Address.class)).thenReturn(anAddress());
+        when(addressService.update(clientId,rateId,anAddress())).thenReturn(anAddress());
+
+        ResponseEntity<Address> response = backofficeController.updateAddress(auth,addressDTO);
+
+        Assert.assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+
+    }
+
+    @Test
+    public void updateAddressTest_403(){
+
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+
+        try {
+            backofficeController.updateAddress(auth,anAddressDTO());
+
+        }catch (ResponseStatusException e){
+            expectedException =e;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(),expectedException.getStatus().value());
+
+    }
+    @Test
+    public void deleteAddressTest_200(){
+        //given
+        Integer addressId =1;
+        when(auth.getPrincipal()).thenReturn(employee);
+        doNothing().when(addressService).delete(addressId);
+
+        backofficeController.deleteAddress(auth,addressId);
+
+        verify(addressService,times(1)).delete(addressId);
+    }
+
+    @Test
+    public void deleteAddressTest_403(){
+        Integer addressId = 1;
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+
+        try {
+            backofficeController.deleteAddress(auth,addressId);
+
+        }catch (ResponseStatusException e){
+            expectedException =e;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(),expectedException.getStatus().value());
+    }
 }
 
 

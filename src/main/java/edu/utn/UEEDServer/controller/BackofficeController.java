@@ -104,14 +104,19 @@ public class BackofficeController {
 
     @GetMapping(ADDRESS_PATH)
     public List<Address> getAllAddress(Authentication auth) {
+        if(!((UserDTO) auth.getPrincipal()).getEmployee())
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+
         return addressService.getAll();
     }
 
     @GetMapping(ADDRESS_PATH + "/{id}")
-    public Address getByIdAddress(Authentication auth, @PathVariable Integer id) {
+    public ResponseEntity<Address> getByIdAddress(Authentication auth, @PathVariable Integer id) {
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
-        return addressService.getById(id);
+        Address a= addressService.getById(id);
+
+        return ResponseEntity.ok(a);
     }
 
     @PostMapping(ADDRESS_PATH)
@@ -125,12 +130,12 @@ public class BackofficeController {
     }
 
     @PutMapping(ADDRESS_PATH)
-    public ResponseEntity updateAddress(Authentication auth, @RequestBody AddressDTO addressDTO) {
+    public ResponseEntity<Address> updateAddress(Authentication auth, @RequestBody AddressDTO addressDTO) {
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
 
         Address newAddress = modelMapper.map(addressDTO,Address.class);
-        addressService.update(addressDTO.getClientId(), addressDTO.getRateId(), newAddress);
+       Address updatedAddress= addressService.update(addressDTO.getClientId(), addressDTO.getRateId(), newAddress);
 
         return ResponseEntity.ok().build();
     }

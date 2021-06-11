@@ -3,6 +3,7 @@ package edu.utn.UEEDServer.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import edu.utn.UEEDServer.model.*;
+import edu.utn.UEEDServer.model.dto.AddressDTO;
 import edu.utn.UEEDServer.model.dto.ReadingDTO;
 import edu.utn.UEEDServer.model.dto.UserDTO;
 
@@ -18,15 +19,27 @@ public class TestUtils {
     // Address
     public static String aAddressJSON(){
         final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        return gson.toJson(aAddress());
+        return gson.toJson(anAddress());
     }
 
-    public static Address aAddress(){
+    public static Address anAddress(){
 
         return Address.builder()
                 .addressId(1)
-                .street("calle1")
-                .number(2)
+                .street("calle falsa")
+                .number(1234)
+                .rate(aRate())
+                .client(aClient())
+                .build();
+    }
+
+    public static AddressDTO anAddressDTO(){
+
+        return AddressDTO.builder()
+                .street("calle falsa")
+                .number(1234)
+                .clientId(1)
+                .rateId(1)
                 .build();
     }
 
@@ -92,7 +105,7 @@ public class TestUtils {
                 .model(aModel())
                 .lastReading(LocalDateTime.now())
                 .accumulatedConsumption(10)
-                .address(aAddress())
+                .address(anAddress())
                 .serialNumber("aaa111")
                 .password("1234")
                 .readings(List.of())
