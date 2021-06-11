@@ -1,5 +1,6 @@
 package edu.utn.UEEDServer.service;
 
+import edu.utn.UEEDServer.exceptions.IDnotFoundException;
 import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.repository.MeterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,22 +21,16 @@ public class MeterService {
     }
 
     public List<Meter> getAll(){
-        List<Meter> list = this.meterRepo.findAll();
-        if(list.isEmpty())
-            throw new ResponseStatusException(HttpStatus.NO_CONTENT,"Meter list is empty");
-        return list;
+        return this.meterRepo.findAll();
     }
 
     public Meter getById(String serialNumber){
         return this.meterRepo.findById(serialNumber)
-                .orElseThrow( () -> new ResponseStatusException(HttpStatus.NOT_FOUND,"No meter found under serial number: " + serialNumber));
+                    .orElseThrow(()-> new IDnotFoundException("Meter",serialNumber));
     }
 
     public Meter add(Meter newMeter){
         String serialNum = newMeter.getSerialNumber();
-
-        if(serialNum == null)
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Meter serial number cannot be null");
 
         if(this.meterRepo.existsById(serialNum))
             throw new ResponseStatusException(HttpStatus.CONFLICT,"Meter serial number: " + serialNum + " already registered. No action performed.");

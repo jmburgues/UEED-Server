@@ -14,6 +14,7 @@ public class Response {
                 .header("X-Total-Elements",Long.toString(page.getTotalElements()))
                 .body(page.getContent());
     }
+
     public static ResponseEntity response(List list){
 
         return ResponseEntity.status(list.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK)

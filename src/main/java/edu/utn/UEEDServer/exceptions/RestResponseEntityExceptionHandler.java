@@ -42,4 +42,14 @@ public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionH
 
         return new ResponseEntity<Object>(apiError,new HttpHeaders(), apiError.getHttpStatus());
     }
+
+    @ExceptionHandler({
+            IllegalArgumentException.class
+    })
+
+    public ResponseEntity<Object> illegalArgumentExceptionHandler(IllegalArgumentException exceptions){
+        ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, exceptions.getLocalizedMessage(),List.of(exceptions.getMessage()));
+
+        return new ResponseEntity<Object>(apiError,new HttpHeaders(), apiError.getHttpStatus());
+    }
 }

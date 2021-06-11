@@ -141,7 +141,7 @@ public class BackofficeController {
 
 /* METER ENDPOINTS */
 
-    @GetMapping
+    @GetMapping(METER_PATH)
     public List<Meter> getAllMeter(Authentication auth) {
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
