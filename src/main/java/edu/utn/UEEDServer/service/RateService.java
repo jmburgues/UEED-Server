@@ -1,19 +1,12 @@
 package edu.utn.UEEDServer.service;
 
-import edu.utn.UEEDServer.exceptions.AlreadyExistException;
-import edu.utn.UEEDServer.model.Bill;
-import edu.utn.UEEDServer.model.PostResponse;
 import edu.utn.UEEDServer.model.Rate;
 import edu.utn.UEEDServer.repository.RateRepository;
-import edu.utn.UEEDServer.utils.EntityURLBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.net.URI;
 import java.util.List;
 
 @Service

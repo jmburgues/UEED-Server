@@ -3,14 +3,17 @@ package edu.utn.UEEDServer.utils;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import edu.utn.UEEDServer.model.*;
+import edu.utn.UEEDServer.model.dto.ReadingDTO;
+import edu.utn.UEEDServer.model.dto.UserDTO;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class TestUtils {
 
-    //TODO ver si hay alguna manera de no repetir tanto codigo acá
+
 
     // Address
     public static String aAddressJSON(){
@@ -33,7 +36,7 @@ public class TestUtils {
         return gson.toJson(aBill());
     }
 
-    private static Bill aBill() {
+    public static Bill aBill() {
 
         return Bill.builder()
                 .billId(1)
@@ -49,7 +52,7 @@ public class TestUtils {
         return gson.toJson(aBrand());
     }
 
-    private static Brand aBrand() {
+    public static Brand aBrand() {
 
         return Brand.builder()
                 .id(1)
@@ -65,7 +68,7 @@ public class TestUtils {
         return gson.toJson(aClient());
     }
 
-    private static Client aClient() {
+    public static Client aClient() {
 
         return Client.builder()
                 .id(1)
@@ -83,16 +86,21 @@ public class TestUtils {
 
     }
 
-    private static Meter aMeter() {
+    public static Meter aMeter(){
 
         return Meter.builder()
-                .serialNumber("1")
+                .model(aModel())
                 .lastReading(LocalDateTime.now())
-                .model(new Model())
-                .readings(new ArrayList<>())
-                .accumulatedConsumption(0)
+                .accumulatedConsumption(10)
+                .address(aAddress())
+                .serialNumber("aaa111")
+                .password("1234")
+                .readings(List.of())
                 .build();
+
     }
+
+
 
     //Models
 
@@ -119,7 +127,7 @@ public class TestUtils {
         return gson.toJson(aRate());
     }
 
-    private static Rate aRate() {
+    public static Rate aRate() {
 
         return Rate.builder()
                 .id(1)
@@ -155,7 +163,7 @@ public class TestUtils {
         return gson.toJson(aUser());
     }
 
-    private static User aUser() {
+    public static User aUser() {
 
         return User.builder()
                 .name("name")
@@ -165,6 +173,40 @@ public class TestUtils {
                 .employee(false)
                 .build();
     }
+
+    public static UserDTO anEmployee(){
+
+        return  UserDTO
+                .builder()
+                .username("user")
+                .name("name")
+                .surname("surname")
+                .employee(true)
+                .build();
+
+    }
+
+    public static UserDTO aUserDTO(){
+        return  UserDTO
+                .builder()
+                .username("user")
+                .name("name")
+                .surname("surname")
+                .employee(false)
+                .build();
+    }
+
+    public static ReadingDTO aReadingDTO() {
+
+        return ReadingDTO.builder()
+                .meterSerialNumber("aaa111")
+                .readDate(LocalDateTime.now())
+                .password("1234")
+                .totalKw(15F)
+                .build();
+    }
+
+
 
 
 
