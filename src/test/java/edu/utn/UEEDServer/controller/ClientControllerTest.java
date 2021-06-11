@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 
+import static edu.utn.UEEDServer.utils.TestUtils.aClient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -36,16 +37,26 @@ public class ClientControllerTest {
 
     private ClientController clientController;
 
+    @Mock
+    private Authentication auth;
+
+    private Client loggedClient;
+
+    private ResponseStatusException expectedException;
+
     @Before
     public void setUp() {
         initMocks(this);
         clientController = new ClientController(readingService, billService, clientService);
+        this.expectedException = null;
+        this.loggedClient=aClient();
+
     }
 
     @Test
     public void testFilterByClientAndDateHappyPath() {
-        Authentication auth = mock(Authentication.class);
-        List<Bill> listOfBills = new ArrayList<>();
+
+        List<Bill>listOfBills = new ArrayList<>();
         listOfBills.add(Bill.builder().billId(1).build());
 
         try {
@@ -68,14 +79,13 @@ public class ClientControllerTest {
 
     @Test
     public void testFilterByClientAndDate403Forbidden() {
-        Authentication auth = mock(Authentication.class);
-        Client loggedClient = mock(Client.class);
-        ResponseStatusException expectedException = null;
+
+
 
         try {
             Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
             Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
-            when(loggedClient.getId()).thenReturn(1);
+           loggedClient.setId(2);
             when(auth.getPrincipal()).thenReturn(UserDTO.builder().username("User1").build());
             when(clientService.getByUsername("User1")).thenReturn(Client.builder().id(2).build());
 
@@ -95,7 +105,7 @@ public class ClientControllerTest {
 
     @Test
     public void testFilterByClientAndDate204() {
-        Authentication auth = mock(Authentication.class);
+
         List<Bill> listOfBills = new ArrayList<>();
 
         try {
@@ -117,7 +127,7 @@ public class ClientControllerTest {
 
     @Test
     public void testGetUnpaidBillClientHappyPath(){
-        Authentication auth = mock(Authentication.class);
+
         List<Bill> listOfBills = new ArrayList<>();
 
         when(auth.getPrincipal()).thenReturn(UserDTO.builder().username("user").build());
@@ -131,8 +141,7 @@ public class ClientControllerTest {
 
     @Test
     public void testGetUnpaidBillClient403Forbidden(){
-        Authentication auth = mock(Authentication.class);
-        ResponseStatusException expectedException = null;
+
 
         when(auth.getPrincipal()).thenReturn(UserDTO.builder().username("user").build());
         when(clientService.getByUsername("user")).thenReturn(Client.builder().id(2).build());
@@ -144,13 +153,13 @@ public class ClientControllerTest {
         }
         Assert.assertNotNull(expectedException);
         Assert.assertEquals(HttpStatus.FORBIDDEN, expectedException.getStatus());
-        Assert.assertTrue(expectedException instanceof ResponseStatusException);
+
 
     }
 
     @Test
     public void testGetUnpaidBillClient204(){
-        Authentication auth = mock(Authentication.class);
+
         List<Bill> listOfBills = new ArrayList<>();
 
         when(auth.getPrincipal()).thenReturn(UserDTO.builder().username("user").build());
