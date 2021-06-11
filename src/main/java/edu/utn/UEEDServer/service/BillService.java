@@ -2,11 +2,8 @@ package edu.utn.UEEDServer.service;
 
 import edu.utn.UEEDServer.model.Bill;
 import edu.utn.UEEDServer.repository.BillRepository;
-import edu.utn.UEEDServer.repository.ClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.util.List;

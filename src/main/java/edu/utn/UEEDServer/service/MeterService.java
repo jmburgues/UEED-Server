@@ -33,22 +33,20 @@ public class MeterService {
         String serialNum = newMeter.getSerialNumber();
 
         if(this.meterRepo.existsById(serialNum))
-            throw new ResponseStatusException(HttpStatus.CONFLICT,"Meter serial number: " + serialNum + " already registered. No action performed.");
+            throw new IllegalArgumentException("Meter id " + serialNum + " already exists.");
 
         return meterRepo.save(newMeter);
     }
 
     public Meter update(Meter meter){
-        this.getById(meter.getSerialNumber());
+        getById(meter.getSerialNumber());
 
         return meterRepo.save(meter);
     }
 
-    public void delete(String serialNumber){
-        if(this.meterRepo.existsById(serialNumber))
-            this.meterRepo.deleteById(serialNumber);
-        else
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Meter serial number: " + serialNumber + " does not exists.");
+    public void delete(String serialNumber) {
+        getById(serialNumber);
+        this.meterRepo.deleteById(serialNumber);
     }
 
     public Meter getByAddressId(Integer addressId) {
