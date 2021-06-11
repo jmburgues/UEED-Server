@@ -1,17 +1,16 @@
 package edu.utn.UEEDServer.service;
 
-import edu.utn.UEEDServer.model.Client;
 import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.model.Reading;
-import edu.utn.UEEDServer.model.dto.ConsumersDTO;
+import edu.utn.UEEDServer.model.projections.ConsumersDTO;
 import edu.utn.UEEDServer.model.projections.ClientConsumption;
 import edu.utn.UEEDServer.repository.ReadingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class ReadingService {
@@ -37,11 +36,11 @@ public class ReadingService {
         return this.readingRepo.getReadingsByMeterAndDate(meter.getSerialNumber(),from,to);
     }
 
-    public List<Reading>getClientReadingsByDate(Integer clientId, Date from, Date to) {
+    public List<Reading>getClientReadingsByDate(Integer clientId, Date from, Date to, Integer page, Integer size) {
         if(from.after(to))
             throw new IllegalArgumentException("Date From (" + from + ") can not be after date To (" + to + ")");
 
-        return this.readingRepo.getClientReadingsByDate(clientId,from,to);
+         return this.readingRepo.getClientReadingsByDate(clientId,from,to, page, size);
     }
 
     public ClientConsumption getClientConsumption(Integer clientId, Date from, Date to) {

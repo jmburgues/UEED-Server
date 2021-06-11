@@ -2,7 +2,7 @@ package edu.utn.UEEDServer.controller;
 
 import edu.utn.UEEDServer.model.*;
 import edu.utn.UEEDServer.model.dto.AddressDTO;
-import edu.utn.UEEDServer.model.dto.ConsumersDTO;
+import edu.utn.UEEDServer.model.projections.ConsumersDTO;
 
 import edu.utn.UEEDServer.model.dto.UserDTO;
 import edu.utn.UEEDServer.service.*;
@@ -92,8 +92,11 @@ public class BackofficeController {
 /* ADDRESSES ENDPOINTS */
 
     @GetMapping(ADDRESS_PATH)
-    public  ResponseEntity<List<Address>> getAllAddress(Authentication auth) {
-        return response(addressService.getAll());
+    public  ResponseEntity<List<Address>> getAllAddress(Authentication auth,
+                                                        @RequestParam(value="page", defaultValue = "0") Integer page,
+                                                        @RequestParam(value="size", defaultValue = "10") Integer size){
+        verifyAuthentication(auth);
+        return response(addressService.getAll(page,size));
     }
 
     @GetMapping(ADDRESS_PATH + "/{id}")
@@ -130,9 +133,11 @@ public class BackofficeController {
 /* METER ENDPOINTS */
 
     @GetMapping(METER_PATH)
-    public ResponseEntity<List<Meter>> getAllMeter(Authentication auth) {
+    public ResponseEntity<List<Meter>> getAllMeter(Authentication auth,
+                                                   @RequestParam(value="page", defaultValue = "0") Integer page,
+                                                   @RequestParam(value="size", defaultValue = "10") Integer size){
         verifyAuthentication(auth);
-        return response(this.meterService.getAll());
+        return response(this.meterService.getAll(page,size));
     }
 
     @GetMapping(METER_PATH + "/{serialNumber}")

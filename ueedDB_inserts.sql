@@ -14,3 +14,6 @@ insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values 
 insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),12,'002',null);
 insert into READINGS (readDate, totalKw, meterSerialNumber, readingPrice) values (now(),13,'002',null);
 insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),14,'002',null);
+insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),15,'001',null);
+insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),17,'001',null);
+insert into READINGS(readDate, totalKw, meterSerialNumber, readingPrice) values (now(),20,'001',null);

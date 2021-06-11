@@ -18,7 +18,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import static edu.utn.UEEDServer.utils.Response.response;
 
@@ -26,9 +25,9 @@ import static edu.utn.UEEDServer.utils.Response.response;
 @RequestMapping("/client")
 public class ClientController {
 
-    private ReadingService readingService;
-    private BillService billService;
-    private ClientService clientService;
+    private final  ReadingService readingService;
+    private final BillService billService;
+    private final ClientService clientService;
 
     @Autowired
     public ClientController(ReadingService readingService, BillService billService, ClientService clientService) {
@@ -37,7 +36,7 @@ public class ClientController {
         this.clientService = clientService;
     }
 
-    @GetMapping("/{clientId}/bill") // VER QUERY DSL PARA LOS DIFERENTES FILTERS
+    @GetMapping("/{clientId}/bill")
     public ResponseEntity<List<Bill>> filterByClientAndDate(Authentication auth,
                                             @PathVariable Integer clientId,
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date from,
@@ -65,9 +64,11 @@ public class ClientController {
     public ResponseEntity<List<Reading>> getClientReadingsByDate(Authentication auth,
                                                  @PathVariable Integer clientId,
                                                  @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
-                                                 @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to){
+                                                 @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to,
+                                                 @RequestParam(value="page", defaultValue = "0") Integer page,
+                                                 @RequestParam(value="size", defaultValue = "10") Integer size){
         verifyAuthentication(auth,clientId);
-        return response(readingService.getClientReadingsByDate(clientId,from,to));
+        return response(readingService.getClientReadingsByDate(clientId,from,to,page,size));
     }
 
     private void verifyAuthentication(Authentication auth, Integer clientId){

@@ -1,4 +1,4 @@
-package edu.utn.UEEDServer.model.dto;
+package edu.utn.UEEDServer.model.projections;
 
 public interface ConsumersDTO {
 

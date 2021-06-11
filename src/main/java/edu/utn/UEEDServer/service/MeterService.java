@@ -20,8 +20,8 @@ public class MeterService {
         this.meterRepo = meterRepo;
     }
 
-    public List<Meter> getAll(){
-        return this.meterRepo.findAll();
+    public List<Meter> getAll(Integer page, Integer size){
+        return this.meterRepo.findAllPagable(page,size);
     }
 
     public Meter getById(String serialNumber){

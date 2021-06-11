@@ -1,8 +1,9 @@
 package edu.utn.UEEDServer.repository;
 
 import edu.utn.UEEDServer.model.Reading;
-import edu.utn.UEEDServer.model.dto.ConsumersDTO;
+import edu.utn.UEEDServer.model.projections.ConsumersDTO;
 import edu.utn.UEEDServer.model.projections.ClientConsumption;
+import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -22,8 +23,9 @@ public interface ReadingRepository extends JpaRepository<Reading,Integer> {
             "ON A.addressId = M.addressId " +
             "INNER JOIN CLIENTS C " +
             "ON A.clientId = C.clientId " +
-            "WHERE C.clientId = ?1 AND R.readDate BETWEEN ?2 AND ?3", nativeQuery = true)
-    List<Reading> getClientReadingsByDate(Integer clientId, Date from, Date to);
+            "WHERE C.clientId = ?1 AND R.readDate BETWEEN ?2 AND ?3 " +
+            "LIMIT ?4,?5", nativeQuery = true)
+    List<Reading> getClientReadingsByDate(Integer clientId, Date from, Date to, Integer page, Integer size);
 
     @Query(value = "SELECT SUM(R.totalKw) AS totalConsumption, SUM(R.readingPrice) AS totalPrice " +
             "FROM READINGS R " +

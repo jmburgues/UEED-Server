@@ -32,8 +32,8 @@ public class AddressService {
         return addressRepository.save(address);
     }
 
-    public List<Address> getAll() {
-        return addressRepository.findAll();
+    public List<Address> getAll(Integer page, Integer size) {
+        return addressRepository.findAllPageable(page,size);
     }
 
     public Address getById(Integer addressId) {
