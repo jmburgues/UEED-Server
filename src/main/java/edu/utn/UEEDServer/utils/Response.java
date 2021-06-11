@@ -18,7 +18,6 @@ public class Response {
     public static ResponseEntity response(List list){
 
         return ResponseEntity.status(list.isEmpty() ? HttpStatus.NO_CONTENT : HttpStatus.OK)
-
                 .body(list);
     }
 }

@@ -7,7 +7,6 @@ import edu.utn.UEEDServer.model.dto.ConsumersDTO;
 import edu.utn.UEEDServer.model.dto.UserDTO;
 import edu.utn.UEEDServer.service.*;
 import edu.utn.UEEDServer.utils.EntityURLBuilder;
-import org.apache.coyote.Response;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -20,8 +19,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Date;
 import java.util.List;
-
-import static edu.utn.UEEDServer.utils.Constants.*;
 
 @RestController
 @RequestMapping("/backoffice")
@@ -55,14 +52,13 @@ public class BackofficeController {
 
     @GetMapping(RATE_PATH)
     public List<Rate> getAllRate(Authentication auth) {
-        isAuthorized(auth);
+        verifyAuthentication(auth);
         return rateService.getAll();
     }
 
     @GetMapping(RATE_PATH + "/{id}")
     public ResponseEntity<Rate> getByIdRate(Authentication auth, @PathVariable Integer id) {
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        verifyAuthentication(auth);
         Rate rate = rateService.getById(id);
 
         return ResponseEntity.ok(rate);
@@ -70,19 +66,14 @@ public class BackofficeController {
 
     @PostMapping(RATE_PATH)
     public ResponseEntity addRate(Authentication auth, @RequestBody Rate rate) {
-
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())//todo crear un metodo con esta autorizacion
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
-
+        verifyAuthentication(auth);
         Rate added = rateService.add(rate);
        return ResponseEntity.created(EntityURLBuilder.buildURL(added.getId())).build();
     }
 
     @PutMapping(RATE_PATH)
     public ResponseEntity updateRate(Authentication auth, @RequestBody Rate rate) {
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
-
+        verifyAuthentication(auth);
         if(rateService.getById(rate.getId())!=null)
         return ResponseEntity.ok(rate); // si ya existe actualizo y devuelvo ok
 
@@ -91,11 +82,9 @@ public class BackofficeController {
 
     }
 
-    // Shall we implement DELETE method??
     @DeleteMapping(RATE_PATH + "/{id}")
     public void deleteRate(Authentication auth, @PathVariable Integer id) {
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        verifyAuthentication(auth);
         rateService.delete(id);
     }
 
@@ -109,15 +98,13 @@ public class BackofficeController {
 
     @GetMapping(ADDRESS_PATH + "/{id}")
     public Address getByIdAddress(Authentication auth, @PathVariable Integer id) {
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        verifyAuthentication(auth);
         return addressService.getById(id);
     }
 
     @PostMapping(ADDRESS_PATH)
     public ResponseEntity addAddress(Authentication auth, @RequestBody AddressDTO addressDTO) {
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        verifyAuthentication(auth);
         Address newAddress = modelMapper.map(addressDTO,Address.class);
         Address savedAddress = addressService.add(addressDTO.getClientId(), addressDTO.getRateId(), newAddress);
 
@@ -126,9 +113,7 @@ public class BackofficeController {
 
     @PutMapping(ADDRESS_PATH)
     public ResponseEntity updateAddress(Authentication auth, @RequestBody AddressDTO addressDTO) {
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
-
+        verifyAuthentication(auth);
         Address newAddress = modelMapper.map(addressDTO,Address.class);
         addressService.update(addressDTO.getClientId(), addressDTO.getRateId(), newAddress);
 
@@ -137,8 +122,7 @@ public class BackofficeController {
 
     @DeleteMapping(ADDRESS_PATH + "/{addressId}")
     public void deleteAddress(Authentication auth, @PathVariable Integer addressId) {
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        verifyAuthentication(auth);
         addressService.delete(addressId);
     }
 
@@ -147,22 +131,19 @@ public class BackofficeController {
 
     @GetMapping(METER_PATH)
     public List<Meter> getAllMeter(Authentication auth) {
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        verifyAuthentication(auth);
         return this.meterService.getAll();
     }
 
     @GetMapping(METER_PATH + "/{serialNumber}")
     public Meter getByIdMeter(Authentication auth, @PathVariable String serialNumber) {
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        verifyAuthentication(auth);
         return this.meterService.getById(serialNumber);
     }
 
     @PostMapping(METER_PATH)
     public ResponseEntity addMeter(Authentication auth, @RequestBody Meter newMeter) {
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        verifyAuthentication(auth);
         Meter saved = meterService.add(newMeter);
 
         return ResponseEntity
@@ -171,9 +152,7 @@ public class BackofficeController {
 
     @PutMapping(METER_PATH)
     public ResponseEntity updateMeter(Authentication auth, @RequestBody Meter meter) {
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
-
+        verifyAuthentication(auth);
         meterService.update(meter);
 
         if(meterService.getById(meter.getSerialNumber())!=null)
@@ -185,8 +164,7 @@ public class BackofficeController {
 
     @DeleteMapping(METER_PATH + "/{serialNumber}")
     public void deleteMeter(Authentication auth, @PathVariable String serialNumber) {
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        verifyAuthentication(auth);
         this.meterService.delete(serialNumber);
     }
 
@@ -198,23 +176,20 @@ public class BackofficeController {
                                    @PathVariable Integer clientId,
                                    @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date from,
                                    @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date to){
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        verifyAuthentication(auth);
         return this.billService.filterByClientAndDate(clientId,from,to);
     }
 
     @GetMapping(CLIENT_PATH + "/{clientId}/bills/unpaid")
     public List<Bill>getUnpaidBillClient(Authentication auth, @PathVariable Integer clientId){
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        verifyAuthentication(auth);
         return billService.getClientUnpaid(clientId);
     }
 
     @GetMapping(ADDRESS_PATH + "/{addressId}/bills/unpaid")
     public List<Bill>getUnpaidBillAddress(Authentication auth, @PathVariable Integer addressId){
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
-            return billService.getAddressUnpaid(addressId);
+        verifyAuthentication(auth);
+        return billService.getAddressUnpaid(addressId);
     }
 
 /* READING ENDPOINTS */
@@ -224,8 +199,7 @@ public class BackofficeController {
                                             @PathVariable Integer addressId,
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to){
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        verifyAuthentication(auth);
         return this.readingService.getAddressReadingsByDate(addressId,from,to);
     }
 
@@ -236,16 +210,13 @@ public class BackofficeController {
     public List<ConsumersDTO> getTopConsumers( Authentication auth,
                                                @RequestParam("from") @DateTimeFormat(pattern = "yyyy-MM-dd") Date from,
                                                @RequestParam("to") @DateTimeFormat(pattern = "yyyy-MM-dd") Date to){
-        if(!((UserDTO) auth.getPrincipal()).getEmployee())
-            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
+        verifyAuthentication(auth);
         return this.readingService.getTopConsumers(from,to);
     }
 
-    public Boolean isAuthorized(Authentication auth){
-
+    private void verifyAuthentication(Authentication auth){
         if(!((UserDTO) auth.getPrincipal()).getEmployee())
             throw new ResponseStatusException(HttpStatus.FORBIDDEN,"Access forbidden for your profile.");
-        return true;
     }
 }
 
