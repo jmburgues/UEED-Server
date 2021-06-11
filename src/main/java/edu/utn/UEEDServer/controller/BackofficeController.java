@@ -93,6 +93,7 @@ public class BackofficeController {
 
     @GetMapping(ADDRESS_PATH)
     public  ResponseEntity<List<Address>> getAllAddress(Authentication auth) {
+        verifyAuthentication(auth);
         return response(addressService.getAll());
     }
 
@@ -152,7 +153,7 @@ public class BackofficeController {
     @PutMapping(METER_PATH)
     public ResponseEntity updateMeter(Authentication auth, @RequestBody Meter meter) {
         verifyAuthentication(auth);
-        meterService.update(meter);
+        Meter updated =meterService.update(meter);
 
         if(meterService.getById(meter.getSerialNumber())!=null)
         return ResponseEntity.ok().build(); //si esta actualizo

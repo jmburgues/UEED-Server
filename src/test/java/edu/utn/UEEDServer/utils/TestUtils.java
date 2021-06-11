@@ -4,13 +4,12 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import edu.utn.UEEDServer.model.*;
 import edu.utn.UEEDServer.model.dto.AddressDTO;
+import edu.utn.UEEDServer.model.dto.ConsumersDTO;
 import edu.utn.UEEDServer.model.dto.ReadingDTO;
 import edu.utn.UEEDServer.model.dto.UserDTO;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class TestUtils {
 
@@ -53,7 +52,7 @@ public class TestUtils {
 
         return Bill.builder()
                 .billId(1)
-                .billedDate(LocalDateTime.now())
+                .billedDate(null)
                 .build();
 
     }
@@ -103,7 +102,7 @@ public class TestUtils {
 
         return Meter.builder()
                 .model(aModel())
-                .lastReading(LocalDateTime.now())
+                .lastReading(null)
                 .accumulatedConsumption(10)
                 .address(anAddress())
                 .serialNumber("aaa111")
@@ -145,7 +144,7 @@ public class TestUtils {
         return Rate.builder()
                 .id(1)
                 .category("category")
-                .kwPrice(new Random().nextFloat())
+                .kwPrice(10F)
                 .build();
     }
 
@@ -157,14 +156,14 @@ public class TestUtils {
         return gson.toJson(aReading());
     }
 
-    private static Reading aReading() {
+    public static Reading aReading() {
 
         return Reading.builder()
                 .readingId(1)
                 .bill(new Bill())
-                .readDate(LocalDateTime.now())
-                .readingPrice(new Random().nextFloat())
-                .totalKw(new Random().nextFloat())
+                .readDate(null)
+                .readingPrice(2F)
+                .totalKw(3F)
                 .build();
     }
 
@@ -213,13 +212,19 @@ public class TestUtils {
 
         return ReadingDTO.builder()
                 .meterSerialNumber("aaa111")
-                .readDate(LocalDateTime.now())
+                .readDate(null)
                 .password("1234")
                 .totalKw(15F)
                 .build();
     }
 
 
+
+
+    public static List anEmptyList(){
+
+        return new ArrayList<>();
+    }
 
 
 

@@ -1,17 +1,16 @@
 package edu.utn.UEEDServer.controller;
 
-import edu.utn.UEEDServer.model.Address;
-import edu.utn.UEEDServer.model.Rate;
+import edu.utn.UEEDServer.model.*;
 import edu.utn.UEEDServer.model.dto.AddressDTO;
+import edu.utn.UEEDServer.model.dto.ConsumersDTO;
 import edu.utn.UEEDServer.model.dto.UserDTO;
 import edu.utn.UEEDServer.service.*;
+import lombok.SneakyThrows;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +20,12 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static edu.utn.UEEDServer.utils.TestUtils.*;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -62,7 +62,7 @@ public class BackOfficeControllerTest {
         initMocks(this);
         backofficeController = new BackofficeController(
                 rateService,addressService,meterService,billService,readingService,modelMapper);
-    employee = anEmployee();
+        employee = anEmployee();
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     }
@@ -236,9 +236,9 @@ public class BackOfficeControllerTest {
         when(auth.getPrincipal()).thenReturn(employee);
         when(addressService.getAll()).thenReturn(addresses);
 
-        List<Address>actual=backofficeController.getAllAddress(auth);
+        ResponseEntity<List<Address>>actual=backofficeController.getAllAddress(auth);
 
-        Assert.assertEquals(addresses.size(),actual.size());
+        Assert.assertEquals(addresses.size(),actual.getBody().size());
     }
 
     @Test
@@ -376,6 +376,405 @@ public class BackOfficeControllerTest {
         }
 
         Assert.assertEquals(HttpStatus.FORBIDDEN.value(),expectedException.getStatus().value());
+    }
+
+    @Test
+    public void getAllMeterTest_200(){
+
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(meterService.getAll()).thenReturn(List.of(aMeter()));
+
+        ResponseEntity<List<Meter>>response =backofficeController.getAllMeter(auth);
+
+        Assert.assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+        Assert.assertEquals(List.of(aMeter()).size(),response.getBody().size());
+
+    }
+
+    @Test
+    public void getAllMeterTest_403(){
+
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+
+        try{
+            backofficeController.getAllMeter(auth);
+        }catch (ResponseStatusException ex){
+            expectedException = ex;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(),expectedException.getStatus().value());
+
+    }
+
+    @Test
+    public void getAllMeterTest_204(){
+
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(meterService.getAll()).thenReturn(new ArrayList<>());
+
+        ResponseEntity<List<Meter>>response = backofficeController.getAllMeter(auth);
+
+        Assert.assertEquals(HttpStatus.NO_CONTENT.value(),response.getStatusCodeValue());
+        Assert.assertEquals(anEmptyList(),response.getBody());
+    }
+
+    @Test
+    public void getByIdMeterTest_200(){
+        String meterId = "aaa111";
+
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(meterService.getById(meterId)).thenReturn(aMeter());
+
+        ResponseEntity<Meter>response = backofficeController.getByIdMeter(auth,meterId);
+
+        Assert.assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+        Assert.assertEquals(aMeter(),response.getBody());
+    }
+
+    @Test
+    public void getByIdMeterTest_403(){
+        String meterId = "aaa111";
+
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+
+        try{
+            backofficeController.getByIdMeter(auth,meterId);
+        }catch (ResponseStatusException ex){
+            expectedException = ex;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(),expectedException.getStatus().value());
+    }
+
+    @Test
+    public void addMeterTest_201(){
+        Meter meter = aMeter();
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(meterService.add(aMeter())).thenReturn(meter);
+
+        ResponseEntity response = backofficeController.addMeter(auth,meter);
+
+        Assert.assertEquals(HttpStatus.CREATED.value(),response.getStatusCodeValue());
+    }
+
+    @Test
+    public void addMeterTest_403(){
+        Meter meter = aMeter();
+
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+
+        try{
+            backofficeController.addMeter(auth,meter);
+        }catch (ResponseStatusException ex){
+            expectedException = ex;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(),expectedException.getStatus().value());
+    }
+
+    @Test
+    public void  updateMeterTest_200(){
+
+        Meter meter = aMeter();
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(meterService.getById("aaa111")).thenReturn(aMeter());
+
+        ResponseEntity responseEntity = backofficeController.updateMeter(auth,meter);
+
+        Assert.assertEquals(HttpStatus.OK.value(),responseEntity.getStatusCodeValue());
+
+    }
+    @Test
+    public void  updateMeterTest_201(){
+
+        Meter meter = aMeter();
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(meterService.getById("aaa111")).thenReturn(null);
+
+        ResponseEntity responseEntity = backofficeController.updateMeter(auth,meter);
+
+        Assert.assertEquals(HttpStatus.CREATED.value(),responseEntity.getStatusCodeValue());
+
+    }
+    @Test
+    public void  updateMeterTest_403(){
+
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+
+        try{
+            backofficeController.updateMeter(auth,aMeter());
+        }catch (ResponseStatusException ex){
+            expectedException = ex;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(),expectedException.getStatus().value());
+    }
+
+    @Test
+    public void deleteMeterTest_200(){
+        String meterId = "aaa111";
+
+        when(auth.getPrincipal()).thenReturn(employee);
+        doNothing().when(meterService).delete(meterId);
+
+        backofficeController.deleteMeter(auth,meterId);
+
+        verify(meterService,times(1)).delete(meterId);
+
+    }
+
+    @Test
+    public void deleteMeterTest_403(){
+        String meterId = "aaa111";
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+        try{
+            backofficeController.deleteMeter(auth,meterId);
+        }catch (ResponseStatusException ex){
+            expectedException = ex;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(),expectedException.getStatus().value());
+    }
+
+    @SneakyThrows
+    @Test
+    public void filterByDateTest_200(){
+
+        //given
+        Integer clientId = 1;
+        Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
+        Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
+
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(billService.filterByClientAndDate(clientId,from,to)).thenReturn(List.of(aBill()));
+
+        ResponseEntity<List<Bill>>response = backofficeController.filterByDate(auth,clientId,from,to);
+
+        Assert.assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+        Assert.assertEquals(List.of(aBill()),response.getBody());
+    }
+
+    @SneakyThrows
+    @Test
+    public void filterByDateTest_403() {
+
+        //given
+        Integer clientId = 1;
+        Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
+        Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
+
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+        try{
+            backofficeController.filterByDate(auth,clientId,from,to);
+        }catch (ResponseStatusException ex){
+            expectedException = ex;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(),expectedException.getStatus().value());
+    }
+
+    @SneakyThrows
+    @Test
+    public void filterByDateTest_204(){
+
+        //given
+        Integer clientId = 1;
+        Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
+        Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
+
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(billService.filterByClientAndDate(clientId,from,to)).thenReturn(anEmptyList());
+
+        ResponseEntity<List<Bill>>response = backofficeController.filterByDate(auth,clientId,from,to);
+
+        Assert.assertEquals(HttpStatus.NO_CONTENT.value(),response.getStatusCodeValue());
+        Assert.assertEquals(new ArrayList<>(),response.getBody());
+    }
+
+    @Test
+    public void getUnpaidBillClientTest_200(){
+        //given
+        Integer clientId = 1;
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(billService.getClientUnpaid(clientId)).thenReturn(List.of(aBill()));
+
+        ResponseEntity<List<Bill>>response = backofficeController.getUnpaidBillClient(auth,clientId);
+
+        Assert.assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+        Assert.assertEquals(List.of(aBill()),response.getBody());
+    }
+
+    @Test
+    public void getUnpaidBillClientTest_204(){
+        //given
+        Integer clientId = 1;
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(billService.getClientUnpaid(clientId)).thenReturn(anEmptyList());
+
+        ResponseEntity<List<Bill>>response = backofficeController.getUnpaidBillClient(auth,clientId);
+
+        Assert.assertEquals(HttpStatus.NO_CONTENT.value(),response.getStatusCodeValue());
+        Assert.assertTrue(response.getBody().isEmpty());
+    }
+
+    @Test
+    public void getUnpaidBillClientTest_403() {
+        //given
+        Integer clientId = 1;
+
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+        try {
+            backofficeController.getUnpaidBillClient(auth, clientId);
+        } catch (ResponseStatusException ex) {
+            expectedException = ex;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(), expectedException.getStatus().value());
+
+    }
+
+    @Test
+    public void getUnpaidBillAddressTest_200(){
+        //given
+        Integer addressId = 1;
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(billService.getAddressUnpaid(addressId)).thenReturn(List.of(aBill()));
+
+        ResponseEntity<List<Bill>>response = backofficeController.getUnpaidBillAddress(auth,addressId);
+
+        Assert.assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+        Assert.assertEquals(List.of(aBill()),response.getBody());
+    }
+
+    @Test
+    public void getUnpaidBillAddressTest_204(){
+        //given
+        Integer addressId = 1;
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(billService.getAddressUnpaid(addressId)).thenReturn(anEmptyList());
+
+        ResponseEntity<List<Bill>>response = backofficeController.getUnpaidBillAddress(auth,addressId);
+
+        Assert.assertEquals(HttpStatus.NO_CONTENT.value(),response.getStatusCodeValue());
+        Assert.assertTrue(response.getBody().isEmpty());
+    }
+
+    @Test
+    public void getUnpaidBillAddressTest_403() {
+        //given
+        Integer addressId = 1;
+
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+        try {
+            backofficeController.getUnpaidBillAddress(auth, addressId);
+        } catch (ResponseStatusException ex) {
+            expectedException = ex;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(), expectedException.getStatus().value());
+
+    }
+
+    @SneakyThrows
+    @Test
+    public void getAddressReadingsTest_200(){
+        //given
+        Integer addressId = 1;
+        Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
+        Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
+
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(readingService.getAddressReadingsByDate(addressId,from,to)).thenReturn(List.of(aReading()));
+
+        ResponseEntity<List<Reading>>response = backofficeController.getAddressReadings(auth,addressId,from,to);
+
+        Assert.assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+        Assert.assertEquals(List.of(aReading()),response.getBody());
+    }
+
+    @SneakyThrows
+    @Test
+    public void getAddressReadingsTest_204(){
+        //given
+        Integer addressId = 1;
+        Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
+        Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
+
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(readingService.getAddressReadingsByDate(addressId,from,to)).thenReturn(anEmptyList());
+
+        ResponseEntity<List<Reading>>response = backofficeController.getAddressReadings(auth,addressId,from,to);
+
+        Assert.assertEquals(HttpStatus.NO_CONTENT.value(),response.getStatusCodeValue());
+        Assert.assertTrue(response.getBody().isEmpty());
+    }
+
+    @SneakyThrows
+    @Test
+    public void getAddressReadingsTest_403(){
+        //given
+        Integer addressId = 1;
+        Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
+        Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
+
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+        try {
+            backofficeController.getAddressReadings(auth,addressId,from,to);
+        } catch (ResponseStatusException ex) {
+            expectedException = ex;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(), expectedException.getStatus().value());
+    }
+
+    @SneakyThrows
+    @Test
+    public void getTopConsumersTest_200(){
+        Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
+        Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
+        ConsumersDTO consumersDTO = mock(ConsumersDTO.class);
+
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(readingService.getTopConsumers(from,to)).thenReturn(List.of(consumersDTO));
+
+        ResponseEntity<List<ConsumersDTO>>response = backofficeController.getTopConsumers(auth,from,to);
+
+        Assert.assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+
+    }
+    @SneakyThrows
+    @Test
+    public void getTopConsumersTest_204(){
+        Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
+        Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
+        ConsumersDTO consumersDTO = mock(ConsumersDTO.class);
+
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(readingService.getTopConsumers(from,to)).thenReturn(anEmptyList());
+
+        ResponseEntity<List<ConsumersDTO>>response = backofficeController.getTopConsumers(auth,from,to);
+
+        Assert.assertEquals(HttpStatus.NO_CONTENT.value(),response.getStatusCodeValue());
+        Assert.assertTrue(response.getBody().isEmpty());
+
+    }
+
+    @SneakyThrows
+    @Test
+    public void getTopConsumersTest_404(){
+        Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
+        Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
+
+
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+
+        try {
+            backofficeController.getTopConsumers(auth,from,to);
+        } catch (ResponseStatusException ex) {
+            expectedException = ex;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN.value(), expectedException.getStatus().value());
     }
 }
 
