@@ -74,7 +74,7 @@ public class BackOfficeControllerTest {
     @Test
     public void getAllRateTest_200(){
 
-        Integer rateId = 1;
+
         List<Rate>rates = new ArrayList<>();
         rates.add(aRate());
 
