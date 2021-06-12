@@ -2,6 +2,7 @@ package edu.utn.UEEDServer.controller;
 
 
 import edu.utn.UEEDServer.model.Meter;
+import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.model.dto.ReadingDTO;
 import edu.utn.UEEDServer.service.MeterService;
 import edu.utn.UEEDServer.service.ReadingService;
@@ -15,8 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
-import static edu.utn.UEEDServer.utils.TestUtils.aMeter;
-import static edu.utn.UEEDServer.utils.TestUtils.aReadingDTO;
+import static edu.utn.UEEDServer.utils.TestUtils.*;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -47,7 +47,7 @@ public class MeterControllerTest {
         Meter meter = aMeter();
 
         when(meterService.getById(aReadingDTO().getMeterSerialNumber())).thenReturn(meter);
-
+        when(conversionService.convert(aReadingDTO(), Reading.class)).thenReturn(aReading());
         ResponseEntity response = meterController.addReading(aReadingDTO());
         Assert.assertEquals(meter.getPassword(),readingDTO.getPassword());
 
