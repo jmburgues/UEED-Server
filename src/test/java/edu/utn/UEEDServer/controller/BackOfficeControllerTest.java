@@ -2,8 +2,8 @@ package edu.utn.UEEDServer.controller;
 
 import edu.utn.UEEDServer.model.*;
 import edu.utn.UEEDServer.model.dto.AddressDTO;
-import edu.utn.UEEDServer.model.dto.ConsumersDTO;
 import edu.utn.UEEDServer.model.dto.UserDTO;
+import edu.utn.UEEDServer.model.projections.ConsumersDTO;
 import edu.utn.UEEDServer.service.*;
 import lombok.SneakyThrows;
 import org.junit.Assert;
@@ -54,6 +54,9 @@ public class BackOfficeControllerTest {
 
     private UserDTO employee;
 
+    private Integer page;
+    private Integer size;
+
 
 
     @BeforeEach
@@ -65,6 +68,8 @@ public class BackOfficeControllerTest {
         employee = anEmployee();
         MockHttpServletRequest request = new MockHttpServletRequest();
         RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
+        page = 1;
+        size = 1;
     }
     @Test
     public void getAllRateTest_200(){
@@ -234,9 +239,9 @@ public class BackOfficeControllerTest {
         List<Address>addresses = List.of(anAddress());
 
         when(auth.getPrincipal()).thenReturn(employee);
-        when(addressService.getAll()).thenReturn(addresses);
+        when(addressService.getAll(page,size)).thenReturn(addresses);
 
-        ResponseEntity<List<Address>>actual=backofficeController.getAllAddress(auth);
+        ResponseEntity<List<Address>>actual=backofficeController.getAllAddress(auth,page,size);
 
         Assert.assertEquals(addresses.size(),actual.getBody().size());
     }
@@ -246,7 +251,7 @@ public class BackOfficeControllerTest {
 
         when(auth.getPrincipal()).thenReturn(aUserDTO());
         try{
-            backofficeController.getAllAddress(auth);
+            backofficeController.getAllAddress(auth,page,size);
         }catch (ResponseStatusException e){
             expectedException = e;
         }
@@ -382,9 +387,9 @@ public class BackOfficeControllerTest {
     public void getAllMeterTest_200(){
 
         when(auth.getPrincipal()).thenReturn(employee);
-        when(meterService.getAll()).thenReturn(List.of(aMeter()));
+        when(meterService.getAll(page,size)).thenReturn(List.of(aMeter()));
 
-        ResponseEntity<List<Meter>>response =backofficeController.getAllMeter(auth);
+        ResponseEntity<List<Meter>>response =backofficeController.getAllMeter(auth,page,size);
 
         Assert.assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
         Assert.assertEquals(List.of(aMeter()).size(),response.getBody().size());
@@ -397,7 +402,7 @@ public class BackOfficeControllerTest {
         when(auth.getPrincipal()).thenReturn(aUserDTO());
 
         try{
-            backofficeController.getAllMeter(auth);
+            backofficeController.getAllMeter(auth,page,size);
         }catch (ResponseStatusException ex){
             expectedException = ex;
         }
@@ -410,9 +415,9 @@ public class BackOfficeControllerTest {
     public void getAllMeterTest_204(){
 
         when(auth.getPrincipal()).thenReturn(employee);
-        when(meterService.getAll()).thenReturn(new ArrayList<>());
+        when(meterService.getAll(page,size)).thenReturn(new ArrayList<>());
 
-        ResponseEntity<List<Meter>>response = backofficeController.getAllMeter(auth);
+        ResponseEntity<List<Meter>>response = backofficeController.getAllMeter(auth,page,size);
 
         Assert.assertEquals(HttpStatus.NO_CONTENT.value(),response.getStatusCodeValue());
         Assert.assertEquals(anEmptyList(),response.getBody());

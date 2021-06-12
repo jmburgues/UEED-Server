@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import edu.utn.UEEDServer.model.*;
 import edu.utn.UEEDServer.model.dto.AddressDTO;
-import edu.utn.UEEDServer.model.dto.ConsumersDTO;
+
 import edu.utn.UEEDServer.model.dto.ReadingDTO;
 import edu.utn.UEEDServer.model.dto.UserDTO;
 
