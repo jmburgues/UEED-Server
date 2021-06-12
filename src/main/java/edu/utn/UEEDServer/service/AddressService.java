@@ -51,7 +51,7 @@ public class AddressService {
         addressRepository.deleteById(addressId);
     }
 
-    public Address update(Integer clientId, Integer rateId, Address newAddress) {
+    public Address update(Address newAddress) {
         return addressRepository.save(getById(newAddress.getAddressId()));
     }
 }

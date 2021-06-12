@@ -118,7 +118,7 @@ public class BackofficeController {
     public ResponseEntity updateAddress(Authentication auth, @RequestBody AddressDTO addressDTO) {
         verifyAuthentication(auth);
         Address newAddress = modelMapper.map(addressDTO,Address.class);
-        addressService.update(addressDTO.getClientId(), addressDTO.getRateId(), newAddress);
+        addressService.update(newAddress);
 
         return ResponseEntity.ok().build();
     }

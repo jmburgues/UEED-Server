@@ -39,7 +39,6 @@ public class MeterService {
     }
 
     public Meter update(Meter meter){
-        getById(meter.getSerialNumber());
 
         return meterRepo.save(meter);
     }

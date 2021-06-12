@@ -106,11 +106,13 @@ public class AddressServiceTest {
     public void updateTest(){
         //given
         Address address = anAddress();
-        when(addressService.getById(anyInt())).thenReturn(address);
-        //todo check si no es mejor hacer directamente un save en el service
-        /*
-        *  Modificado!
-         */
+
+        when(addressRepository.save(anAddress())).thenReturn(address);
+        when(addressRepository.findById(anyInt())).thenReturn(Optional.of(address));
+
+
+        Address actual = addressService.update(anAddress());
+        Assert.assertEquals(address,actual);
     }
 
 }

@@ -329,11 +329,10 @@ public class BackOfficeControllerTest {
     public void updateAddressTest_200(){
         //given
         AddressDTO addressDTO = anAddressDTO();
-        Integer clientId = 1;
-        Integer rateId = 1;
+
         when(auth.getPrincipal()).thenReturn(employee);
         when(modelMapper.map(addressDTO,Address.class)).thenReturn(anAddress());
-        when(addressService.update(clientId,rateId,anAddress())).thenReturn(anAddress());
+        when(addressService.update(anAddress())).thenReturn(anAddress());
 
         ResponseEntity<Address> response = backofficeController.updateAddress(auth,addressDTO);
 
