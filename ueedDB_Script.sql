@@ -97,24 +97,6 @@ CREATE TABLE READINGS(
     CONSTRAINT fk_READINGS_billId foreign key (billId) references BILLS(billId)
 );
 
-# ITEM 1 - USER PRIVILEGES
-
-CREATE USER 'backoffice' IDENTIFIED BY 'root';
-GRANT ALL PRIVILEGES ON UEED_DB.METERS TO backoffice;
-GRANT ALL PRIVILEGES ON UEED_DB.RATES TO backoffice;
-GRANT ALL PRIVILEGES ON UEED_DB.CLIENTS TO backoffice;
-
-CREATE USER 'client' IDENTIFIED BY 'root';
-GRANT SELECT ON UEED_DB.BILLS TO 'client';
-GRANT SELECT ON UEED_DB.READINGS TO 'client';
-
-CREATE USER 'meter' IDENTIFIED BY 'root';
-GRANT INSERT ON UEED_DB.READINGS TO 'meter';
-
-CREATE USER 'billing' IDENTIFIED BY 'root';
-GRANT SELECT ON UEED_DB.* TO 'billing';
-GRANT INSERT ON UEED_DB.BILLS TO 'billing';
-
 
 # TRIGGER prevents unregistered meters from storing data.
 
@@ -210,7 +192,8 @@ BEGIN
     SELECT totalKw INTO consumeTo FROM READINGS WHERE meterSerialNumber = pSerialNumber AND readDate = pDateTo;
 
     SET pConsume = consumeTo-consumeFrom;
-END;
+END $$
+DELIMITER ;
 
 
 
@@ -226,16 +209,16 @@ FROM ADDRESSES a JOIN METERS m ON a.addressId=m.addressId JOIN
 #TOP CONSUMERS
 SELECT ONE.clientId, ONE.consumption
 FROM(
-SELECT C.clientId, R.meterSerialNumber, MAX(R.totalKw) - MIN(R.TotalKw) as consumption
-FROM READINGS R
-INNER JOIN METERS M
-ON R.meterSerialNumber = M.serialNumber
-INNER JOIN ADDRESSES A
-ON A.addressId = M.addressId
-INNER JOIN CLIENTS C
-ON C.clientId = A.clientId
-WHERE R.readDate BETWEEN '2021/05/01' AND '2021/06/01'
-GROUP BY C.clientId, R.meterSerialNumber) AS ONE
+    SELECT C.clientId, R.meterSerialNumber, MAX(R.totalKw) - MIN(R.TotalKw) as consumption
+    FROM READINGS R
+    INNER JOIN METERS M
+    ON R.meterSerialNumber = M.serialNumber
+    INNER JOIN ADDRESSES A
+    ON A.addressId = M.addressId
+    INNER JOIN CLIENTS C
+    ON C.clientId = A.clientId
+    WHERE R.readDate BETWEEN '2021/05/01' AND '2021/06/01'
+    GROUP BY C.clientId, R.meterSerialNumber) AS ONE
 GROUP BY ONE.clientId, ONE.consumption
 ORDER BY SUM(consumption) DESC
 LIMIT 20;
@@ -275,7 +258,8 @@ BEGIN
          p_ratePrice,p_totalConsumption,p_totalPrice);
 
     END IF;
-END;
+END $$
+DELIMITER ;
 
 #-------------------generate all bills --------------------
 DELIMITER $$
@@ -299,7 +283,8 @@ BEGIN
 
     END LOOP foreach;
     CLOSE billCursor;
-END;
+END $$
+DELIMITER ;
 
 #----------------------------------#
 # Event for billing once a month
@@ -346,10 +331,8 @@ BEGIN
         (NOW(),pDateFrom,pDateTo,pInitialConsumption,pFinalConsumption,pTotalConsumption,pMeterId,new.rateId,new.kwPrice,pTotalPrice,pClientId);
     END LOOP foreach;
     CLOSE adjust;
-END;
-
-
-
+END $$
+DELIMITER ;
 
 
 #INDEXES
