@@ -175,7 +175,7 @@ public class BackofficeController {
 
 /* BILL ENDPOINTS */
 
-    @GetMapping(CLIENT_PATH + "/{clientId}/bills") // VER QUERY DSL PARA LOS DIFERENTES FILTERS
+    @GetMapping(CLIENT_PATH + "/{clientId}/bills")
     public ResponseEntity<List<Bill>> filterByDate(Authentication auth,
                                    @PathVariable Integer clientId,
                                    @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date from,

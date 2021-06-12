@@ -12,9 +12,13 @@ import java.util.List;
 
 public interface ReadingRepository extends JpaRepository<Reading,Integer> {
 
-    @Query(value = "SELECT * FROM READINGS " +
-            "WHERE meterSerialNumber = ?1 AND readDate BETWEEN ?2 AND ?3", nativeQuery = true)
-    List<Reading> getReadingsByMeterAndDate(String meterSerialNumber, Date from, Date to);
+    @Query(value = "SELECT * FROM READINGS R " +
+            "INNER JOIN METERS M " +
+            "ON R.meterSerialNumber = M.serialNumber " +
+            "INNER JOIN ADDRESSES A " +
+            "ON M.addressId = A.addressId " +
+            "WHERE A.addressId = ?1 AND readDate BETWEEN ?2 AND ?3", nativeQuery = true)
+    List<Reading> getAddressReadingsByDate(Integer addressId, Date from, Date to);
 
     @Query(value = "SELECT * FROM READINGS R " +
             "INNER JOIN METERS M " +
@@ -54,7 +58,7 @@ public interface ReadingRepository extends JpaRepository<Reading,Integer> {
                     "GROUP BY C.clientId, C.name, C.surname) AS ONE " +
                     "GROUP BY ONE.clientId, ONE.name, ONE.surname, ONE.consumption " +
                     "ORDER BY SUM(consumption) DESC " +
-                    "LIMIT 20", nativeQuery = true)
+                    "LIMIT 10", nativeQuery = true)
     List<ConsumersDTO> getTopConsumers(Date from, Date to);
 }
 

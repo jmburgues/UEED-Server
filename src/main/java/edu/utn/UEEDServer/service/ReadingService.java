@@ -17,11 +17,13 @@ public class ReadingService {
 
     private final MeterService meterService;
     private final ReadingRepository readingRepo;
+    private final AddressService addressService;
 
     @Autowired
-    public ReadingService(MeterService meterService, ReadingRepository readingRepo) {
+    public ReadingService(MeterService meterService, ReadingRepository readingRepo, AddressService addressService) {
         this.meterService = meterService;
         this.readingRepo = readingRepo;
+        this.addressService = addressService;
     }
 
     public Reading add(Reading reading) {
@@ -31,9 +33,8 @@ public class ReadingService {
     public List<Reading>getAddressReadingsByDate(Integer addressId, Date from, Date to) {
         if(from.after(to))
             throw new IllegalArgumentException("Date From (" + from + ") can not be after date To (" + to + ")");
-
-        Meter meter = this.meterService.getByAddressId(addressId);
-        return this.readingRepo.getReadingsByMeterAndDate(meter.getSerialNumber(),from,to);
+        addressService.getById(addressId);
+        return this.readingRepo.getAddressReadingsByDate(addressId,from,to);
     }
 
     public List<Reading>getClientReadingsByDate(Integer clientId, Date from, Date to, Integer page, Integer size) {

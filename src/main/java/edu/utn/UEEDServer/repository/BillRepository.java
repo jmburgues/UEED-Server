@@ -11,7 +11,7 @@ import java.util.List;
 @Repository
 public interface BillRepository extends JpaRepository<Bill,Integer> {
 
-    @Query(value = "SELECT A.* FROM BILLS B " +
+    @Query(value = "SELECT * FROM BILLS B " +
             "INNER JOIN CLIENTS C " +
             "ON B.clientId = C.clientId " +
             "INNER JOIN ADDRESSES A " +
