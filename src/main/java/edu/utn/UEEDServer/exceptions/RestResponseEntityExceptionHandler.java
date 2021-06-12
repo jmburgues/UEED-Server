@@ -18,13 +18,13 @@ import java.util.List;
 public class RestResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler({
-            ResponseStatusException.class,
+            IDnotFoundException.class
     })
-    public ResponseEntity<Object> handlerResponseStatusException(ResponseStatusException ex, WebRequest request){
-        List<String> errors = new ArrayList<>();
-        errors.add(ex.getMessage());
-        ApiError apiError = new ApiError(ex.getStatus(), ex.getLocalizedMessage(), errors);
-        return new ResponseEntity<Object>(apiError,new HttpHeaders(),apiError.getHttpStatus());
+
+    public ResponseEntity<Object> idNotFoundExceptionHandler(IDnotFoundException exceptions){
+        ApiError apiError = new ApiError(HttpStatus.NOT_FOUND, exceptions.getLocalizedMessage(),List.of(exceptions.getMessage()));
+
+        return new ResponseEntity<Object>(apiError,new HttpHeaders(), apiError.getHttpStatus());
     }
 
     @ExceptionHandler({

@@ -97,6 +97,24 @@ CREATE TABLE READINGS(
     CONSTRAINT fk_READINGS_billId foreign key (billId) references BILLS(billId)
 );
 
+# ITEM 1 - USER PRIVILEGES
+
+CREATE USER 'backoffice' IDENTIFIED BY 'root';
+GRANT ALL PRIVILEGES ON UEED_DB.METERS TO backoffice;
+GRANT ALL PRIVILEGES ON UEED_DB.RATES TO backoffice;
+GRANT ALL PRIVILEGES ON UEED_DB.CLIENTS TO backoffice;
+
+CREATE USER 'client' IDENTIFIED BY 'root';
+GRANT SELECT ON UEED_DB.BILLS TO 'client';
+GRANT SELECT ON UEED_DB.READINGS TO 'client';
+
+CREATE USER 'meter' IDENTIFIED BY 'root';
+GRANT INSERT ON UEED_DB.READINGS TO 'meter';
+
+CREATE USER 'billing' IDENTIFIED BY 'root';
+GRANT SELECT ON UEED_DB.* TO 'billing';
+GRANT INSERT ON UEED_DB.BILLS TO 'billing';
+
 
 # TRIGGER prevents unregistered meters from storing data.
 
@@ -134,7 +152,7 @@ BEGIN
     DECLARE pLastReading FLOAT DEFAULT 0;
 
     CALL getKwPrice(new.meterSerialNumber,@actualPrice);
-
+# Esto esta bien?? Hace un select del last reading que todavia no se inserto (trigger before insert)
     SET pReadDate=(SELECT MAX(readDate) FROM READINGS WHERE readDate<new.readDate AND meterSerialNumber=new.meterSerialNumber);
 
     IF(pReadDate IS NOT NULL)THEN
@@ -151,8 +169,7 @@ END;
 #ITEM 3 PART II
 #TRIGGER UPDATE READING PRICES AFTER UPDATES ON RATES
 DELIMITER $$
-CREATE TRIGGER tau_updateReadingPrice AFTER UPDATE ON RATES
-    FOR EACH ROW
+CREATE TRIGGER tau_updateReadingPrice AFTER UPDATE ON RATES FOR EACH ROW
 BEGIN
 
     DECLARE endLoop INT DEFAULT 0;
@@ -331,23 +348,7 @@ BEGIN
     CLOSE adjust;
 END;
 
-#USER PRIVILEGES
 
-CREATE USER 'backoffice' IDENTIFIED BY 'root';
-GRANT ALL PRIVILEGES ON UEED_DB.METERS TO backoffice;
-GRANT ALL PRIVILEGES ON UEED_DB.RATES TO backoffice;
-GRANT ALL PRIVILEGES ON UEED_DB.CLIENTS TO backoffice;
-
-CREATE USER 'client' IDENTIFIED BY 'root';
-GRANT SELECT ON UEED_DB.BILLS TO 'client';
-GRANT SELECT ON UEED_DB.READINGS TO 'client';
-
-CREATE USER 'meter' IDENTIFIED BY 'root';
-GRANT INSERT ON UEED_DB.READINGS TO 'meter';
-
-CREATE USER 'billing' IDENTIFIED BY 'root';
-GRANT SELECT ON UEED_DB.* TO 'billing';
-GRANT INSERT ON UEED_DB.BILLS TO 'billing';
 
 
 

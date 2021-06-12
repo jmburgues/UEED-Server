@@ -40,6 +40,9 @@ public class AddressServiceTest {
 
     @Test
     public void addTest(){  //todo deberia tirar un sql exception si el address ya existe
+        /*
+        *   MODIFICADO. Ahora verifica si existe por street y number y tira excepcion.
+         */
         //given
         Integer clientId = 1;
         Integer rateId = 1;
@@ -105,6 +108,9 @@ public class AddressServiceTest {
         Address address = anAddress();
         when(addressService.getById(anyInt())).thenReturn(address);
         //todo check si no es mejor hacer directamente un save en el service
+        /*
+        *  Modificado!
+         */
     }
 
 }

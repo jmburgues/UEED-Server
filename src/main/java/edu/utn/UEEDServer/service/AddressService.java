@@ -25,6 +25,9 @@ public class AddressService {
     }
 
     public Address add(Integer clientId, Integer rateId, Address address) {
+        if(addressRepository.getByStreeetAndNumber(address.getStreet(),address.getNumber()).isPresent())
+            throw new IllegalArgumentException("Address (street and number combination) already exists.");
+
         Rate rate = rateService.getById(rateId);
         Client client = clientService.getById(clientId);
         address.setRate(rate);
@@ -49,7 +52,6 @@ public class AddressService {
     }
 
     public Address update(Integer clientId, Integer rateId, Address newAddress) {
-        getById(newAddress.getAddressId());
-        return add(clientId,rateId,newAddress); //aca no deberia hacer un save??
+        return addressRepository.save(getById(newAddress.getAddressId()));
     }
 }
