@@ -51,7 +51,9 @@ public class AddressService {
         addressRepository.deleteById(addressId);
     }
 
-    public Address update(Address newAddress) {
-        return addressRepository.save(getById(newAddress.getAddressId()));
+    public Boolean update(Address newAddress) {
+        Boolean updated = addressRepository.findById(newAddress.getAddressId()).isPresent();
+        addressRepository.save(newAddress);
+        return updated;
     }
 }

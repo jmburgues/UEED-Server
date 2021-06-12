@@ -38,9 +38,10 @@ public class MeterService {
         return meterRepo.save(newMeter);
     }
 
-    public Meter update(Meter meter){
-
-        return meterRepo.save(meter);
+    public Boolean update(Meter meter){
+        Boolean updated = meterRepo.findById(meter.getSerialNumber()).isPresent();
+        meterRepo.save(meter);
+        return updated;
     }
 
     public void delete(String serialNumber) {

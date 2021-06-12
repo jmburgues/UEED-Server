@@ -94,7 +94,7 @@ public class BackofficeController {
     @GetMapping(ADDRESS_PATH)
     public  ResponseEntity<List<Address>> getAllAddress(Authentication auth,
                                                         @RequestParam(value="page", defaultValue = "0") Integer page,
-                                                        @RequestParam(value="size", defaultValue = "10") Integer size){
+                                                        @RequestParam(value="size", defaultValue = "10") Integer size) {
         verifyAuthentication(auth);
         return response(addressService.getAll(page,size));
     }
@@ -118,9 +118,11 @@ public class BackofficeController {
     public ResponseEntity updateAddress(Authentication auth, @RequestBody AddressDTO addressDTO) {
         verifyAuthentication(auth);
         Address newAddress = modelMapper.map(addressDTO,Address.class);
-        addressService.update(newAddress);
 
-        return ResponseEntity.ok().build();
+        if(addressService.update(newAddress))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.created(EntityURLBuilder.buildURL(newAddress.getAddressId())).build();
     }
 
     @DeleteMapping(ADDRESS_PATH + "/{addressId}")
@@ -135,7 +137,7 @@ public class BackofficeController {
     @GetMapping(METER_PATH)
     public ResponseEntity<List<Meter>> getAllMeter(Authentication auth,
                                                    @RequestParam(value="page", defaultValue = "0") Integer page,
-                                                   @RequestParam(value="size", defaultValue = "10") Integer size){
+                                                   @RequestParam(value="size", defaultValue = "10") Integer size) {
         verifyAuthentication(auth);
         return response(this.meterService.getAll(page,size));
     }
@@ -157,13 +159,11 @@ public class BackofficeController {
     @PutMapping(METER_PATH)
     public ResponseEntity updateMeter(Authentication auth, @RequestBody Meter meter) {
         verifyAuthentication(auth);
-        meterService.update(meter);
 
-        if(meterService.getById(meter.getSerialNumber())!=null)
-        return ResponseEntity.ok().build(); //si esta actualizo
-
-        else return ResponseEntity //sino lo creo y devuelvo el recurso
-                .created(EntityURLBuilder.buildURL(meter.getSerialNumber())).build();
+       if(meterService.update(meter))
+            return ResponseEntity.ok().build();
+        else
+            return ResponseEntity.created(EntityURLBuilder.buildURL(meter.getSerialNumber())).build();
     }
 
     @DeleteMapping(METER_PATH + "/{serialNumber}")
