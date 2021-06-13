@@ -29,10 +29,9 @@ public class MeterController {
 
     @PostMapping()
     public ResponseEntity<Meter> addReading(@RequestBody ReadingDTO incoming){
-        System.out.println("INCOMING !!! " + incoming.toString());
+        System.out.println("INCOMING READING: " + incoming.toString());
         Meter existent = meterService.getById(incoming.getMeterSerialNumber());
         if(existent.getPassword().equals(incoming.getPassword())){
-            System.out.println("ADDING reading" + conversionService.convert(incoming,Reading.class).toString());
             Reading added = readingService.add(conversionService.convert(incoming, Reading.class));
         }else{
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,"Invalid credentials.");

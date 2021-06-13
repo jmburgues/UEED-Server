@@ -247,6 +247,7 @@ BEGIN
          p_ratePrice,p_totalConsumption,p_totalPrice);
 
     END IF;
+
 END $$
 DELIMITER ;
 
@@ -254,24 +255,29 @@ DELIMITER ;
 DELIMITER $$
 CREATE definer = 'root'@'localhost' PROCEDURE billAll()
 BEGIN
+        DECLARE endLoop INT DEFAULT 0;
+        DECLARE pAddressId INT;
+        DECLARE billCursor CURSOR FOR SELECT addressId FROM ADDRESSES;
+        DECLARE CONTINUE HANDLER FOR NOT FOUND SET endLoop = 1;
 
-    DECLARE endLoop INT DEFAULT 0;
-    DECLARE pAddressId INT;
-    DECLARE billCursor CURSOR FOR SELECT addressId FROM ADDRESSES;
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET endLoop = 1;
+        SET autocommit = 0;
+        SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
 
-    OPEN billCursor;
+            OPEN billCursor;
 
-    foreach: LOOP
+            foreach: LOOP
 
-        FETCH billCursor INTO pAddressId;
-             IF  endLoop = 1 THEN
-             LEAVE foreach;
-             END IF;
-        CALL sp_generateBill(pAddressId);
+                FETCH billCursor INTO pAddressId;
+                     IF  endLoop = 1 THEN
+                     LEAVE foreach;
+                     END IF;
+                CALL sp_generateBill(pAddressId);
 
-    END LOOP foreach;
-    CLOSE billCursor;
+            END LOOP foreach;
+            CLOSE billCursor;
+
+        COMMIT;
+        SET autocommit = 1;
 END $$
 DELIMITER ;
 

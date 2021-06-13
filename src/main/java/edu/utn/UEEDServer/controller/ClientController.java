@@ -22,7 +22,7 @@ import java.util.List;
 import static edu.utn.UEEDServer.utils.Response.response;
 
 @RestController
-@RequestMapping("/client")
+@RequestMapping("/clients")
 public class ClientController {
 
     private final  ReadingService readingService;
@@ -36,7 +36,7 @@ public class ClientController {
         this.clientService = clientService;
     }
 
-    @GetMapping("/{clientId}/bill")
+    @GetMapping("/{clientId}/bills")
     public ResponseEntity<List<Bill>> filterByClientAndDate(Authentication auth,
                                             @PathVariable Integer clientId,
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date from,

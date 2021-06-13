@@ -6,6 +6,4 @@ public class Constants {
     public static final String JWT_SECRET = "UEEDSecretKey";
     public static final String AUTH_EMPLOYEE = "EMPLOYEE";
     public static final String AUTH_CLIENT = "CLIENT";
-    public static final String BACKOFFICE_PATH = "backoffice";
-    public static final String CLIENT_PATH = "client";
 }

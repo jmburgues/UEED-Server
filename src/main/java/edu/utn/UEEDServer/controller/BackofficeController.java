@@ -26,10 +26,10 @@ import static edu.utn.UEEDServer.utils.Response.response;
 @RequestMapping("/backoffice")
 public class BackofficeController {
 
-    private static final String RATE_PATH = "/rate";
-    private static final String ADDRESS_PATH = "/address";
-    private static final String METER_PATH = "/meter";
-    private static final String CLIENT_PATH = "/client";
+    private static final String RATE_PATH = "/rates";
+    private static final String ADDRESS_PATH = "/addresses";
+    private static final String METER_PATH = "/meters";
+    private static final String CLIENT_PATH = "/clients";
 
     private final RateService rateService;
     private final AddressService addressService;
