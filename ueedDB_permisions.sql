@@ -1,7 +1,15 @@
+drop user ''@'localhost';
 create user 'meters'@'%' identified by '1234';
+create user 'meters'@'localhost' identified by '1234';
+
 create user 'clients'@'%' identified by '1234';
+create user 'clients'@'localhost' identified by '1234';
+
 create user 'boffice'@'%' identified by '1234';
+create user 'boffice'@'localhost' identified by '1234';
+
 create user 'billings'@'%' identified by '1234';
+create user 'billings'@'localhost' identified by '1234';
 
 ### METER PERMISIONS
 grant insert on UEED_DB.READINGS to 'meters';
@@ -33,7 +41,7 @@ GRANT execute ON procedure UEED_DB.clientConsumption to 'clients';
 DELIMITER $$
 CREATE definer = 'root'@'localhost' PROCEDURE getClientReadings(inClientId INT, dateFrom DATETIME, dateTo DATETIME)
 begin
-    SELECT * FROM READINGS R
+    SELECT R.* FROM READINGS R
     INNER JOIN METERS M
     ON R.meterSerialNumber = M.serialNumber
     INNER JOIN ADDRESSES A
@@ -75,7 +83,7 @@ GRANT execute ON procedure UEED_DB.getUnpaidByAddress to 'boffice';
 DELIMITER $$
 CREATE definer = 'root'@'localhost' PROCEDURE getAddressReadingsByDate(procAddresId INT, dateFrom DATETIME, dateTo DATETIME)
 begin
-    SELECT * FROM READINGS R
+    SELECT R.* FROM READINGS R
     INNER JOIN METERS M
     ON R.meterSerialNumber = M.serialNumber
     INNER JOIN ADDRESSES A

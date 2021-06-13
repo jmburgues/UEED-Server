@@ -57,7 +57,7 @@ CREATE TABLE ADDRESSES
 CREATE TABLE METERS
 (
     serialNumber VARCHAR(40),
-    lastReading datetime default now(), # This field will be set by a trigger
+    lastReading datetime default null, # This field will be set by a trigger
     accumulatedConsumption double default 0,  # This field will be set by a trigger
     modelId int not null,
     password VARCHAR(40) not null,
@@ -125,8 +125,7 @@ BEGIN
 end; //
 
 ## ITEM 3
-# TRIGGER updates meter attributes with last readings and calculates consumption price.
-
+# TRIGGER updates READINGS attributes with last readings and calculates consumption price.
 DELIMITER //
 CREATE TRIGGER `tbi_setReadingPrice` BEFORE INSERT ON READINGS FOR EACH ROW
 BEGIN
@@ -134,19 +133,28 @@ BEGIN
     DECLARE pLastReading FLOAT DEFAULT 0;
 
     CALL getKwPrice(new.meterSerialNumber,@actualPrice);
-# Esto esta bien?? Hace un select del last reading que todavia no se inserto (trigger before insert)
-    SET pReadDate=(SELECT MAX(readDate) FROM READINGS WHERE readDate<new.readDate AND meterSerialNumber=new.meterSerialNumber);
+
+    SET pReadDate=(SELECT MAX(readDate) FROM READINGS WHERE readDate<new.readDate AND meterSerialNumber=new.meterSerialNumber LIMIT 1);
 
     IF(pReadDate IS NOT NULL)THEN
-
-        SET pLastReading=(SELECT totalKw FROM READINGS WHERE meterSerialNumber = new.meterSerialNumber AND readDate=pReadDate);
+        SET pLastReading=(SELECT MAX(totalKw) FROM READINGS WHERE meterSerialNumber = new.meterSerialNumber AND readDate=pReadDate);
         SET new.readingPrice = (new.totalKw-pLastReading)* @actualPrice;
     END IF;
+
     IF(pReadDate IS NULL) THEN
         SET new.readingPrice = new.totalKw*@actualPrice;
     END IF;
-
 END;
+
+# TRIGGER Update METERS table after insert on READINGS
+DELIMITER $$
+CREATE TRIGGER `tai_updateMetersAfterReading` AFTER INSERT ON READINGS FOR EACH ROW
+    BEGIN
+        UPDATE METERS
+        SET accumulatedConsumption = new.totalKw, lastReading = new.readDate
+        WHERE METERS.serialNumber = new.meterSerialNumber;
+    end;
+
 
 #ITEM 3 PART II
 #TRIGGER UPDATE READING PRICES AFTER UPDATES ON RATES

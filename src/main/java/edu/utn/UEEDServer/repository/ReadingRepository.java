@@ -3,7 +3,6 @@ package edu.utn.UEEDServer.repository;
 import edu.utn.UEEDServer.model.Reading;
 import edu.utn.UEEDServer.model.projections.ConsumersDTO;
 import edu.utn.UEEDServer.model.projections.ClientConsumption;
-import org.springframework.data.domain.Page;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -12,7 +11,7 @@ import java.util.List;
 
 public interface ReadingRepository extends JpaRepository<Reading,Integer> {
 
-    @Query(value = "SELECT * FROM READINGS R " +
+    @Query(value = "SELECT R.* FROM READINGS R " +
             "INNER JOIN METERS M " +
             "ON R.meterSerialNumber = M.serialNumber " +
             "INNER JOIN ADDRESSES A " +
@@ -20,7 +19,7 @@ public interface ReadingRepository extends JpaRepository<Reading,Integer> {
             "WHERE A.addressId = ?1 AND readDate BETWEEN ?2 AND ?3", nativeQuery = true)
     List<Reading> getAddressReadingsByDate(Integer addressId, Date from, Date to);
 
-    @Query(value = "SELECT * FROM READINGS R " +
+    @Query(value = "SELECT R.* FROM READINGS R " +
             "INNER JOIN METERS M " +
             "ON R.meterSerialNumber = M.serialNumber " +
             "INNER JOIN ADDRESSES A " +

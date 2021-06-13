@@ -21,7 +21,7 @@ public class Meter {
     @NotNull
     private String serialNumber;
 
-    @Column(name="lastReading",columnDefinition = "datetime default now()")
+    @Column(name="lastReading",columnDefinition = "datetime default null")
     private LocalDateTime lastReading;
 
     @Column(name="accumulatedConsumption",columnDefinition = "double default 0")
