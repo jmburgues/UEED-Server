@@ -1,0 +1,135 @@
+ueedDB.rates
+[
+            "1":{
+                category : "residencial",
+                kwPrice : "5"
+                }
+]
+ueedDB.users
+[
+                {
+                    username : "user",
+                    password : "1234",
+                    name : "user",
+                    surname : "surname"
+                    employee: 0
+                }
+]
+ueedDB.clients
+[
+                {
+                    username: "username",
+                    name: "name",
+                    surname: "surname",
+                    dni: "1234564",
+                }
+]
+uuedDB.brand
+[
+                {
+                    id : 1,
+                    name: "brand"
+                }
+]
+
+uuedDB.models
+[
+                {
+                    id : 1,
+                    name: "model",
+                    brand:{
+                            id: 1,
+                            name: "brand"
+                          }
+                }
+]
+uuedDB.addresses
+[
+                  {
+                    id : 1,
+                    street: "street",
+                    number: "number",
+                    client:{
+                            username: "username",
+                            name: "name",
+                            surname: "surname",
+                            dni: "1234564",
+                           },
+                    rate:{
+                            category : "residencial",
+                            kwPrice = 5
+                         }
+                  }
+]
+uuedDB.meters
+[{
+  serialNumber: "aaa111",
+  lastReading: 4,
+  acummulatedConsumption: 4,
+  model:{
+          id : 1,
+          name: "model",
+          brand:{
+                 id: 1,
+                 name: "brand"
+                }
+         },
+  password: "1234",
+  addressId: 1
+ }
+]
+uuedDB.readings
+[
+ {
+  readingId: 1,
+  readDate: "2021-01-01 : 00:00:00",
+  totalKw: 3,
+  readingPrice: 6,
+  meter{
+          serialNumber: "aaa111",
+          lastReading: 4,
+          acummulatedConsumption: 4,
+          model:{
+                  id : 1,
+                  name: "model",
+                  brand:{
+                         id: 1,
+                         name: "brand"
+                        }
+                 },
+          password: "1234",
+          addressId: 1,
+          bills:[]
+       }
+ }
+]
+ueedDB.bills
+[
+  {
+    billId: 1,
+    billedDate: "2021-06-15 00:00:00",
+    initialReadingDate: "2021-06-01 00:00:00",
+    finalReadingDate: "2021-06-15 00:00:00",
+    initialConsumption: 0,
+    finalConsumption: 4,
+    totalConsumption: 15,
+    meterId: "aaa111",
+    rateCategory:{
+                    category : "residencial",
+                    kwPrice : "5"
+                 },
+    totalPrice: 150,
+    paid: true,
+    address:{
+              id : 1,
+              street: "street",
+              number: "number",
+              client:{
+                       username: "username",
+                       name: "name",
+                       surname: "surname",
+                       dni: "1234564",
+                      }
+            }
+    }
+]
