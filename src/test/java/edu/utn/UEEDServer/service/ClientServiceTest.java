@@ -6,6 +6,7 @@ import edu.utn.UEEDServer.repository.ClientRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 
 import java.util.Optional;
@@ -23,7 +24,7 @@ public class ClientServiceTest {
 
     ClientService clientService;
 
-    @Before
+    @BeforeEach
     public void setUp(){
 
         initMocks(this);

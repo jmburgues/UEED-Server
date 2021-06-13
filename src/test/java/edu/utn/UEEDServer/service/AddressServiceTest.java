@@ -7,6 +7,7 @@ import edu.utn.UEEDServer.repository.AddressRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 
 import java.util.List;
@@ -30,7 +31,7 @@ public class AddressServiceTest {
     private Integer page;
     private  Integer size;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         initMocks(this);
         addressService = new AddressService(addressRepository,clientService,rateService);
@@ -39,10 +40,8 @@ public class AddressServiceTest {
     }
 
     @Test
-    public void addTest(){  //todo deberia tirar un sql exception si el address ya existe
-        /*
-        *   MODIFICADO. Ahora verifica si existe por street y number y tira excepcion.
-         */
+    public void addTest(){
+
         //given
         Integer clientId = 1;
         Integer rateId = 1;
@@ -56,6 +55,14 @@ public class AddressServiceTest {
 
         Assert.assertEquals(address,actualAddress);
 
+    }
+    @Test
+    public void addTest_IllegalArguments(){
+
+        when(addressRepository.getByStreeetAndNumber(anyString(),anyInt())).thenReturn(Optional.of(anAddress()));
+
+        Assert.assertThrows(IllegalArgumentException.class,
+                ()->addressService.add(anyInt(),anyInt(),anAddress()));
     }
     @Test
     public void getAllTest(){
@@ -103,16 +110,31 @@ public class AddressServiceTest {
         Assert.assertThrows(IDnotFoundException.class,()->addressService.delete(anyInt()));
     }
     @Test
-    public void updateTest(){
+    public void updateTest_TRUE(){
         //given
         Address address = anAddress();
 
-        when(addressRepository.save(anAddress())).thenReturn(address);
+
         when(addressRepository.findById(anyInt())).thenReturn(Optional.of(address));
+        when(addressRepository.save(anAddress())).thenReturn(address);
+
+       Boolean updatedAddress = addressService.update(anAddress());
+
+        Assert.assertEquals(Boolean.TRUE,updatedAddress);
+    }
+
+    @Test
+    public void updateTest_FALSE(){
+        //given
+        Address address = anAddress();
 
 
-        Address actual = addressService.update(anAddress());
-        Assert.assertEquals(address,actual);
+        when(addressRepository.findById(anyInt())).thenReturn(Optional.empty());
+        when(addressRepository.save(anAddress())).thenReturn(address);
+
+        Boolean updatedAddress = addressService.update(anAddress());
+
+        Assert.assertEquals(Boolean.FALSE,updatedAddress);
     }
 
 }

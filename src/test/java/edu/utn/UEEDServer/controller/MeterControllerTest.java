@@ -7,7 +7,6 @@ import edu.utn.UEEDServer.model.dto.ReadingDTO;
 import edu.utn.UEEDServer.service.MeterService;
 import edu.utn.UEEDServer.service.ReadingService;
 import org.junit.Assert;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

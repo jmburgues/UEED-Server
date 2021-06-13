@@ -31,30 +31,30 @@ public class ReadingService {
     }
 
     public List<Reading>getAddressReadingsByDate(Integer addressId, Date from, Date to) {
-        if(from.after(to))
-            throw new IllegalArgumentException("Date From (" + from + ") can not be after date To (" + to + ")");
+        verifyDates(from,to);
         addressService.getById(addressId);
         return this.readingRepo.getAddressReadingsByDate(addressId,from,to);
     }
 
     public List<Reading>getClientReadingsByDate(Integer clientId, Date from, Date to, Integer page, Integer size) {
-        if(from.after(to))
-            throw new IllegalArgumentException("Date From (" + from + ") can not be after date To (" + to + ")");
-
+        verifyDates(from,to);
          return this.readingRepo.getClientReadingsByDate(clientId,from,to, page, size);
     }
 
     public ClientConsumption getClientConsumption(Integer clientId, Date from, Date to) {
-        if(from.after(to))
-            throw new IllegalArgumentException("Date From (" + from + ") can not be after date To (" + to + ")");
 
+        verifyDates(from,to);
         return this.readingRepo.getClientConsumption(clientId,from,to);
     }
 
     public List<ConsumersDTO> getTopConsumers(Date from, Date to) {
+
+        verifyDates(from,to);
+        return this.readingRepo.getTopConsumers(from,to);
+    }
+
+    public void verifyDates(Date from,Date to){
         if(from.after(to))
             throw new IllegalArgumentException("Date From (" + from + ") can not be after date To (" + to + ")");
-
-        return this.readingRepo.getTopConsumers(from,to);
     }
 }

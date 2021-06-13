@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 
 import java.text.SimpleDateFormat;
@@ -28,7 +29,7 @@ public class BillServiceTest {
 
     private BillService billService;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         initMocks(this);
         billService = new BillService(billRepository,clientService,addressService);

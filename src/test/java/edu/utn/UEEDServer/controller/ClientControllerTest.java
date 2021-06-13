@@ -5,12 +5,13 @@ import edu.utn.UEEDServer.model.Client;
 import edu.utn.UEEDServer.model.dto.UserDTO;
 import edu.utn.UEEDServer.service.BillService;
 import edu.utn.UEEDServer.service.ClientService;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
 import edu.utn.UEEDServer.service.ReadingService;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -19,10 +20,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import org.springframework.http.ResponseEntity;
 
 import static edu.utn.UEEDServer.utils.TestUtils.aClient;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -44,7 +43,7 @@ public class ClientControllerTest {
 
     private ResponseStatusException expectedException;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         initMocks(this);
         clientController = new ClientController(readingService, billService, clientService);

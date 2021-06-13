@@ -6,6 +6,7 @@ import edu.utn.UEEDServer.repository.MeterRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class MeterServiceTest {
     Integer page;
     Integer size;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         initMocks(this);
         this.meterService = new MeterService(meterRepository);
@@ -79,11 +80,17 @@ public class MeterServiceTest {
         Assert.assertThrows(IllegalArgumentException.class,()->meterService.add(aMeter()));
     }
     @Test
-    public void updateTest(){
-        when(meterRepository.save(aMeter())).thenReturn(aMeter());
+    public void updateTest_TRUE(){
+        when(meterRepository.findById(anyString())).thenReturn(Optional.of(aMeter()));
+        Boolean actualMeter = meterService.update(aMeter());
+        Assert.assertEquals(Boolean.TRUE,actualMeter);
+    }
 
-        Meter actualMeter = meterService.update(aMeter());
-        Assert.assertEquals(aMeter(),actualMeter);
+    @Test
+    public void updateTest_FALSE(){
+        when(meterRepository.findById(anyString())).thenReturn(Optional.empty());
+        Boolean actualMeter = meterService.update(aMeter());
+        Assert.assertEquals(Boolean.FALSE,actualMeter);
     }
     @Test
     public void deleteTest(){

@@ -332,11 +332,26 @@ public class BackOfficeControllerTest {
 
         when(auth.getPrincipal()).thenReturn(employee);
         when(modelMapper.map(addressDTO,Address.class)).thenReturn(anAddress());
-        when(addressService.update(anAddress())).thenReturn(anAddress());
+        when(addressService.update(anAddress())).thenReturn(true);
+
 
         ResponseEntity<Address> response = backofficeController.updateAddress(auth,addressDTO);
 
         Assert.assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+
+    }
+    @Test
+    public void updateAddressTest_201(){
+        //given
+        AddressDTO addressDTO = anAddressDTO();
+
+        when(auth.getPrincipal()).thenReturn(employee);
+        when(modelMapper.map(addressDTO,Address.class)).thenReturn(anAddress());
+        when(addressService.update(anAddress())).thenReturn(false);
+
+        ResponseEntity<Address>response = backofficeController.updateAddress(auth,addressDTO);
+
+        Assert.assertEquals(HttpStatus.CREATED.value(),response.getStatusCodeValue());
 
     }
 
@@ -481,7 +496,7 @@ public class BackOfficeControllerTest {
 
         Meter meter = aMeter();
         when(auth.getPrincipal()).thenReturn(employee);
-        when(meterService.getById("aaa111")).thenReturn(aMeter());
+        when(meterService.update(meter)).thenReturn(true);
 
         ResponseEntity responseEntity = backofficeController.updateMeter(auth,meter);
 
@@ -493,7 +508,7 @@ public class BackOfficeControllerTest {
 
         Meter meter = aMeter();
         when(auth.getPrincipal()).thenReturn(employee);
-        when(meterService.getById("aaa111")).thenReturn(null);
+        when(meterService.update(meter)).thenReturn(false);
 
         ResponseEntity responseEntity = backofficeController.updateMeter(auth,meter);
 

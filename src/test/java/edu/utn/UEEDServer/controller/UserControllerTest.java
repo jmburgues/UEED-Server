@@ -7,7 +7,6 @@ import edu.utn.UEEDServer.model.dto.LoginResponseDto;
 import edu.utn.UEEDServer.model.dto.UserDTO;
 import edu.utn.UEEDServer.service.UserService;
 import lombok.SneakyThrows;
-import org.dom4j.util.UserDataAttribute;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

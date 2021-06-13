@@ -6,6 +6,7 @@ import edu.utn.UEEDServer.repository.RateRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 
 import java.util.List;
@@ -23,7 +24,7 @@ public class RateServiceTest {
 
     RateService rateService;
 
-    @Before
+    @BeforeEach
     public void setUp(){
 
         initMocks(this);

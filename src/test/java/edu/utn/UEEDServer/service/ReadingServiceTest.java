@@ -8,6 +8,7 @@ import lombok.SneakyThrows;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 
 import java.text.SimpleDateFormat;
@@ -35,7 +36,7 @@ public class ReadingServiceTest {
     Integer size;
 
 
-    @Before
+    @BeforeEach
     public void setUp(){
         initMocks(this);
         this.readingService = new ReadingService(meterService, readingRepository, addressService);
@@ -91,11 +92,12 @@ public class ReadingServiceTest {
     @Test
     public void getClientReadingsByDateTest_IllegalArguments(){
 
+        Integer clientId =1;
         Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
         Date to = new SimpleDateFormat("yyyy-MM").parse("2021-04");
 
         Assert.assertThrows(IllegalArgumentException.class,
-                ()->readingService.getClientReadingsByDate(anyInt(),from,to,page,size));
+                ()->readingService.getClientReadingsByDate(clientId,from,to,page,size));
     }
 
     @SneakyThrows

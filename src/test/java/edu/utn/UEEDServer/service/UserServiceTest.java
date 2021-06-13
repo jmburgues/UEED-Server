@@ -3,8 +3,8 @@ package edu.utn.UEEDServer.service;
 import edu.utn.UEEDServer.model.User;
 import edu.utn.UEEDServer.repository.UserRepository;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
 
 import static edu.utn.UEEDServer.utils.TestUtils.aUser;
@@ -18,7 +18,7 @@ public class UserServiceTest {
 
     UserService userService;
 
-    @Before
+    @BeforeEach
     public void setUp(){
         initMocks(this);
         this.userService = new UserService(userRepository);
