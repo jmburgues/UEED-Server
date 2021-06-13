@@ -321,7 +321,7 @@ BEGIN
     DECLARE pInitialConsumption,pFinalConsumption,pTotalConsumption,pRatePrice,pTotalPrice FLOAT;
 
     DECLARE adjust CURSOR FOR SELECT billId,initialReadingDate,finalReadingDate,initialConsumption,finalConsumption,totalConsumption,meterId,ratePrice,totalPrice,clientId
-                              FROM BILLS WHERE rateCategory = old.rateId;
+                              FROM BILLS WHERE rateCategory = old.rateId AND ratePrice=old.KwPrice;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET endLoop = 1;
 
     OPEN adjust;
