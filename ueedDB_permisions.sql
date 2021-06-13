@@ -117,3 +117,6 @@ end $$
 DELIMITER ;
 
 GRANT execute ON procedure UEED_DB.getTopConsumers to 'boffice';
+
+## BILLING PERMISSIONS to Bill user
+GRANT execute ON procedure UEED_DB.billAll to 'billings';

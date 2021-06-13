@@ -189,7 +189,6 @@ BEGIN
     CLOSE rUpdate;
 END;
 
-
    # /*Calculate consumed kws between intervals of time*/
 DELIMITER $$
 CREATE PROCEDURE sp_consumeBtwTimes (pSerialNumber VARCHAR(40),pDateFrom DATETIME ,pDateTo DATETIME,OUT pConsume FLOAT)
@@ -204,7 +203,6 @@ END $$
 DELIMITER ;
 
 
-
 #VIEWS
 #Item 4
 CREATE VIEW report_readings_by_date_n_user_view AS
@@ -212,29 +210,11 @@ SELECT c.name,c.surname,m.serialNumber,r.readDate,r.totalKw,r.readingPrice
 FROM ADDRESSES a JOIN METERS m ON a.addressId=m.addressId JOIN
      CLIENTS c ON c.clientId = a.clientId JOIN READINGS r ON r.meterSerialNumber =m.serialNumber;
 
-
-
-#TOP CONSUMERS
-SELECT ONE.clientId, ONE.consumption
-FROM(
-    SELECT C.clientId, R.meterSerialNumber, MAX(R.totalKw) - MIN(R.TotalKw) as consumption
-    FROM READINGS R
-    INNER JOIN METERS M
-    ON R.meterSerialNumber = M.serialNumber
-    INNER JOIN ADDRESSES A
-    ON A.addressId = M.addressId
-    INNER JOIN CLIENTS C
-    ON C.clientId = A.clientId
-    WHERE R.readDate BETWEEN '2021/05/01' AND '2021/06/01'
-    GROUP BY C.clientId, R.meterSerialNumber) AS ONE
-GROUP BY ONE.clientId, ONE.consumption
-ORDER BY SUM(consumption) DESC
-LIMIT 20;
-
 #ITEM 4
 #----- Generate Bill --------#
 DELIMITER $$
 CREATE PROCEDURE sp_generateBill (p_addressId INT)
+#drop procedure sp_generateBill
 BEGIN
     DECLARE p_meterId VARCHAR(100);
     DECLARE p_dateFrom,p_dateTo DATETIME;
@@ -244,14 +224,15 @@ BEGIN
 
     SELECT serialNumber INTO p_meterId FROM METERS  WHERE addressId = p_addressId;
 
-    SELECT MIN(readDate)INTO p_dateFrom
-    FROM READINGS WHERE ISNULL(billId) AND meterSerialNumber=p_meterId;
+    SELECT MIN(readDate) INTO p_dateFrom
+    FROM READINGS WHERE ISNULL(billId) AND meterSerialNumber=p_meterId LIMIT 1;
+
     SELECT MAX(readDate)INTO p_dateTo FROM READINGS
-    WHERE ISNULL(billId) AND meterSerialNumber=p_meterId;
+    WHERE ISNULL(billId) AND meterSerialNumber=p_meterId LIMIT 1;
 
     SELECT clientId INTO p_clientId FROM ADDRESSES WHERE addressId = p_addressId;
-    SELECT totalKw INTO p_initialConsumption FROM READINGS WHERE readDate = p_dateFrom AND meterSerialNumber=p_meterId;
-    SELECT totalKw INTO p_finalConsumption FROM READINGS WHERE readDate = p_dateTo AND meterSerialNumber=p_meterId;
+    SELECT MAX(totalKw) INTO p_initialConsumption FROM READINGS WHERE readDate = p_dateFrom AND meterSerialNumber=p_meterId;
+    SELECT MAX(totalKw) INTO p_finalConsumption FROM READINGS WHERE readDate = p_dateTo AND meterSerialNumber=p_meterId;
     SELECT rateId INTO p_rateId FROM ADDRESSES WHERE addressId = p_addressId;
     SELECT rateId INTO p_rateCategory FROM RATES WHERE rateId=p_rateId;
     SELECT kwPrice INTO p_ratePrice FROM RATES WHERE  rateId=p_rateId;
@@ -271,7 +252,7 @@ DELIMITER ;
 
 #-------------------generate all bills --------------------
 DELIMITER $$
-CREATE PROCEDURE billAll()
+CREATE definer = 'root'@'localhost' PROCEDURE billAll()
 BEGIN
 
     DECLARE endLoop INT DEFAULT 0;
@@ -347,3 +328,12 @@ DELIMITER ;
 /*to prevent duplicates addresses*/
 CREATE UNIQUE INDEX index_address ON ADDRESSES (street,number)
     USING BTREE;
+
+
+## ITEM 4
+# Indexes to optimize Reading querys by username and date
+CREATE INDEX `idx_readings_dates` ON READINGS(readDate) USING BTREE;
+CREATE INDEX `idx_readings_username` ON READINGS(meterSerialNumber) USING HASH;
+CREATE INDEX `idx_meters_username` ON METERS(addressId) USING HASH;
+CREATE INDEX `idx_addresses_username` ON ADDRESSES(clientId) USING HASH;
+CREATE INDEX `idx_clients_username` ON CLIENTS(username) USING HASH;
