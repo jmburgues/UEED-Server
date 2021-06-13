@@ -7,33 +7,34 @@ import edu.utn.UEEDServer.model.dto.ReadingDTO;
 import edu.utn.UEEDServer.service.MeterService;
 import edu.utn.UEEDServer.service.ReadingService;
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.junit.Before;
+import org.junit.Test;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.server.ResponseStatusException;
 
 import static edu.utn.UEEDServer.utils.TestUtils.*;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 public class MeterControllerTest {
 
-    @Mock
+
     MeterService meterService;
-    @Mock
+
     ReadingService readingService;
-    @Mock
+
     ConversionService conversionService;
 
     private MeterController meterController;
 
-    @BeforeEach
+    @Before
     public void setUp(){
 
-        initMocks(this);
+        meterService=mock(MeterService.class);
+        conversionService=mock(ConversionService.class);
+        readingService=mock(ReadingService.class);
         this.meterController = new MeterController(meterService,conversionService,readingService);
     }
 

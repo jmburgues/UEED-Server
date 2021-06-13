@@ -8,9 +8,8 @@ import edu.utn.UEEDServer.model.dto.UserDTO;
 import edu.utn.UEEDServer.service.UserService;
 import lombok.SneakyThrows;
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
+import org.junit.Before;
+import org.junit.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,25 +17,27 @@ import org.springframework.web.server.ResponseStatusException;
 
 import static edu.utn.UEEDServer.utils.TestUtils.aUser;
 import static edu.utn.UEEDServer.utils.TestUtils.aUserDTO;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 public class UserControllerTest {
 
-    @Mock
+
     private UserService userService;
-    @Mock
+
     private ObjectMapper objectMapper;
-    @Mock
+
     private ModelMapper modelMapper;
 
     private UserController userController;
 
     private LoginRequestDto loginRequestDto;
 
-    @BeforeEach
+    @Before
     public void setUp(){
-        initMocks(this);
+        userService=mock(UserService.class);
+        objectMapper=mock(ObjectMapper.class);
+        modelMapper=mock(ModelMapper.class);
 
         this.userController = new UserController(userService,objectMapper,modelMapper);
         this.loginRequestDto = LoginRequestDto

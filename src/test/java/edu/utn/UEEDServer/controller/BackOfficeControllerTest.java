@@ -1,5 +1,6 @@
 package edu.utn.UEEDServer.controller;
 
+
 import edu.utn.UEEDServer.model.*;
 import edu.utn.UEEDServer.model.dto.AddressDTO;
 import edu.utn.UEEDServer.model.dto.UserDTO;
@@ -7,10 +8,8 @@ import edu.utn.UEEDServer.model.projections.ConsumersDTO;
 import edu.utn.UEEDServer.service.*;
 import lombok.SneakyThrows;
 import org.junit.Assert;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.junit.Before;
+import org.junit.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,28 +26,27 @@ import java.util.List;
 
 import static edu.utn.UEEDServer.utils.TestUtils.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 public class BackOfficeControllerTest {
 
 
-    @Mock
+
     private RateService rateService;
-    @Mock
+
     private AddressService addressService;
-    @Mock
+
     private MeterService meterService;
-    @Mock
+
     private BillService billService;
-    @Mock
+
     private ReadingService readingService;
-    @Mock
+
     private ModelMapper modelMapper;
 
     private BackofficeController backofficeController;
 
-    @Mock
-    private Authentication auth;
+
+    Authentication auth;
 
     private ResponseStatusException expectedException;
 
@@ -59,10 +57,16 @@ public class BackOfficeControllerTest {
 
 
 
-    @BeforeEach
+    @Before
     public void setUp(){
+        rateService=mock(RateService.class);
+        addressService=mock(AddressService.class);
+        meterService=mock(MeterService.class);
+        billService=mock(BillService.class);
+        readingService=mock(ReadingService.class);
+        modelMapper=mock(ModelMapper.class);
+        auth=mock(Authentication.class);
 
-        initMocks(this);
         backofficeController = new BackofficeController(
                 rateService,addressService,meterService,billService,readingService,modelMapper);
         employee = anEmployee();
@@ -74,14 +78,14 @@ public class BackOfficeControllerTest {
     @Test
     public void getAllRateTest_200(){
 
-
-        List<Rate>rates = new ArrayList<>();
+        auth = mock(Authentication.class);
+        List<Rate> rates = new ArrayList<>();
         rates.add(aRate());
 
         when(auth.getPrincipal()).thenReturn(employee);
         when(rateService.getAll()).thenReturn(List.of(aRate()));
 
-        ResponseEntity<List<Rate>>actualList=backofficeController.getAllRate(auth);
+        ResponseEntity<List<Rate>> actualList=backofficeController.getAllRate(auth);
 
         Assert.assertEquals(actualList.getBody().size(),rates.size());
 
@@ -210,11 +214,11 @@ public class BackOfficeControllerTest {
 
         when(auth.getPrincipal()).thenReturn(employee);
 
-         Mockito.doNothing().when(rateService).delete(1);
+         doNothing().when(rateService).delete(1);
 
          backofficeController.deleteRate(auth,1);
 
-         Mockito.verify(rateService,Mockito.times(1)).delete(1);
+         verify(rateService,times(1)).delete(1);
 
     }
 

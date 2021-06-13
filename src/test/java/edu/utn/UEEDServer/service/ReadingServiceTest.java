@@ -8,8 +8,6 @@ import lombok.SneakyThrows;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mock;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -17,28 +15,29 @@ import java.util.List;
 
 import static edu.utn.UEEDServer.utils.TestUtils.aReading;
 import static edu.utn.UEEDServer.utils.TestUtils.anAddress;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 public class ReadingServiceTest {
 
-    @Mock
+
     MeterService meterService;
-    @Mock
+
     ReadingRepository readingRepository;
-    @Mock
-    AddressService addressService;
+
+    private AddressService addressService;
 
     private ReadingService readingService;
     Integer page;
     Integer size;
 
 
-    @BeforeEach
+    @Before
     public void setUp(){
-        initMocks(this);
+
+        addressService=mock(AddressService.class);
+        readingRepository= mock(ReadingRepository.class);
+        meterService=mock(MeterService.class);
         this.readingService = new ReadingService(meterService, readingRepository, addressService);
         page = 1;
         size = 1;

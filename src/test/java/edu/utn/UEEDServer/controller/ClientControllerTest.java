@@ -7,9 +7,8 @@ import edu.utn.UEEDServer.service.BillService;
 import edu.utn.UEEDServer.service.ClientService;
 import edu.utn.UEEDServer.service.ReadingService;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mock;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -22,30 +21,33 @@ import java.util.Date;
 import java.util.List;
 
 import static edu.utn.UEEDServer.utils.TestUtils.aClient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 
 public class ClientControllerTest {
-    @Mock
+
     private ReadingService readingService;
-    @Mock
+
     private BillService billService;
-    @Mock
+
     private ClientService clientService;
 
     private ClientController clientController;
 
-    @Mock
+
     private Authentication auth;
 
     private Client loggedClient;
 
     private ResponseStatusException expectedException;
 
-    @BeforeEach
+    @Before
     public void setUp() {
-        initMocks(this);
+        readingService=mock(ReadingService.class);
+        billService=mock(BillService.class);
+        clientService=mock(ClientService.class);
+        auth=mock(Authentication.class);
         clientController = new ClientController(readingService, billService, clientService);
         this.expectedException = null;
         this.loggedClient=aClient();

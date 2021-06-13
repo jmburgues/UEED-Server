@@ -3,27 +3,21 @@ package edu.utn.UEEDServer.service;
 import edu.utn.UEEDServer.exceptions.IDnotFoundException;
 import edu.utn.UEEDServer.model.Address;
 import edu.utn.UEEDServer.repository.AddressRepository;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mock;
 
 import java.util.List;
 import java.util.Optional;
 
 import static edu.utn.UEEDServer.utils.TestUtils.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 public class AddressServiceTest {
 
-    @Mock
+
     AddressRepository addressRepository;
-    @Mock
     ClientService clientService;
-    @Mock
     RateService rateService;
 
     AddressService addressService;
@@ -31,17 +25,23 @@ public class AddressServiceTest {
     private Integer page;
     private  Integer size;
 
-    @BeforeEach
+    @Before
     public void setUp(){
-        initMocks(this);
+        addressRepository = mock(AddressRepository.class);
+        clientService=mock(ClientService.class);
+        rateService=mock(RateService.class);
+
+        this.addressRepository = mock(AddressRepository.class);
         addressService = new AddressService(addressRepository,clientService,rateService);
         page = 1;
         size = 1;
     }
 
     @Test
-    public void addTest(){
-
+    public void addTest(){  //todo deberia tirar un sql exception si el address ya existe
+        /*
+        *   MODIFICADO. Ahora verifica si existe por street y number y tira excepcion.
+         */
         //given
         Integer clientId = 1;
         Integer rateId = 1;
@@ -55,14 +55,6 @@ public class AddressServiceTest {
 
         Assert.assertEquals(address,actualAddress);
 
-    }
-    @Test
-    public void addTest_IllegalArguments(){
-
-        when(addressRepository.getByStreeetAndNumber(anyString(),anyInt())).thenReturn(Optional.of(anAddress()));
-
-        Assert.assertThrows(IllegalArgumentException.class,
-                ()->addressService.add(anyInt(),anyInt(),anAddress()));
     }
     @Test
     public void getAllTest(){
@@ -118,7 +110,7 @@ public class AddressServiceTest {
         when(addressRepository.findById(anyInt())).thenReturn(Optional.of(address));
         when(addressRepository.save(anAddress())).thenReturn(address);
 
-       Boolean updatedAddress = addressService.update(anAddress());
+        Boolean updatedAddress = addressService.update(anAddress());
 
         Assert.assertEquals(Boolean.TRUE,updatedAddress);
     }

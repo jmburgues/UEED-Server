@@ -6,8 +6,6 @@ import edu.utn.UEEDServer.repository.MeterRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mock;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,11 +13,10 @@ import java.util.Optional;
 import static edu.utn.UEEDServer.utils.TestUtils.aMeter;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 public class MeterServiceTest {
 
-    @Mock
+
     MeterRepository meterRepository;
 
     MeterService meterService;
@@ -27,9 +24,9 @@ public class MeterServiceTest {
     Integer page;
     Integer size;
 
-    @BeforeEach
+    @Before
     public void setUp(){
-        initMocks(this);
+        meterRepository=mock(MeterRepository.class);
         this.meterService = new MeterService(meterRepository);
         this.page = 1;
         this.size = 1;

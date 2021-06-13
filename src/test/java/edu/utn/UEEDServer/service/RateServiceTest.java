@@ -6,8 +6,6 @@ import edu.utn.UEEDServer.repository.RateRepository;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mock;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,19 +13,18 @@ import java.util.Optional;
 import static edu.utn.UEEDServer.utils.TestUtils.aRate;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.*;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 public class RateServiceTest {
 
-    @Mock
+
     RateRepository rateRepository;
 
     RateService rateService;
 
-    @BeforeEach
+    @Before
     public void setUp(){
 
-        initMocks(this);
+        rateRepository=mock(RateRepository.class);
         this.rateService = new RateService(rateRepository);
     }
 

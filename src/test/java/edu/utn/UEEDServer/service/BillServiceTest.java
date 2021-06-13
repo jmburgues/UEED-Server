@@ -6,8 +6,6 @@ import lombok.SneakyThrows;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeEach;
-import org.mockito.Mock;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,23 +13,25 @@ import java.util.List;
 
 import static edu.utn.UEEDServer.utils.TestUtils.aBill;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.initMocks;
 
 public class BillServiceTest {
 
-    @Mock
+
     BillRepository billRepository;
-    @Mock
+
     ClientService clientService;
-    @Mock
+
     AddressService addressService;
 
-    private BillService billService;
+    BillService billService;
 
-    @BeforeEach
+    @Before
     public void setUp(){
-        initMocks(this);
+        billRepository=mock(BillRepository.class);
+        clientService=mock(ClientService.class);
+        addressService=mock(AddressService.class);
         billService = new BillService(billRepository,clientService,addressService);
     }
 
