@@ -161,32 +161,36 @@ CREATE TRIGGER `tai_updateMetersAfterReading` AFTER INSERT ON READINGS FOR EACH 
 DELIMITER $$
 CREATE TRIGGER tau_updateReadingPrice AFTER UPDATE ON RATES FOR EACH ROW
 BEGIN
+        DECLARE endLoop INT DEFAULT 0;
+        DECLARE pReadingPrice,pTotalKw FLOAT;
+        DECLARE pReadingId INT;
+        DECLARE pSerialNumber VARCHAR(20);
+        DECLARE rUpdate CURSOR FOR SELECT readingId,totalKw,meterSerialNumber,readingPrice FROM READINGS r
+                                    WHERE r.meterSerialNumber IN(
+                                                                SELECT m.serialNumber FROM METERS m
+                                                                JOIN ADDRESSES a
+                                                                ON m.addressId = a.addressId
+                                                                JOIN RATES ra
+                                                                ON a.rateId = ra.rateId
+                                                                WHERE ra.rateId = old.rateId
+                                                                );
+        DECLARE CONTINUE HANDLER FOR NOT FOUND SET endLoop=1;
 
-    DECLARE endLoop INT DEFAULT 0;
-    DECLARE pReadingPrice,pTotalKw FLOAT;
-    DECLARE pReadingId INT;
-    DECLARE pSerialNumber VARCHAR(20);
-    DECLARE rUpdate CURSOR FOR SELECT readingId,totalKw,meterSerialNumber,readingPrice FROM READINGS r
-                                WHERE r.meterSerialNumber IN(
-                                                            SELECT m.serialNumber FROM METERS m
-                                                            JOIN ADDRESSES a
-                                                            ON m.addressId = a.addressId
-                                                            JOIN RATES ra
-                                                            ON a.rateId = ra.rateId
-                                                            WHERE ra.rateId = old.rateId
-                                                            );
+        IF (OLD.kwPrice <> NEW.kwPrice) THEN
+            SET autocommit = 0;
+            SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
 
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET endLoop=1;
-    OPEN rUpdate;
-    foreach: LOOP
-        FETCH rUpdate INTO pReadingId,pTotalKw,pSerialNumber,pReadingPrice;
-        IF endLoop = 1 THEN
-            LEAVE foreach;
+            OPEN rUpdate;
+            foreach: LOOP
+                FETCH rUpdate INTO pReadingId,pTotalKw,pSerialNumber,pReadingPrice;
+                IF endLoop = 1 THEN
+                    LEAVE foreach;
+                END IF;
+                UPDATE READINGS SET readingPrice=(pReadingPrice/old.kwPrice)*new.kwPrice WHERE meterSerialNumber=pSerialNumber AND readingId = pReadingId;
+
+            END LOOP foreach;
+            CLOSE rUpdate;
         END IF;
-        UPDATE READINGS SET readingPrice=(pReadingPrice/old.kwPrice)*new.kwPrice WHERE meterSerialNumber=pSerialNumber AND readingId = pReadingId;
-
-    END LOOP foreach;
-    CLOSE rUpdate;
 END;
 
    # /*Calculate consumed kws between intervals of time*/
