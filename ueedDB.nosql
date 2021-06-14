@@ -1,135 +1,160 @@
-ueedDB.rates
-[
-            "1":{
-                category : "residencial",
-                kwPrice : "5"
-                }
-]
-ueedDB.users
-[
-                {
-                    username : "user",
-                    password : "1234",
-                    name : "user",
-                    surname : "surname"
-                    employee: 0
-                }
-]
-ueedDB.clients
-[
-                {
-                    username: "username",
-                    name: "name",
-                    surname: "surname",
-                    dni: "1234564",
-                }
-]
-uuedDB.brand
-[
-                {
-                    id : 1,
-                    name: "brand"
-                }
-]
-
-uuedDB.models
-[
-                {
-                    id : 1,
-                    name: "model",
-                    brand:{
-                            id: 1,
-                            name: "brand"
-                          }
-                }
-]
-uuedDB.addresses
-[
-                  {
-                    id : 1,
-                    street: "street",
-                    number: "number",
-                    client:{
-                            username: "username",
-                            name: "name",
-                            surname: "surname",
-                            dni: "1234564",
-                           },
-                    rate:{
-                            category : "residencial",
-                            kwPrice = 5
-                         }
-                  }
-]
-uuedDB.meters
-[{
-  serialNumber: "aaa111",
-  lastReading: 4,
-  acummulatedConsumption: 4,
-  model:{
-          id : 1,
-          name: "model",
-          brand:{
-                 id: 1,
-                 name: "brand"
-                }
-         },
-  password: "1234",
-  addressId: 1
- }
-]
-uuedDB.readings
-[
- {
-  readingId: 1,
-  readDate: "2021-01-01 : 00:00:00",
-  totalKw: 3,
-  readingPrice: 6,
-  meter{
-          serialNumber: "aaa111",
-          lastReading: 4,
-          acummulatedConsumption: 4,
-          model:{
-                  id : 1,
-                  name: "model",
-                  brand:{
-                         id: 1,
-                         name: "brand"
-                        }
-                 },
-          password: "1234",
-          addressId: 1,
-          bills:[]
-       }
- }
-]
-ueedDB.bills
-[
-  {
-    billId: 1,
-    billedDate: "2021-06-15 00:00:00",
-    initialReadingDate: "2021-06-01 00:00:00",
-    finalReadingDate: "2021-06-15 00:00:00",
-    initialConsumption: 0,
-    finalConsumption: 4,
-    totalConsumption: 15,
-    meterId: "aaa111",
-    rateCategory:{
-                    category : "residencial",
-                    kwPrice : "5"
-                 },
-    totalPrice: 150,
-    paid: true,
-    address:{
-              id : 1,
-              street: "street",
-              number: "number",
-              client:{
-                       username: "username",
-                       name: "name",
-                       surname: "surname",
-                       dni: "1234564",
-                      }
-            }
+ueedDB.users: [
+    "1": {
+        "username": "User1",
+        "password": "1234",
+        "employee": 0
+    },
+    "2": {
+        "username": "employee",
+        "password": "1234",
+        "employee": 1
     }
 ]
+
+ueedDB.meters: [
+    "1": {
+        "serialNumber": "001",
+        "password": "1234",
+        "brand": "Zyxel",
+        "model": "ZX99"
+    },
+    "2": {
+        "serialNumber": "002",
+        "password": "1234",
+        "brand": "Motorola",
+        "model": "M001"
+    }
+]
+
+ueedDB.rates: [
+    "1": {
+        "category": "RESIDENTIAL",
+        "price": "1.0"
+    },
+    "2": {
+        "category": "INDUSTRIAL",
+        "price": "1.5"
+    }
+]
+
+ueedDB.addresses: [
+    "1": {
+        "street": "Av. Siempre Viva",
+        "number": "3021",
+        "rate": {
+            "category": "RESIDENTIAL",
+            "price": "1.0"
+        },
+        "meter": {
+            "serialNumber": "002",
+            "brand": "Motorola",
+            "model": "M001"
+        }
+    },
+    "2": {
+        "street": "Calle Falsa",
+        "number": "123",
+        "rate": {
+            "category": "INDUSTRIAL",
+            "price": "1.5"
+        },
+        "meter": "false"
+    }
+]
+
+ueedDB.bills: [
+    "1": {
+        "billDate": "2021-05-05",
+        "initialReadingDate": "2021-04-01",
+        "finalReadingDate": "2021-04-30",
+        "initialConsumption": "10021.00",
+        "finalConsumption": "10300.05",
+        "totalConsumption": "10321.05",
+        "paid": "false",
+        "client": {
+            "name": "Juancito",
+            "surname": "Perez",
+            "DNI": "3123112",
+            "address": {
+                "street": "Av. Siempre Viva",
+                "number": "3021",
+                "rate": {
+                    "category": "RESIDENTIAL",
+                    "price": "1.0"
+                }
+            }
+        }
+    }
+]
+
+ueedDB.readings: [
+    "1": {
+        "readDate": "2021-05-04 11:00:00",
+        "totalKw": "1221.21",
+        "meterSerialNumber": "001",
+        "readingPrice": "112.1",
+        "billedDate": "2021-05-05",
+        "client": {
+            "name": "Juancito",
+            "surname": "Perez",
+            "DNI": "3123112",
+            "address": {
+                "street": "Av. Siempre Viva",
+                "number": "3021",
+                "rate": {
+                    "category": "RESIDENTIAL",
+                    "price": "1.0"
+                }
+            }
+        }
+    },
+    "2": { ...
+    }
+]
+
+ueedDB.topConsumers: [
+    "1"{
+        "rank": "1",
+        "client": {
+            "name": "Juancito",
+            "surname": "Perez",
+            "DNI": "3123112",
+            "address": [
+                {
+                    "street": "Av. Siempre Viva",
+                    "number": "3021",
+                    "rate": {
+                        "category": "RESIDENTIAL",
+                        "price": "1.0"
+                    },
+                    {
+                        "street": "Calle Falsa",
+                        "number": "123",
+                        "rate": {
+                            "category": "INDUSTRIAL",
+                            "price": "1.5"
+                        }
+                    }
+                ]
+            },
+            "accConsumption": "121311,30",
+            "dateFrom": "2020-01-01",
+            "dateTo": "2021-01-01"
+        },
+        "2"{
+            "rank": "2",
+            ...
+        }
+    ]
+
+ueedDB.clientConsumption:
+[
+    "1"{
+            "dateFrom": "2020-01-01",
+            "dateTo": "2021-01-01",
+            "totalConsumption" : "10342,11",
+        },
+    "2" { ... }
+]
+
+
