@@ -24,11 +24,13 @@ public class ClientService {
                 orElseThrow(()->new IDnotFoundException("Client",clientId.toString()));
     }
 
-    public Client update(Client client) {
+    public Boolean update(Client client) {
 
-        this.getById(client.getId());
+        Boolean updated = clientRepository.findById(client.getId()).isPresent();
+        clientRepository.save(client);
 
-        return clientRepository.save(client);
+        return updated;
+
     }
 
     public List<Client> getAll() {

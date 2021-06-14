@@ -38,15 +38,14 @@ public class AddressServiceTest {
     }
 
     @Test
-    public void addTest(){  //todo deberia tirar un sql exception si el address ya existe
-        /*
-        *   MODIFICADO. Ahora verifica si existe por street y number y tira excepcion.
-         */
+    public void addTest(){
+
         //given
         Integer clientId = 1;
         Integer rateId = 1;
         Address address = anAddress();
 
+        when(addressRepository.getByStreeetAndNumber(anyString(),anyInt())).thenReturn(Optional.empty());
         when(rateService.getById(rateId)).thenReturn(aRate());
         when(clientService.getById(clientId)).thenReturn(aClient());
         when(addressRepository.save(address)).thenReturn(address);
@@ -54,6 +53,20 @@ public class AddressServiceTest {
         Address actualAddress = addressService.add(clientId,rateId,address);
 
         Assert.assertEquals(address,actualAddress);
+
+    }
+    @Test
+    public void addTest_IllegalArguments(){
+
+        //given
+        Integer clientId = 1;
+        Integer rateId = 1;
+        Address address = anAddress();
+
+        when(addressRepository.getByStreeetAndNumber(anyString(),anyInt())).thenReturn(Optional.of(anAddress()));
+
+        Assert.assertThrows(IllegalArgumentException.class,
+                ()->addressService.add(clientId,rateId,address));
 
     }
     @Test
