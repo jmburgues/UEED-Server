@@ -108,10 +108,11 @@
 					<excludes>
 						<exclude>**/*edu/utn/UEEDServer/configuration/**</exclude>
 						<exclude>**/*edu/utn/UEEDServer/model/**</exclude>
+						<exclude>**/*edu/utn/UEEDServer/converter/**</exclude>
 						<exclude>**/*edu/utn/UEEDServer/filter/**</exclude>
 						<exclude>**/*edu/utn/UEEDServer/utils/**</exclude>
 						<exclude>**/*edu/utn/UEEDServer/configuration/**</exclude>
-						<exclude>**/*edu/utn/UEEDServer/UEEDServerApplication</exclude>
+						<exclude>**/*edu/utn/UEEDServer/UeedServerApplication</exclude>
 					</excludes>
 				</configuration>
 				<executions>

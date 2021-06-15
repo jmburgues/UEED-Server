@@ -78,4 +78,23 @@ public class RateServiceTest {
         when(rateRepository.findById(anyInt())).thenReturn(Optional.empty());
         Assert.assertThrows(IDnotFoundException.class,()->rateService.delete(anyInt()));
     }
+
+    @Test
+    public void updateTest_TRUE(){
+        when(rateRepository.findById(anyInt())).thenReturn(Optional.of(aRate()));
+        when(rateRepository.save(aRate())).thenReturn(aRate());
+        Boolean updated = rateService.update(aRate());
+
+        Assert.assertEquals(Boolean.TRUE,updated);
+
+    }
+    @Test
+    public void updateTest_FALSE(){
+        when(rateRepository.findById(anyInt())).thenReturn(Optional.empty());
+        when(rateRepository.save(aRate())).thenReturn(aRate());
+        Boolean updated = rateService.update(aRate());
+
+        Assert.assertEquals(Boolean.FALSE,updated);
+
+    }
 }
