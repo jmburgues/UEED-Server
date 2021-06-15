@@ -3,9 +3,11 @@ package edu.utn.UEEDServer.controller;
 import edu.utn.UEEDServer.model.Bill;
 import edu.utn.UEEDServer.model.Client;
 import edu.utn.UEEDServer.model.dto.UserDTO;
+import edu.utn.UEEDServer.model.projections.ClientConsumption;
 import edu.utn.UEEDServer.service.BillService;
 import edu.utn.UEEDServer.service.ClientService;
 import edu.utn.UEEDServer.service.ReadingService;
+import lombok.SneakyThrows;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,9 +22,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static edu.utn.UEEDServer.utils.TestUtils.aClient;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static edu.utn.UEEDServer.utils.TestUtils.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.*;
 
 
 public class ClientControllerTest {
@@ -70,8 +72,8 @@ public class ClientControllerTest {
 
           ResponseEntity<List<Bill>> response = clientController.filterByClientAndDate(auth, 1, from, to);
 
-            Assert.assertEquals(listOfBills.get(0).getBillId(), response.getBody().get(0).getBillId());
-            Assert.assertEquals(HttpStatus.valueOf(200), response.getStatusCode());
+            assertEquals(listOfBills.get(0).getBillId(), response.getBody().get(0).getBillId());
+            assertEquals(HttpStatus.valueOf(200), response.getStatusCode());
 
         } catch (ParseException e) {
             Assert.fail("parsing dates failed.");
@@ -96,8 +98,8 @@ public class ClientControllerTest {
                 expectedException = e;
             }
 
-            Assert.assertEquals(HttpStatus.FORBIDDEN, expectedException.getStatus());
-            Assert.assertEquals(ResponseStatusException.class,expectedException.getClass());
+            assertEquals(HttpStatus.FORBIDDEN, expectedException.getStatus());
+            assertEquals(ResponseStatusException.class,expectedException.getClass());
 
         } catch (ParseException e) {
             Assert.fail("parsing dates failed.");
@@ -119,7 +121,7 @@ public class ClientControllerTest {
 
             ResponseEntity<List<Bill>> newList = clientController.filterByClientAndDate(auth, 1, from, to);
 
-            Assert.assertEquals(listOfBills.isEmpty(), newList.getBody().isEmpty());
+            assertEquals(listOfBills.isEmpty(), newList.getBody().isEmpty());
 
         } catch (ParseException e) {
             Assert.fail("parsing dates failed.");
@@ -137,7 +139,7 @@ public class ClientControllerTest {
 
         ResponseEntity<List<Bill>> response = clientController.getUnpaidBillClient(auth,1);
 
-        Assert.assertEquals(!listOfBills.isEmpty(), !response.getBody().isEmpty());
+        assertEquals(!listOfBills.isEmpty(), !response.getBody().isEmpty());
     }
 
     @Test
@@ -153,7 +155,7 @@ public class ClientControllerTest {
             expectedException = e;
         }
         Assert.assertNotNull(expectedException);
-        Assert.assertEquals(HttpStatus.FORBIDDEN, expectedException.getStatus());
+        assertEquals(HttpStatus.FORBIDDEN, expectedException.getStatus());
 
 
     }
@@ -169,8 +171,103 @@ public class ClientControllerTest {
 
         ResponseEntity<List<Bill>> response = clientController.getUnpaidBillClient(auth,1);
 
-        Assert.assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
-        Assert.assertEquals(listOfBills.isEmpty(), response.getBody().isEmpty());
+        assertEquals(HttpStatus.NO_CONTENT, response.getStatusCode());
+        assertEquals(listOfBills.isEmpty(), response.getBody().isEmpty());
+    }
+    @SneakyThrows
+    @Test
+    public void getClientConsumptionHappyPath(){
+        ClientConsumption clientConsumption =mock(ClientConsumption.class);
+        Integer clientId = 1;
+        Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
+        Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
+
+        when(auth.getPrincipal()).thenReturn(UserDTO.builder().username("user").build());
+        when(clientService.getByUsername("user")).thenReturn(Client.builder().id(1).build());
+        when(readingService.getClientConsumption(clientId,from,to)).thenReturn(clientConsumption);
+
+        ResponseEntity response = clientController.getClientConsumption(auth,clientId,from,to);
+        assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
+        assertEquals(clientConsumption,response.getBody());
+
+
+    }
+
+    @SneakyThrows
+    @Test
+    public void getClientConsumption403(){
+        ClientConsumption clientConsumption =mock(ClientConsumption.class);
+        Integer clientId = 1;
+        Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
+        Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
+
+        when(auth.getPrincipal()).thenReturn(UserDTO.builder().username("user").build());
+        when(clientService.getByUsername("user")).thenReturn(Client.builder().id(2).build());
+
+        try {
+            clientController.getClientConsumption(auth,1,from,to);
+        }catch(ResponseStatusException e){
+            expectedException = e;
+        }
+
+        assertEquals(HttpStatus.FORBIDDEN, expectedException.getStatus());
+    }
+    @SneakyThrows
+    @Test
+    public void getClientReadingsByDateHappyPath(){
+        Integer clientId = 1;
+        Integer page = 1;
+        Integer size = 1;
+        Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
+        Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+        when(clientService.getByUsername(anyString())).thenReturn(aClient());
+        when(readingService.getClientReadingsByDate(clientId,from,to,page,size)).thenReturn(List.of(aReading()));
+
+        ResponseEntity response = clientController.getClientReadingsByDate(auth,clientId,from,to,page,size);
+
+        Assert.assertEquals(HttpStatus.OK,response.getStatusCode());
+        Assert.assertEquals(List.of(aReading()),response.getBody());
+    }
+
+
+    @SneakyThrows
+    @Test
+    public void getClientReadingsByDate204(){
+        Integer clientId = 1;
+        Integer page = 1;
+        Integer size = 1;
+        Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
+        Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+        when(clientService.getByUsername(anyString())).thenReturn(aClient());
+        when(readingService.getClientReadingsByDate(clientId,from,to,page,size)).thenReturn(anEmptyList());
+
+        ResponseEntity response = clientController.getClientReadingsByDate(auth,clientId,from,to,page,size);
+
+        Assert.assertEquals(HttpStatus.NO_CONTENT,response.getStatusCode());
+        Assert.assertEquals(anEmptyList(),response.getBody());
+    }
+
+    @SneakyThrows
+    @Test
+    public void getClientReadingsByDate403(){
+        Integer clientId = 1;
+        Integer page = 1;
+        Integer size = 1;
+        Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
+        Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
+        when(auth.getPrincipal()).thenReturn(aUserDTO());
+        when(clientService.getByUsername(anyString())).thenReturn(Client.builder().id(2).build());
+
+        try {
+            clientController.getClientReadingsByDate(auth,1,from,to,page,size);
+        }catch(ResponseStatusException e){
+            expectedException = e;
+        }
+
+        Assert.assertEquals(HttpStatus.FORBIDDEN,expectedException.getStatus());
+
     }
 }
 
