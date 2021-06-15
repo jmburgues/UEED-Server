@@ -21,8 +21,6 @@ public class User {
     @Column(name="username")
     private String username;
     private String password;
-    private String name;
-    private String surname;
     @Column(columnDefinition = "BIT default 0")
     @Type(type = "org.hibernate.type.NumericBooleanType")
     private Boolean employee;

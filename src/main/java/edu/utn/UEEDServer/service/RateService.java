@@ -36,10 +36,11 @@ public class RateService {
         return  rateRepository.save(rate);
     }
 
-    public Rate update(Rate rate) {
-        this.getById(rate.getId());
+    public Boolean update(Rate rate) {
 
-        return rateRepository.save(rate);
+        Boolean updated = rateRepository.findById(rate.getId()).isPresent();
+        rateRepository.save(rate);
+        return updated;
     }
 
     public void delete(Integer rateId) {

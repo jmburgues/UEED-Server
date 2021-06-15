@@ -178,8 +178,6 @@ public class TestUtils {
     public static User aUser() {
 
         return User.builder()
-                .name("name")
-                .surname("surname")
                 .username("username")
                 .password("pass")
                 .employee(false)
@@ -191,8 +189,6 @@ public class TestUtils {
         return  UserDTO
                 .builder()
                 .username("user")
-                .name("name")
-                .surname("surname")
                 .employee(true)
                 .build();
 
@@ -202,8 +198,6 @@ public class TestUtils {
         return  UserDTO
                 .builder()
                 .username("user")
-                .name("name")
-                .surname("surname")
                 .employee(false)
                 .build();
     }

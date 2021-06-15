@@ -74,10 +74,10 @@ public class BackofficeController {
     @PutMapping(RATE_PATH)
     public ResponseEntity updateRate(Authentication auth, @RequestBody Rate rate) {
         verifyAuthentication(auth);
-        if(rateService.getById(rate.getId())!=null)
-        return ResponseEntity.ok(rate); // si ya existe actualizo y devuelvo ok
 
-        else   //sino lo creo y devuelvo el nuevo recurso
+        if(rateService.update(rate))
+            return ResponseEntity.ok().build();
+        else
             return ResponseEntity.created(EntityURLBuilder.buildURL(rate.getId())).build();
 
     }
