@@ -115,17 +115,22 @@ ueedDB.readings: [
 ueedDB.topConsumers: [
     "1"{
         "rank": "1",
+        "totalConsumption" : "2254.82",
+        "dateFrom": "2020-01-01",
+        "dateTo": "2021-01-01",
         "client": {
             "name": "Juancito",
             "surname": "Perez",
             "DNI": "3123112",
-            "address": [
-                {
-                    "street": "Av. Siempre Viva",
-                    "number": "3021",
-                    "rate": {
-                        "category": "RESIDENTIAL",
-                        "price": "1.0"
+                "address": [
+                    {
+                        "street": "Av. Siempre Viva",
+                        "number": "3021",
+                        "rate": {
+                            "category": "RESIDENTIAL",
+                            "price": "1.0"
+                            },
+                        "partialConsumption" : "1231,41"
                     },
                     {
                         "street": "Calle Falsa",
@@ -133,13 +138,11 @@ ueedDB.topConsumers: [
                         "rate": {
                             "category": "INDUSTRIAL",
                             "price": "1.5"
-                        }
+                        },
+                        "partialConsumption" : "1023,41"
                     }
                 ]
-            },
-            "accConsumption": "121311,30",
-            "dateFrom": "2020-01-01",
-            "dateTo": "2021-01-01"
+            }
         },
         "2"{
             "rank": "2",
