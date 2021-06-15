@@ -475,7 +475,7 @@ public class BackOfficeControllerTest {
         Meter meter = aMeter();
         MeterDTO meterDTO = aMeterDTO();
         when(auth.getPrincipal()).thenReturn(employee);
-        when(meterService.add(aMeter())).thenReturn(meter);
+        when(meterService.add(aMeter(),1,1)).thenReturn(meter);
         when(modelMapper.map(meterDTO,Meter.class)).thenReturn(aMeter());
 
         ResponseEntity response = backofficeController.addMeter(auth,meterDTO);

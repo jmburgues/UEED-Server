@@ -123,7 +123,7 @@ public class TestUtils {
         return gson.toJson(aModel());
     }
 
-    private static Model aModel() {
+    public static Model aModel() {
 
         return Model.builder()
                 .id(1)

@@ -10,7 +10,7 @@ import org.junit.Test;
 import java.util.List;
 import java.util.Optional;
 
-import static edu.utn.UEEDServer.utils.TestUtils.aMeter;
+import static edu.utn.UEEDServer.utils.TestUtils.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -20,6 +20,8 @@ public class MeterServiceTest {
     MeterRepository meterRepository;
 
     MeterService meterService;
+    AddressService addressService;
+    ModelService modelService;
 
     Integer page;
     Integer size;
@@ -27,7 +29,9 @@ public class MeterServiceTest {
     @Before
     public void setUp(){
         meterRepository=mock(MeterRepository.class);
-        this.meterService = new MeterService(meterRepository);
+        addressService= mock(AddressService.class);
+        modelService = mock(ModelService.class);
+        this.meterService = new MeterService(meterRepository,addressService,modelService);
         this.page = 1;
         this.size = 1;
     }
@@ -60,11 +64,16 @@ public class MeterServiceTest {
     @Test
     public void addTest(){
         Meter meter = aMeter();
+        Integer modelId = 1;
+        Integer addressId = 1;
         String serialNumber = meter.getSerialNumber();
+
         when(meterRepository.existsById(serialNumber)).thenReturn(false);
         when(meterRepository.save(aMeter())).thenReturn(meter);
+        when(addressService.getById(anyInt())).thenReturn(anAddress());
+        when(modelService.getById(anyInt())).thenReturn(aModel());
 
-        Meter actualMeter = meterService.add(aMeter());
+        Meter actualMeter = meterService.add(aMeter(),modelId,addressId);
 
         Assert.assertEquals(meter,actualMeter);
 
@@ -72,9 +81,10 @@ public class MeterServiceTest {
 
     @Test
     public void addTest_AlreadyExist(){
+
         when(meterRepository.existsById(anyString())).thenReturn(true);
 
-        Assert.assertThrows(IllegalArgumentException.class,()->meterService.add(aMeter()));
+        Assert.assertThrows(IllegalArgumentException.class,()->meterService.add(aMeter(),1,1));
     }
     @Test
     public void updateTest_TRUE(){
