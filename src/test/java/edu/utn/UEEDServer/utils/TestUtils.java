@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import edu.utn.UEEDServer.model.*;
 import edu.utn.UEEDServer.model.dto.AddressDTO;
 
+import edu.utn.UEEDServer.model.dto.MeterDTO;
 import edu.utn.UEEDServer.model.dto.ReadingDTO;
 import edu.utn.UEEDServer.model.dto.UserDTO;
 
@@ -202,6 +203,16 @@ public class TestUtils {
                 .build();
     }
 
+    public static MeterDTO aMeterDTO(){
+        return  MeterDTO
+                .builder()
+                .serialNumber("111")
+                .password("111")
+                .modelId(1)
+                .addressId(1)
+                .build();
+    }
+
     public static ReadingDTO aReadingDTO() {
 
         return ReadingDTO.builder()
@@ -211,9 +222,6 @@ public class TestUtils {
                 .totalKw(15F)
                 .build();
     }
-
-
-
 
     public static List anEmptyList(){
 

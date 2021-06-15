@@ -4,21 +4,24 @@ import edu.utn.UEEDServer.exceptions.IDnotFoundException;
 import edu.utn.UEEDServer.model.Meter;
 import edu.utn.UEEDServer.repository.MeterRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
 @Service
 public class MeterService {
 
-    private MeterRepository meterRepo;
+    private final MeterRepository meterRepo;
+    private final AddressService addressService;
+    private final ModelService modelService;
 
     @Autowired
-    public MeterService(MeterRepository meterRepo) {
+        public MeterService(MeterRepository meterRepo, AddressService addressService, ModelService modelService) {
         this.meterRepo = meterRepo;
+        this.addressService = addressService;
+        this.modelService = modelService;
     }
+
 
     public List<Meter> getAll(Integer page, Integer size){
         return this.meterRepo.findAllPagable(page,size);
@@ -29,11 +32,14 @@ public class MeterService {
                     .orElseThrow(()-> new IDnotFoundException("Meter",serialNumber));
     }
 
-    public Meter add(Meter newMeter){
+    public Meter add(Meter newMeter, Integer modelId, Integer addressId){
         String serialNum = newMeter.getSerialNumber();
 
         if(this.meterRepo.existsById(serialNum))
             throw new IllegalArgumentException("Meter id " + serialNum + " already exists.");
+
+        newMeter.setAddress(addressService.getById(addressId));
+        newMeter.setModel(modelService.getById(modelId));
 
         return meterRepo.save(newMeter);
     }

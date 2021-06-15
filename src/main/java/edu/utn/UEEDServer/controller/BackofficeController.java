@@ -2,6 +2,7 @@ package edu.utn.UEEDServer.controller;
 
 import edu.utn.UEEDServer.model.*;
 import edu.utn.UEEDServer.model.dto.AddressDTO;
+import edu.utn.UEEDServer.model.dto.MeterDTO;
 import edu.utn.UEEDServer.model.projections.ConsumersDTO;
 
 import edu.utn.UEEDServer.model.dto.UserDTO;
@@ -149,9 +150,10 @@ public class BackofficeController {
     }
 
     @PostMapping(METER_PATH)
-    public ResponseEntity addMeter(Authentication auth, @RequestBody Meter newMeter) {
+    public ResponseEntity addMeter(Authentication auth, @RequestBody MeterDTO incoming) {
         verifyAuthentication(auth);
-        Meter saved = meterService.add(newMeter);
+        Meter newMeter = modelMapper.map(incoming,Meter.class);
+        Meter saved = meterService.add(newMeter,incoming.getModelId(),incoming.getAddressId());
         return ResponseEntity
                 .created(EntityURLBuilder.buildURL(saved.getSerialNumber())).build();
     }

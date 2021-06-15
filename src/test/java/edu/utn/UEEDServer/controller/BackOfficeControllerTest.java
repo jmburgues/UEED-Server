@@ -3,6 +3,7 @@ package edu.utn.UEEDServer.controller;
 
 import edu.utn.UEEDServer.model.*;
 import edu.utn.UEEDServer.model.dto.AddressDTO;
+import edu.utn.UEEDServer.model.dto.MeterDTO;
 import edu.utn.UEEDServer.model.dto.UserDTO;
 import edu.utn.UEEDServer.model.projections.ConsumersDTO;
 import edu.utn.UEEDServer.service.*;
@@ -472,10 +473,12 @@ public class BackOfficeControllerTest {
     @Test
     public void addMeterTest_201(){
         Meter meter = aMeter();
+        MeterDTO meterDTO = aMeterDTO();
         when(auth.getPrincipal()).thenReturn(employee);
         when(meterService.add(aMeter())).thenReturn(meter);
+        when(modelMapper.map(meterDTO,Meter.class)).thenReturn(aMeter());
 
-        ResponseEntity response = backofficeController.addMeter(auth,meter);
+        ResponseEntity response = backofficeController.addMeter(auth,meterDTO);
 
         Assert.assertEquals(HttpStatus.CREATED.value(),response.getStatusCodeValue());
     }
@@ -483,11 +486,11 @@ public class BackOfficeControllerTest {
     @Test
     public void addMeterTest_403(){
         Meter meter = aMeter();
-
+        MeterDTO meterDTO = aMeterDTO();
         when(auth.getPrincipal()).thenReturn(aUserDTO());
 
         try{
-            backofficeController.addMeter(auth,meter);
+            backofficeController.addMeter(auth,meterDTO);
         }catch (ResponseStatusException ex){
             expectedException = ex;
         }
