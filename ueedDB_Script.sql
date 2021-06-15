@@ -5,7 +5,7 @@ USE UEED_DB;
 CREATE TABLE RATES(
     rateId int auto_increment,
     category varchar(40) unique,
-    kwPrice float,
+    kwPrice float CHECK(kwPrice>0),
     CONSTRAINT pk_rateId primary key (rateId)
 );
 
@@ -69,6 +69,7 @@ CREATE TABLE METERS
 
 CREATE TABLE BILLS(
     billId int auto_increment,
+    description varchar(100),
     billedDate datetime not null,
     initialReadingDate datetime,
     finalReadingDate datetime,
@@ -158,6 +159,7 @@ CREATE TRIGGER `tai_updateMetersAfterReading` AFTER INSERT ON READINGS FOR EACH 
 
 #ITEM 3 PART II
 #TRIGGER UPDATE READING PRICES AFTER UPDATES ON RATES
+#drop trigger tau_updateReadingPrice
 DELIMITER $$
 CREATE TRIGGER tau_updateReadingPrice AFTER UPDATE ON RATES FOR EACH ROW
 BEGIN
@@ -177,8 +179,6 @@ BEGIN
         DECLARE CONTINUE HANDLER FOR NOT FOUND SET endLoop=1;
 
         IF (OLD.kwPrice <> NEW.kwPrice) THEN
-            SET autocommit = 0;
-            SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
 
             OPEN rUpdate;
             foreach: LOOP
@@ -187,7 +187,6 @@ BEGIN
                     LEAVE foreach;
                 END IF;
                 UPDATE READINGS SET readingPrice=(pReadingPrice/old.kwPrice)*new.kwPrice WHERE meterSerialNumber=pSerialNumber AND readingId = pReadingId;
-
             END LOOP foreach;
             CLOSE rUpdate;
         END IF;
@@ -245,9 +244,9 @@ BEGIN
     SET p_totalPrice = p_ratePrice*p_totalConsumption;
 
     IF p_dateFrom IS NOT NULL THEN
-        INSERT INTO BILLS (clientId,billedDate,initialReadingDate,finalReadingDate,finalConsumption,initialConsumption,meterId,rateCategory,ratePrice,
+        INSERT INTO BILLS (description,clientId,billedDate,initialReadingDate,finalReadingDate,finalConsumption,initialConsumption,meterId,rateCategory,ratePrice,
                            totalConsumption,totalPrice) VALUES
-        (p_clientId,NOW(),p_dateFrom,p_dateTo,p_finalConsumption,p_initialConsumption,p_meterId,p_rateCategory,
+        ('Monthly',p_clientId,NOW(),p_dateFrom,p_dateTo,p_finalConsumption,p_initialConsumption,p_meterId,p_rateCategory,
          p_ratePrice,p_totalConsumption,p_totalPrice);
 
     END IF;
@@ -301,6 +300,7 @@ BEGIN
 END;
 
 #----------ADJUSTMENT BILL TRIGGER -------------
+#drop trigger UEED_DB.tau_adjustmentBill
 DELIMITER $$
 CREATE TRIGGER tau_adjustmentBill AFTER UPDATE ON RATES
     FOR EACH ROW
@@ -309,15 +309,16 @@ BEGIN
     DECLARE pBillId,pClientId INT;
     DECLARE pDateFrom,pDateTo DATETIME;
     DECLARE pMeterId VARCHAR (20);
+    DECLARE pDescription VARCHAR (100);
     DECLARE pInitialConsumption,pFinalConsumption,pTotalConsumption,pRatePrice,pTotalPrice FLOAT;
 
-    DECLARE adjust CURSOR FOR SELECT billId,initialReadingDate,finalReadingDate,initialConsumption,finalConsumption,totalConsumption,meterId,ratePrice,totalPrice,clientId
+    DECLARE adjust CURSOR FOR SELECT billId,description,initialReadingDate,finalReadingDate,initialConsumption,finalConsumption,totalConsumption,meterId,ratePrice,totalPrice,clientId
                               FROM BILLS WHERE rateCategory = old.rateId AND ratePrice=old.KwPrice;
     DECLARE CONTINUE HANDLER FOR NOT FOUND SET endLoop = 1;
 
     OPEN adjust;
     foreach: LOOP
-        FETCH adjust INTO pBillId,pDateFrom,pDateTo,pInitialConsumption,pFinalConsumption,pTotalConsumption,pMeterId,pRatePrice,pTotalPrice,pClientId;
+        FETCH adjust INTO pBillId,pDescription,pDateFrom,pDateTo,pInitialConsumption,pFinalConsumption,pTotalConsumption,pMeterId,pRatePrice,pTotalPrice,pClientId;
         IF endLoop = 1 THEN
             LEAVE foreach;
         END IF;
@@ -325,14 +326,13 @@ BEGIN
             SET pTotalPrice = -1*pTotalConsumption*(old.kwPrice-new.kwPrice);
         END IF;
         INSERT INTO BILLS
-        (billedDate,initialReadingDate,finalReadingDate,initialConsumption,finalConsumption,totalConsumption,meterId,rateCategory,ratePrice,totalPrice,clientId)
+        (description,billedDate,initialReadingDate,finalReadingDate,initialConsumption,finalConsumption,totalConsumption,meterId,rateCategory,ratePrice,totalPrice,clientId)
         VALUES
-        (NOW(),pDateFrom,pDateTo,pInitialConsumption,pFinalConsumption,pTotalConsumption,pMeterId,new.rateId,new.kwPrice,pTotalPrice,pClientId);
+        ('Adjustment',NOW(),pDateFrom,pDateTo,pInitialConsumption,pFinalConsumption,pTotalConsumption,pMeterId,new.rateId,new.kwPrice,pTotalPrice,pClientId);
     END LOOP foreach;
     CLOSE adjust;
 END $$
 DELIMITER ;
-
 
 #INDEXES
 /*to prevent duplicates addresses*/

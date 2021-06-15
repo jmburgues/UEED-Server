@@ -18,6 +18,7 @@ public class Bill {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer billId;
+    private String description;
     private LocalDateTime billedDate; ///how do we convert this into java.sql.date to store in DB?
     private LocalDateTime initialReadingDate;
     private LocalDateTime finalReadingDate;
