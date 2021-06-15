@@ -173,12 +173,13 @@ public class BackOfficeControllerTest {
     {
         Rate r = aRate();
         when(auth.getPrincipal()).thenReturn(employee);
-        when(rateService.getById(r.getId())).thenReturn(r);
+        when(rateService.update(r)).thenReturn(true);
 
         ResponseEntity responseEntity = backofficeController.updateRate(auth,r);
 
         Assert.assertEquals(HttpStatus.OK.value(),responseEntity.getStatusCodeValue());
-        Assert.assertEquals(r,responseEntity.getBody());
+
+
     }
 
     @Test
@@ -187,12 +188,11 @@ public class BackOfficeControllerTest {
         Rate rate = aRate();
         when(auth.getPrincipal()).thenReturn(employee);
 
-        when(rateService.getById(2)).thenReturn(null);
+        when(rateService.update(rate)).thenReturn(false);
 
         ResponseEntity response = backofficeController.updateRate(auth,rate);
 
         Assert.assertEquals(HttpStatus.CREATED.value(),response.getStatusCodeValue());
-
 
     }
 
