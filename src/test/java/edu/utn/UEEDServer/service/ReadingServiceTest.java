@@ -55,13 +55,15 @@ public class ReadingServiceTest {
     public void getAddressReadingsByDateTest(){
         //given
         Integer addressId =1;
+        Integer page=0;
+        Integer size=10;
         Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
         Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
 
         when(addressService.getById(addressId)).thenReturn(anAddress());
-        when(readingRepository.getAddressReadingsByDate(addressId,from,to)).thenReturn(List.of(aReading()));
+        when(readingRepository.getAddressReadingsByDate(addressId,from,to,page,size)).thenReturn(List.of(aReading()));
 
-        List<Reading>readingList = readingService.getAddressReadingsByDate(addressId,from,to);
+        List<Reading>readingList = readingService.getAddressReadingsByDate(addressId,from,to,page,size);
 
         Assert.assertEquals(List.of(aReading()),readingList);
     }
@@ -69,11 +71,13 @@ public class ReadingServiceTest {
     @Test
     public void getAddressReadingsByDateTest_IllegalArguments(){
         Integer addressId = 1;
+        Integer page = 0;
+        Integer size = 10;
         Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
         Date to = new SimpleDateFormat("yyyy-MM").parse("2021-04");
 
         Assert.assertThrows(IllegalArgumentException.class,
-                ()->readingService.getAddressReadingsByDate(addressId,from,to));
+                ()->readingService.getAddressReadingsByDate(addressId,from,to,page,size));
     }
     @SneakyThrows
     @Test

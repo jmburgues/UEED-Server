@@ -36,7 +36,7 @@ public class BillService {
 
         if(from.after(to))
             throw new IllegalArgumentException("Date From (" + from + ") can not be after date To (" + to + ")");
-
-         return billRepository.dateAndClientFilter(clientId,from,to);
+        clientService.getById(clientId);
+        return billRepository.dateAndClientFilter(clientId,from,to);
     }
 }

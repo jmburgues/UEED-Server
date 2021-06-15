@@ -703,13 +703,15 @@ public class BackOfficeControllerTest {
     public void getAddressReadingsTest_200(){
         //given
         Integer addressId = 1;
+        Integer page = 0;
+        Integer size = 10;
         Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
         Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
 
         when(auth.getPrincipal()).thenReturn(employee);
-        when(readingService.getAddressReadingsByDate(addressId,from,to)).thenReturn(List.of(aReading()));
+        when(readingService.getAddressReadingsByDate(addressId,from,to,page,size)).thenReturn(List.of(aReading()));
 
-        ResponseEntity<List<Reading>>response = backofficeController.getAddressReadings(auth,addressId,from,to);
+        ResponseEntity<List<Reading>>response = backofficeController.getAddressReadings(auth,addressId,from,to,page,size);
 
         Assert.assertEquals(HttpStatus.OK.value(),response.getStatusCodeValue());
         Assert.assertEquals(List.of(aReading()),response.getBody());
@@ -720,13 +722,15 @@ public class BackOfficeControllerTest {
     public void getAddressReadingsTest_204(){
         //given
         Integer addressId = 1;
+        Integer page = 0;
+        Integer size = 10;
         Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
         Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
 
         when(auth.getPrincipal()).thenReturn(employee);
-        when(readingService.getAddressReadingsByDate(addressId,from,to)).thenReturn(anEmptyList());
+        when(readingService.getAddressReadingsByDate(addressId,from,to,page,size)).thenReturn(anEmptyList());
 
-        ResponseEntity<List<Reading>>response = backofficeController.getAddressReadings(auth,addressId,from,to);
+        ResponseEntity<List<Reading>>response = backofficeController.getAddressReadings(auth,addressId,from,to,page,size);
 
         Assert.assertEquals(HttpStatus.NO_CONTENT.value(),response.getStatusCodeValue());
         Assert.assertTrue(response.getBody().isEmpty());
@@ -737,12 +741,14 @@ public class BackOfficeControllerTest {
     public void getAddressReadingsTest_403(){
         //given
         Integer addressId = 1;
+        Integer page = 0;
+        Integer size = 10;
         Date from = new SimpleDateFormat("yyyy-MM").parse("2021-06");
         Date to = new SimpleDateFormat("yyyy-MM").parse("2021-07");
 
         when(auth.getPrincipal()).thenReturn(aUserDTO());
         try {
-            backofficeController.getAddressReadings(auth,addressId,from,to);
+            backofficeController.getAddressReadings(auth,addressId,from,to,page,size);
         } catch (ResponseStatusException ex) {
             expectedException = ex;
         }

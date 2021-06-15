@@ -16,8 +16,9 @@ public interface ReadingRepository extends JpaRepository<Reading,Integer> {
             "ON R.meterSerialNumber = M.serialNumber " +
             "INNER JOIN ADDRESSES A " +
             "ON M.addressId = A.addressId " +
-            "WHERE A.addressId = ?1 AND readDate BETWEEN ?2 AND ?3", nativeQuery = true)
-    List<Reading> getAddressReadingsByDate(Integer addressId, Date from, Date to);
+            "WHERE A.addressId = ?1 AND readDate BETWEEN ?2 AND ?3 " +
+            "LIMIT ?4,?5", nativeQuery = true)
+    List<Reading> getAddressReadingsByDate(Integer addressId, Date from, Date to, Integer page, Integer size);
 
     @Query(value = "SELECT R.* FROM READINGS R " +
             "INNER JOIN METERS M " +

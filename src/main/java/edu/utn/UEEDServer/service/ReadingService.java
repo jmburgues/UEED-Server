@@ -30,10 +30,10 @@ public class ReadingService {
         return readingRepo.save(reading);
     }
 
-    public List<Reading>getAddressReadingsByDate(Integer addressId, Date from, Date to) {
+    public List<Reading>getAddressReadingsByDate(Integer addressId, Date from, Date to, Integer page, Integer size) {
         verifyDates(from,to);
         addressService.getById(addressId);
-        return this.readingRepo.getAddressReadingsByDate(addressId,from,to);
+        return this.readingRepo.getAddressReadingsByDate(addressId,from,to,page,size);
     }
 
     public List<Reading>getClientReadingsByDate(Integer clientId, Date from, Date to, Integer page, Integer size) {

@@ -41,7 +41,6 @@ public class ClientController {
                                             @PathVariable Integer clientId,
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date from,
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM") Date to){
-        System.out.println("entro");
         verifyAuthentication(auth,clientId);
         return response(billService.filterByClientAndDate(clientId,from,to));
     }

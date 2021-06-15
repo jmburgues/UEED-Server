@@ -202,9 +202,11 @@ public class BackofficeController {
     public ResponseEntity<List<Reading>> getAddressReadings(Authentication auth,
                                             @PathVariable Integer addressId,
                                             @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date from,
-                                            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to){
+                                            @RequestParam @DateTimeFormat(pattern="yyyy-MM-dd") Date to,
+                                            @RequestParam(value="page", defaultValue = "0") Integer page,
+                                            @RequestParam(value="size", defaultValue = "10") Integer size) {
         verifyAuthentication(auth);
-        return response(this.readingService.getAddressReadingsByDate(addressId,from,to));
+        return response(this.readingService.getAddressReadingsByDate(addressId,from,to,page,size));
     }
 
 
