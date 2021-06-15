@@ -339,11 +339,6 @@ DELIMITER ;
 CREATE UNIQUE INDEX index_address ON ADDRESSES (street,number)
     USING BTREE;
 
-
 ## ITEM 4
 # Indexes to optimize Reading querys by username and date
-CREATE INDEX `idx_readings_dates` ON READINGS(readDate) USING BTREE;
-CREATE INDEX `idx_readings_username` ON READINGS(meterSerialNumber) USING HASH;
-CREATE INDEX `idx_meters_username` ON METERS(addressId) USING HASH;
-CREATE INDEX `idx_addresses_username` ON ADDRESSES(clientId) USING HASH;
-CREATE INDEX `idx_clients_username` ON CLIENTS(username) USING HASH;
+CREATE INDEX `idx_readings_dates` ON READINGS(meterSerialNumber,readDate) USING BTREE;
