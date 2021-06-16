@@ -12,8 +12,6 @@ CREATE TABLE RATES(
 CREATE TABLE USERS(
     username varchar(40),
     password varchar(40) not null,
-    name varchar(40) not null,
-    surname varchar(40) not null,
     employee bool default 0,
     CONSTRAINT pk_username primary key (username)
 );
@@ -333,11 +331,6 @@ BEGIN
     CLOSE adjust;
 END $$
 DELIMITER ;
-
-#INDEXES
-/*to prevent duplicates addresses*/
-CREATE UNIQUE INDEX index_address ON ADDRESSES (street,number)
-    USING BTREE;
 
 ## ITEM 4
 # Indexes to optimize Reading querys by username and date
